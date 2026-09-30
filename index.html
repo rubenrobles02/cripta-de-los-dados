@@ -596,6 +596,31 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
   .pmenu .pb{min-height:44px;font-size:17px}
   .pmenu .pb.big{min-height:50px;font-size:21px}
 }
+/* ---------- intro story ---------- */
+.intro{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;padding-block:24px 22px;cursor:pointer}
+.intro .lb{position:fixed;left:0;right:0;height:18px;background:#000;z-index:3;pointer-events:none}
+.intro .lb.top{top:0}.intro .lb.bot{bottom:0}
+.intro-spot{flex:1;min-height:110px}
+.intro-box{align-self:center;width:min(100%,780px);padding:12px 16px 14px;display:flex;flex-direction:column;gap:8px;animation:enter .4s steps(4)}
+.intro-txt{margin:0;min-height:4em;font-size:19px;line-height:1.38;color:var(--bone3);max-width:68ch}
+.intro-txt b{color:var(--org2);font-weight:700}
+.intro-txt i{color:var(--bone2)}
+.intro-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:18px}
+.idots{display:flex;gap:6px}
+.idots i{width:9px;height:9px;background:var(--st0)}
+.idots i.on{background:var(--org2)}
+.itap{font-size:14px;font-weight:700;color:var(--yel);animation:blink2 .9s steps(2) infinite}
+.skip{position:fixed;top:calc(24px + env(safe-area-inset-top,0px));right:16px;z-index:4;min-height:38px!important}
+.intro-final{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap;animation:enter .5s steps(5)}
+.itap:has(.intro-final){animation:none}
+.intro-final .pb{margin-block:0 6px}
+.intro-final b{font-family:var(--f-title);font-weight:400;font-size:36px;line-height:1;color:var(--yel);text-shadow:0 var(--p) 0 var(--org0),0 calc(2*var(--p)) 0 var(--k)}
+@media (orientation:landscape) and (max-height:560px){
+  .intro{padding-block:20px 20px;gap:6px}
+  .intro .lb{height:14px}
+  .intro-txt{font-size:17px;min-height:3.6em}
+  .skip{top:calc(20px + env(safe-area-inset-top,0px))}
+}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -1994,7 +2019,8 @@ function newRun(){
     doors:null,combat:null,reward:null,shop:null,event:null,treasure:null,pending:null,
     stats:{kills:0,dmg:0,rolls:0,crits:0}};
   META.runs++; store('cripta-meta',META);
-  G.doors=genDoors(); G.gearHp=0; applyGear(); view='game'; go('map');
+  G.doors=genDoors(); G.gearHp=0; applyGear(); saveRun();
+  if(!META.introSeen) playIntro(()=>{ view='game'; go('map'); }); else { view='game'; go('map'); }
 }
 function genDoors(){
   const f=G.floor;
@@ -2286,6 +2312,76 @@ function victory(){
   G.screen='victory'; retrigger($('#wipe'),'on'); render();
 }
 
+/* ================= intro story (first run, skippable) ================= */
+const INTRO=[
+  {scene:['title',{}],
+   txt:'Bajo el pueblo de Valdeceniza hay una cripta que nadie ha logrado vaciar. Diez pisos de piedra, huesos y oscuridad.',
+   html:'Bajo el pueblo de <b>Valdeceniza</b> hay una cripta que nadie ha logrado vaciar. <b>Diez pisos</b> de piedra, huesos y oscuridad.'},
+  {scene:['crypt',{boss:1}],foe:'demon',
+   txt:'En el fondo duerme Azhrak, el Señor de la Fosa. Hace un siglo robó los Dados del Destino, y con ellos decide quién vive... y quién no vuelve jamás.',
+   html:'En el fondo duerme <b>Azhrak</b>, el Señor de la Fosa. Hace un siglo robó los <b>Dados del Destino</b>, y con ellos decide quién vive... y quién no vuelve jamás.'},
+  {scene:['crypt',{dim:1}],
+   txt:'Cada luna nueva desaparece alguien del pueblo. Anoche fue tu hermana. Solo quedaron sus huellas, bajando hacia la cripta.',
+   html:'Cada luna nueva desaparece alguien del pueblo. Anoche fue <b>tu hermana</b>. Solo quedaron sus huellas, bajando hacia la cripta.'},
+  {scene:['rest',{}],
+   txt:'El viejo tahúr de la taberna te dio tres dados de hueso. «No parecen gran cosa», dijo. «Pero la suerte no se encuentra, muchacho. Se tira.»',
+   html:'El viejo tahúr de la taberna te dio <b>tres dados de hueso</b>. <i>«No parecen gran cosa», dijo. «Pero la suerte no se encuentra, muchacho. Se tira.»</i>'},
+  {scene:['event',{icon:'dice',ramp:'bone'}],
+   txt:'Cada puerta esconde un destino. Cada tirada, una oportunidad. Baja hasta el fondo, vence a Azhrak y trae a tu hermana de vuelta.',
+   html:'Cada puerta esconde un destino. Cada tirada, una oportunidad. <b>Baja hasta el fondo</b>, vence a Azhrak y <b>trae a tu hermana de vuelta</b>.'}
+];
+let INTRO_ST=null;
+function playIntro(done,endLabel){
+  view='intro'; INTRO_ST={i:0,done,endLabel:endLabel||'Empezar la partida',typing:null};
+  $('#sheet').hidden=true; hideTip(); updateTop(); S.foe=null;
+  M.innerHTML=`<section class="intro" id="intro">
+    <div class="lb top"></div><div class="lb bot"></div>
+    <button class="pb sm skip" id="iSkip">Saltar ▸▸</button>
+    <div class="intro-spot" id="spot"></div>
+    <div class="intro-box pf dark" id="ibox"><p class="intro-txt" id="itxt" aria-live="polite"></p>
+      <div class="intro-foot"><span class="idots" id="idots"></span><span class="itap" id="itap"></span></div></div>
+  </section>`;
+  $('#iSkip').onclick=e=>{ e.stopPropagation(); sfx('tap'); endIntro(); };
+  $('#intro').onclick=()=>introTap();
+  setMusic('dungeon'); showPanel(0);
+}
+function showPanel(i){
+  const P0=INTRO[i]; INTRO_ST.i=i; retrigger($('#wipe'),'on');
+  S.foe=P0.foe?Object.assign({},procSprite(P0.foe),{flash:0,shake:0,lunge:0,dead:0,boss:true,elite:false,sc:2}):null;
+  setScene(P0.scene[0],P0.scene[1]);
+  $('#idots').innerHTML=INTRO.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('');
+  $('#itap').innerHTML=''; const old=$('.intro-final'); if(old) old.remove();
+  const el=$('#itxt'); el.textContent='';
+  let n=0; clearInterval(INTRO_ST.typing);
+  INTRO_ST.typing=setInterval(()=>{
+    n++; el.textContent=P0.txt.slice(0,n);
+    if(n%3===0&&AC&&SOUND&&P0.txt[n-1]!==' ') tone(620+Math.random()*260,.025,'square',.012);
+    if(n>=P0.txt.length) finishType();
+  },REDUCED?1:30);
+}
+function finishType(){
+  if(!INTRO_ST) return;
+  clearInterval(INTRO_ST.typing); INTRO_ST.typing=null;
+  const P0=INTRO[INTRO_ST.i]; $('#itxt').innerHTML=P0.html;
+  if(INTRO_ST.i===INTRO.length-1){
+    const f=document.createElement('div'); f.className='intro-final';
+    f.innerHTML=`<b>Tira los dados.</b><button class="pb go" id="iGo">${INTRO_ST.endLabel}</button>`;
+    $('#itap').replaceChildren(f); sfx('combo');
+    $('#iGo').onclick=e=>{ e.stopPropagation(); endIntro(); };
+  } else $('#itap').textContent='Toca para continuar ▸';
+}
+function introTap(){
+  if(!INTRO_ST) return;
+  if(INTRO_ST.typing){ finishType(); return; }
+  if(INTRO_ST.i<INTRO.length-1){ sfx('tap'); showPanel(INTRO_ST.i+1); }
+}
+function endIntro(){
+  if(!INTRO_ST) return;
+  clearInterval(INTRO_ST.typing); const d=INTRO_ST.done; INTRO_ST=null;
+  META.introSeen=true; store('cripta-meta',META); S.foe=null;
+  retrigger($('#wipe'),'on'); d();
+}
+
 /* ================= screens ================= */
 function renderTitle(){
   const saved=load('cripta-run',null);
@@ -2297,7 +2393,7 @@ function renderTitle(){
     <div class="menu pf dark">
       ${saved&&!saved.over?`<button class="pb go big" id="bCont">Continuar · Piso ${saved.floor}</button><button class="pb" id="bNew">Nueva partida</button>`:`<button class="pb go big" id="bNew">Nueva partida</button>`}
       <div class="maprow"><button class="pb sm" id="bArm">${icon('dice','bone',2)} Armería</button><button class="pb sm" id="bGear">${icon('shield','rare',2)} Equipo</button></div>
-      <div class="maprow"><button class="pb sm" id="bHow">Cómo se juega</button><button class="pb sm" id="bMus">Música: ${MUSIC?'sí':'no'}</button><button class="pb sm" id="bSnd" aria-label="Efectos de sonido">${icon(SOUND?'sound':'mute','stone',2)}</button></div>
+      <div class="maprow"><button class="pb sm" id="bStory">Historia</button><button class="pb sm" id="bHow">Cómo se juega</button><button class="pb sm" id="bMus">Música: ${MUSIC?'sí':'no'}</button><button class="pb sm" id="bSnd" aria-label="Efectos de sonido">${icon(SOUND?'sound':'mute','stone',2)}</button></div>
       <div class="records"><span>Mejor piso <b>${META.best||'–'}</b></span><span>Victorias <b>${META.wins}</b></span><span>Tesoro <b>${META.bank||0}</b></span><span>Poder <b>${gearPower()}</b></span></div>
     </div>
   </section>`;
@@ -2305,6 +2401,7 @@ function renderTitle(){
   $('#bNew').onclick=()=>{start(); newRun();};
   if($('#bCont')) $('#bCont').onclick=()=>{start(); G=saved; normalize(); view='game'; retrigger($('#wipe'),'on'); render();};
   $('#bHow').onclick=showHow;
+  $('#bStory').onclick=()=>{ ac(); sfx('tap'); playIntro(()=>{ G=null; view='title'; render(); },'Volver al menú'); };
   $('#bArm').onclick=()=>{ ac(); sfx('tap'); showArmory(); };
   $('#bGear').onclick=()=>{ ac(); sfx('tap'); showGear(); };
   $('#bMus').onclick=()=>{ toggleMusic(); $('#bMus').textContent=`Música: ${MUSIC?'sí':'no'}`; };
@@ -2539,7 +2636,7 @@ function renderEnd(won){
     </div>
     <div class="menu pf dark">
       <div class="bank" style="align-self:center">${icon('coin','coin',2)} <b>+${G.earned||0}</b>&nbsp;al Tesoro · total ${META.bank||0}</div>
-      <p class="sub" style="text-align:center">${won?'Has bajado los diez pisos y vuelto a la superficie.':'Los dados no estuvieron de tu lado esta vez.'}</p>
+      <p class="sub" style="text-align:center">${won?'Los Dados del Destino son tuyos y tu hermana vuelve a casa contigo. Valdeceniza duerme tranquila.':'Los dados no estuvieron de tu lado esta vez. Tu hermana sigue esperando ahí abajo.'}</p>
       <div class="statlist" style="align-self:center">
         <div class="pf"><b>${s.kills}</b><span>Enemigos vencidos</span></div>
         <div class="pf"><b>${s.dmg}</b><span>Daño total</span></div>
