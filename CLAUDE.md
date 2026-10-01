@@ -65,6 +65,8 @@ Tipos de cara: `atk`, `def`, `heal`, `crit` (se muestra como «Magia»: lanza un
 - **Puertas:** `genDoors` con enfriamiento por tipo (`COOL`). El último piso de cada mundo es el jefe; el penúltimo, hoguera y tienda.
 - **Recompensas:** caja de equipo (`BOX_CHANCE=1`, provisional para pruebas) y después 3 cartas: caras, dado nuevo, bendición (`BLESS`/`BUFFK`, duran la siguiente pelea) o mejora (`UPG`).
 - **Skins:** 8, compradas con el Tesoro. Cada una cambia el aspecto de los dados, las partículas y el efecto de las espadas al atacar.
+- **Héroes:** `HEROES` (junto a `spriteImg`): El Errante (sin bonus) → Paladín 100 → Bárbaro 200 → Hechicero 300 → Pícaro 400 → Druida 500 gemas, en cadena. Son paletas `h_*` del sprite `hero`. Sus `mods` se suman en `gearTotal()` vía `heroMods()` (solo con `G.hero` de la partida en curso); `critV`/`healV` se aplican en `calc`, y `start(G)` en `newRun`. Gemas (`META.gems`): `bankRun` da 1 por cada 5 pisos + 10 por jefe (`G.stats.bosses`). La hoja «Héroes» de la portada tiene «+100 gemas (pruebas)».
+- **Sombras de enemigos:** `drawFoe` pinta una sombra proyectada (silueta `foeSil` sesgada hacia arriba a la derecha), una sombra de contacto que encoge al elevarse y oclusión en la parte baja del sprite.
 - **Economía:** al morir, `bankRun` ingresa en el Tesoro el oro restante + 15 por piso + 8 por enemigo. La Armería tiene un botón «+1000 (pruebas)».
 
 ## Preferencias del usuario

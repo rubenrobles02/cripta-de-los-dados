@@ -702,6 +702,14 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .card.r-legend{--rc:#ffa640;box-shadow:inset 0 0 0 1.5px #ffa640,0 5px 0 #09070b,0 0 22px rgba(255,166,64,.4)}
 .gtile[style*="ffa640"]{animation:legendglow 1.4s steps(2) infinite}
 @keyframes legendglow{50%{box-shadow:inset 0 0 0 var(--p) #ffa640,0 0 12px #ffa640}}
+/* heroes */
+.bank.gems{box-shadow:inset 0 0 0 var(--p) #1f6f86}
+.bank.gems b{color:#9eeaf0}
+.hero-card .trio img{width:68px;height:68px;image-rendering:pixelated}
+.hero-card .perk{color:#b0e86a}
+.hero-card.locked{opacity:.55}
+.hero-card em.lockd{color:var(--st3);font-size:12px;white-space:normal}
+.endbank{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -1024,7 +1032,12 @@ const SPR={
     '..kpppkwwkpppk..','.krrppkwwkpprrk.','.krrrrrkkrrrrrk.','krrhhrrrrrrhhrrk',
     'krrhhrrggrrhhrrk','krrrrrrrrrrrrrrk','krrrrrrrrrrrrrrk','kkkkkkkkkkkkkkkk']}
 };
-const PAL_ALT={gold:{w:'#f0cf6a',s:'#b08a2c',k:'#2a1b08',r:'#6ff3ff'},  ghoul:{g:'#7a8a6a',l:'#a8b898',y:'#e04040',b:'#3a3a2a',n:'#6a6a5a'},
+const PAL_ALT={h_paladin:{s:'#c7bdd6',b:'#1a2440',y:'#9eeaf0',r:'#2a55b8',g:'#e8b52a',l:'#4a3f5c'},
+  h_barbaro:{s:'#c99a6e',b:'#5a2a12',y:'#ff3b4f',r:'#6e3a1a',g:'#8a8fa0',l:'#3a2a24'},
+  h_mago:{s:'#8a4cc4',b:'#1e0c30',y:'#dca8ff',r:'#3a1a55',g:'#ffe27a',l:'#241634'},
+  h_picaro:{s:'#5a7a48',b:'#0b0a12',y:'#b0e86a',r:'#1f3a24',g:'#a88c62',l:'#1a1a14'},
+  h_druida:{s:'#7a5a2a',b:'#1a2a10',y:'#ffe27a',r:'#2f7a3a',g:'#b0e86a',l:'#4a3a1a'},
+  gold:{w:'#f0cf6a',s:'#b08a2c',k:'#2a1b08',r:'#6ff3ff'},  ghoul:{g:'#7a8a6a',l:'#a8b898',y:'#e04040',b:'#3a3a2a',n:'#6a6a5a'},
   imp:{g:'#c4302a',l:'#ff6a4a',y:'#ffe14a',b:'#3a1a1e',n:'#e8b52a',k:'#1a0608'},
   stone:{p:'#6a5c7e',q:'#8f82a3',r:'#ff3b4f',f:'#c7bdd6'},
   wraith:{b:'#8a3fc4',w:'#f0d0ff',d:'#2e1447',k:'#120a1e'},
@@ -1308,7 +1321,7 @@ function poolFor(){ const {w,local}=worldOf(); return w.pools[local<=4?0:local<=
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function drop(k){try{localStorage.removeItem(k)}catch(e){}}
-const META=Object.assign({best:0,wins:0,runs:0,bank:0,skins:['bone']},load('cripta-meta',{}));
+const META=Object.assign({best:0,wins:0,runs:0,bank:0,skins:['bone'],gems:0,heroes:['errante'],hero:'errante'},load('cripta-meta',{}));
 if(!META.skins.includes('bone')) META.skins.unshift('bone');
 if(!META.skins.includes(SKIN)) SKIN='bone';
 let SOUND=load('cripta-sound',true);
@@ -1367,7 +1380,7 @@ const lvOf=id=>META.gear.owned[id]||0;
 const gearIcon=(id,k=2)=>icon(SLOTI[GEAR[id].slot],QUAL[GEAR[id].q].rk,k);
 const eqGear=slot=>{ const id=META.gear.eq[slot]; return id&&GEAR[id]?GEAR[id]:null; };
 function gearStats(id,L){ const lv=L||lvOf(id)||1,st=GEAR[id].st(lv); if(GEAR[id].slot!=='chest'&&lv>1) st.hp=(st.hp||0)+(lv-1); for(const k in st) if(!st[k]) delete st[k]; return st; }
-function gearTotal(){ const t={}; for(const s of SLOTS){ const id=META.gear.eq[s]; if(!id) continue; const st=gearStats(id); for(const k in st) t[k]=k==='phoenix'?Math.max(t[k]||0,st[k]):(t[k]||0)+st[k]; } return t; }
+function gearTotal(){ const t={}; for(const s of SLOTS){ const id=META.gear.eq[s]; if(!id) continue; const st=gearStats(id); for(const k in st) t[k]=k==='phoenix'?Math.max(t[k]||0,st[k]):(t[k]||0)+st[k]; } const hm=heroMods(); for(const k in hm) t[k]=(t[k]||0)+hm[k]; return t; }
 function gearPower(){ let p=0; for(const s of SLOTS){ const id=META.gear.eq[s]; if(id) p+=QUAL[GEAR[id].q].w*lvOf(id); } return p; }
 function gearBlock(){ return (gearTotal().block||0)+(G&&G.pact==='iron'?5:0); }
 /* comparison between a piece and the one already in its slot */
@@ -1476,7 +1489,7 @@ function showGear(back){
   }
   openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">Equipo</h2><span class="power" data-tip="<b>Poder</b>Suma de la calidad por el nivel de todo lo que llevas puesto.">${icon('burst','ember',2)} Poder <b>${gearPower()}</b></span><span class="bank">${icon('coin','coin',2)} <b>${META.bank||0}</b></span></div>
     <div class="gearwrap">
-      <div class="doll pf">${SLOTS.map(slotBox).join('')}<div class="hero">${spriteImg('hero')}</div></div>
+      <div class="doll pf">${SLOTS.map(slotBox).join('')}<div class="hero">${spriteImg('hero',heroPal(G&&!G.over&&G.hero?G.hero:META.hero))}</div></div>
       <div class="gright">
         <div class="gdet pf dark" id="gdet">${det}</div>
         <h3 class="h-sec">Colección · ${Object.keys(META.gear.owned).length}/${Object.keys(GEAR).length}</h3>
@@ -1525,7 +1538,47 @@ function bindDrag(tile,back){
 }
 function phoenix(){ const p=gearTotal().phoenix; if(!p||G.phoenixUsed) return false; G.phoenixUsed=true; G.hp=Math.max(1,Math.ceil(G.maxHp*p/100)); banner('¡Fénix!'); sfx('win'); burstAt('#hpBar','ember',40,3); updateTop(); return true; }
 const spr34Cache={};
-const spriteImg=n=>`<img src="${spriteURL34(n)}" width="102" height="102" alt="">`;
+const spriteImg=(n,alt)=>`<img src="${spriteURL34(n,alt)}" width="102" height="102" alt="">`;
+/* ---- heroes: unlocked one after another with gems ---- */
+const HEROES={
+  errante:{name:'El Errante',pal:null,cost:0,role:'Inicial',desc:'Sin talentos: solo tus dados y tu suerte.',perks:[],mods:{}},
+  paladin:{name:'Paladín',pal:'h_paladin',cost:100,role:'Defensa',desc:'Juró proteger Valdeceniza. Aguanta lo que le echen.',perks:['+10 de vida máxima','Empieza cada combate con 3 de escudo'],mods:{hp:10,block:3}},
+  barbaro:{name:'Bárbaro',pal:'h_barbaro',cost:200,role:'Ataque',desc:'Golpea primero y pregunta nunca.',perks:['+3 de daño en cada tirada con ataque','−4 de vida máxima'],mods:{dmg:3,hp:-4}},
+  mago:{name:'Hechicero',pal:'h_mago',cost:300,role:'Magia',desc:'Lee los dados como si fueran runas.',perks:['Las caras de Magia valen +2','Empieza con una cara de Magia en su primer dado'],mods:{critV:2},start:g=>{ const d=g.dice[0].faces,i=d.findIndex(f=>f.t==='blank'); d[i<0?5:i]=F('crit',3,'rare'); }},
+  picaro:{name:'Pícaro',pal:'h_picaro',cost:400,role:'Fortuna',desc:'Siempre encuentra otra oportunidad… y otra moneda.',perks:['+1 relanzamiento por turno','+30% de oro'],mods:{reroll:1,goldPct:30}},
+  druida:{name:'Druida',pal:'h_druida',cost:500,role:'Curación',desc:'La cripta también tiene raíces.',perks:['Se cura 5 al ganar cada combate','Las caras de curación valen +1'],mods:{winHeal:5,healV:1}}
+};
+const HERO_KEYS=Object.keys(HEROES);
+function heroMods(){ const h=G&&!G.over&&HEROES[G.hero]; return h?h.mods:{}; }
+const heroPal=k=>(HEROES[k]||HEROES.errante).pal;
+function showHeroes(back){
+  const owned=META.heroes, nextK=HERO_KEYS.find(k=>!owned.includes(k)), gems=META.gems||0;
+  const list=HERO_KEYS.map(k=>{
+    const h=HEROES[k],own=owned.includes(k),eq=k===META.hero,isNext=k===nextK,can=gems>=h.cost;
+    const prev=HEROES[HERO_KEYS[HERO_KEYS.indexOf(k)-1]];
+    const act=eq?'<em class="gdone">Elegido</em>':own?'<em>Elegir</em>':isNext?`<em class="cost ${can?'':'poor'}">${icon('gem','def',1)}${h.cost}</em>`:`<em class="lockd">Desbloquea antes a ${prev.name}</em>`;
+    const perks=h.perks.length?h.perks.map(p=>`<small class="perk">${icon('up','heal',1)} ${p}</small>`).join(''):'<small class="perk">Sin estadísticas extra</small>';
+    return `<button class="skin hero-card pf dark ${eq?'on':''} ${!own&&!isNext?'locked':''}" data-k="${k}"><span class="trio"><img src="${spriteURL34('hero',h.pal)}" width="68" height="68" alt=""></span><span class="txt"><span class="rar" style="color:${RC.def}">${h.role}</span><b>${h.name}</b><small>${h.desc}</small>${perks}</span>${act}</button>`;
+  }).join('');
+  const ECON='Las gemas se ganan al terminar cada partida: 1 por cada 5 pisos, +10 por cada jefe vencido. Cada héroe desbloquea al siguiente. El héroe elegido se usa al empezar una partida nueva.';
+  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">Héroes</h2><span class="info" data-tip="<b>Gemas</b>${ECON}">?</span><span class="grow"></span><button class="pb sm" id="devGems">+100 gemas (pruebas)</button><span class="bank gems">${icon('gem','def',2)} <b>${gems}</b></span></div>
+    <p class="sub arm-sub">${ECON}</p>
+    <div class="skins">${list}</div>${back?'<button class="pb" id="sBack">Volver</button>':''}`,!!back);
+  $('#sheet').querySelectorAll('.hero-card').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k,h=HEROES[k];
+    if(!META.heroes.includes(k)){
+      if(k!==nextK){ toast(`Primero desbloquea a <b>${HEROES[HERO_KEYS[HERO_KEYS.indexOf(k)-1]].name}</b>`); sfx('tap'); return; }
+      if((META.gems||0)<h.cost){ toast(`Te faltan <b>${h.cost-(META.gems||0)}</b> gemas`); sfx('tap'); return; }
+      META.gems-=h.cost; META.heroes.push(k); banner(`¡${h.name}!`); sfx('win');
+    } else sfx('forge');
+    META.hero=k; store('cripta-meta',META); buzz(30);
+    showHeroes(back);
+    burstAt($('#sheet').querySelector(`.hero-card[data-k="${k}"] .trio`),'def',34,2.6);
+    if(G&&!G.over&&view==='game'&&G.hero!==k) toast('El héroe cambiará en tu próxima partida');
+  });
+  $('#devGems').onclick=()=>{ META.gems=(META.gems||0)+100; store('cripta-meta',META); sfx('coin'); showHeroes(back); burstAt('#devGems','def',24,2.4); };
+  if(back) $('#sBack').onclick=back;
+}
 /* ---- blessings: one-shot buffs for the next fight ---- */
 const BLESS={
   heal:{name:'Descanso',icon:'heart',rk:'heal',desc:'Recuperas el 35% de tu vida ahora mismo.'},
@@ -2186,6 +2239,8 @@ function goblinPeek(c,t,g){
   c.restore();
 }
 /* ---------- frame loop ---------- */
+const silCache=new WeakMap();
+function foeSil(F){ let s=silCache.get(F.white); if(s) return s; s=document.createElement('canvas'); s.width=F.white.width; s.height=F.white.height; const x=s.getContext('2d'); x.drawImage(F.white,0,0); x.globalCompositeOperation='source-in'; x.fillStyle='#0b0812'; x.fillRect(0,0,s.width,s.height); silCache.set(F.white,s); return s; }
 function drawFoe(c,t){
   const F=S.foe; if(!F) return;
   const r=spotRect(); if(!r) return;
@@ -2194,11 +2249,20 @@ function drawFoe(c,t){
   let bob=F.dead?0:Math.round(Math.sin(t/420)*1.2),ox=0,oy=0;
   if(F.shake>0){ ox=Math.round((Math.random()*2-1)*F.shake); F.shake*=.82; if(F.shake<.5) F.shake=0; }
   if(F.lunge>0){ oy=Math.round(Math.sin(F.lunge*Math.PI)*8); F.lunge=Math.max(0,F.lunge-.06); }
-  c.globalAlpha=.55; c.fillStyle='#000'; c.beginPath(); c.ellipse(cx,fy+1,w*.3,2+sc,0,0,7); c.fill(); c.globalAlpha=1;
+  const fade=F.dead?Math.max(0,1-Math.floor(F.dead*5)/5):1, lift=Math.max(0,-bob)+oy*.5;
+  // cast shadow: the silhouette laid on the floor, stretched up and to the right (light comes from the front-left)
+  if(fade>0){ c.save(); c.globalAlpha=.5*fade; c.translate(cx+ox,fy+1); c.transform(1,0,-1.05,.4,0,0); c.drawImage(foeSil(F),-w/2,-w+sc,w,w); c.restore(); }
+  // contact shadow: two stepped ellipses that shrink while the foe rises
+  { const k=Math.max(.55,1-lift/14); c.fillStyle='#000';
+    c.globalAlpha=.45*fade; c.beginPath(); c.ellipse(cx+ox,fy+1,Math.round(w*.48*k),Math.round((3+sc)*k),0,0,7); c.fill();
+    c.globalAlpha=.75*fade; c.beginPath(); c.ellipse(cx+ox,fy+1,Math.round(w*.34*k),Math.round((1.5+sc*.6)*k),0,0,7); c.fill(); c.globalAlpha=1; }
   if(F.elite||F.boss){ glow(c,cx,fy-w*.45,w*.5+Math.sin(t/300)*2,F.boss?'#ff3a1a':'#a655dc',.07); }
   const x0=Math.round(cx-w/2+ox),y0=Math.round(fy-w+sc+bob+oy);
   if(F.dead){ const a=1-Math.floor(F.dead*5)/5; if(a<=0) return; c.globalAlpha=a; c.drawImage(F.white,x0,y0+Math.round(F.dead*12),w,w); c.globalAlpha=1; F.dead+=.035; return; }
   c.drawImage(F.img,x0,y0,w,w);
+  // ambient occlusion: the lower part of the body darkens in two pixel steps, as if the floor took the light
+  c.save(); const sil=foeSil(F); c.beginPath(); c.rect(x0,y0+Math.round(w*.66),w,w); c.clip(); c.globalAlpha=.2; c.drawImage(sil,x0,y0,w,w);
+  c.beginPath(); c.rect(x0,y0+Math.round(w*.84),w,w); c.clip(); c.globalAlpha=.22; c.drawImage(sil,x0,y0,w,w); c.restore();
   if(F.flash>0){ c.globalAlpha=Math.ceil(F.flash*3)/3; c.drawImage(F.white,x0,y0,w,w); c.globalAlpha=1; F.flash=Math.max(0,F.flash-.09); }
 }
 function foePt(){ const el=$('#spot'); if(!el) return {x:innerWidth/2,y:innerHeight/3}; const r=el.getBoundingClientRect(),sc=(S.foe&&S.foe.sc)||2; return {x:r.left+r.width/2,y:r.bottom-17*sc*S.s}; }
@@ -2352,7 +2416,9 @@ function newRun(){
       {faces:[F('atk',2),F('atk',3),F('def',2),F('heal',2),F('coin',3),F('blank',0)]}
     ],
     doors:null,combat:null,reward:null,shop:null,event:null,treasure:null,pending:null,
-    stats:{kills:0,dmg:0,rolls:0,crits:0}};
+    stats:{kills:0,dmg:0,rolls:0,crits:0,bosses:0}};
+  G.hero=META.heroes.includes(META.hero)?META.hero:'errante';
+  { const h=HEROES[G.hero]; if(h.start) h.start(G); }
   META.runs++; store('cripta-meta',META);
   G.doors=genDoors(); G.gearHp=0; applyGear(); saveRun();
   if(!META.introSeen) playIntro(()=>{ view='game'; go('map'); }); else { view='game'; go('map'); }
@@ -2433,8 +2499,8 @@ function calc(faces){
     if(f.t==='blank'){ if(has('loaded')) r.atk+=2; return; }
     const k=f.t==='crit'?'atk':f.t; cnt[k]=(cnt[k]||0)+1;
     if(f.t==='atk') r.atk+=f.v+(has('whet')?1:0);
-    else if(f.t==='crit'){ r.atk+=f.v; r.crits++; }
-    else r[f.t]+=f.v;
+    else if(f.t==='crit'){ r.atk+=f.v+(heroMods().critV||0); r.crits++; }
+    else r[f.t]+=f.v+(f.t==='heal'?heroMods().healV||0:0);
   });
   for(const k in cnt) if(cnt[k]>=3){ const bonus=(cnt[k]-2)*2*(has('idol')?2:1)*(G&&G.pact==='echo'?3:1); r[k]+=bonus; r.combos.push({t:k,n:cnt[k],bonus}); }
   { const C0=G&&G.combat; if(C0&&C0.buffs&&C0.buffs.fury&&r.atk>0) r.atk+=3; }
@@ -2654,7 +2720,7 @@ async function winCombat(){
   G.stats.kills++;
   { const wh=gearTotal().winHeal; if(wh){ const h=heal(wh); if(h) floatAt('#hpBar',`+${h}`,'heal'); } }
   await wait(900);
-  if(C.kind==='boss'){ banner('¡Jefe vencido!'); sfx('win'); META.wins++; store('cripta-meta',META); await wait(900); }
+  if(C.kind==='boss'){ banner('¡Jefe vencido!'); sfx('win'); META.wins++; G.stats.bosses=(G.stats.bosses||0)+1; store('cripta-meta',META); await wait(900); }
   sfx('win');
   const big=C.kind!=='normal',gold=gainGold((C.kind==='boss'?rnd(60,80):big?rnd(28,40):rnd(9,16))*(C.buffs&&C.buffs.gild?3:1));
   let relic=null; if(big){ relic=randomRelic(); gainRelic(relic); }
@@ -2662,7 +2728,7 @@ async function winCombat(){
   G.reward={title:`${e.name} derrotado`,gold,relic,opts,stage:'box',box:Math.random()<BOX_CHANCE?{open:false}:null};
   go('reward');
 }
-function bankRun(won){ const earned=G.gold+G.floor*15+G.stats.kills*8+(won?500:0); META.bank=(META.bank||0)+earned; store('cripta-meta',META); G.earned=earned; }
+function bankRun(won){ const earned=G.gold+G.floor*15+G.stats.kills*8+(won?500:0); META.bank=(META.bank||0)+earned; const gems=Math.floor(G.floor/5)+(G.stats.bosses||0)*10; META.gems=(META.gems||0)+gems; store('cripta-meta',META); G.earned=earned; G.gemsEarned=gems; }
 function lose(){
   G.combat.phase='lost'; sfx('lose'); bankRun(false); G.over=true; drop('cripta-run');
   META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
@@ -2792,9 +2858,9 @@ function renderTitle(){
     </div>
     <div class="menu pf dark">
       ${saved&&!saved.over?`<button class="pb go big" id="bCont">Continuar · Piso ${saved.floor}</button><button class="pb" id="bNew">Nueva partida</button>`:`<button class="pb go big" id="bNew">Nueva partida</button>`}
-      <div class="maprow"><button class="pb sm" id="bArm">${icon('dice','bone',2)} Armería</button><button class="pb sm" id="bGear">${icon('shield','rare',2)} Equipo</button></div>
+      <div class="maprow"><button class="pb sm" id="bHero">${icon('gem','def',2)} Héroes</button><button class="pb sm" id="bArm">${icon('dice','bone',2)} Armería</button><button class="pb sm" id="bGear">${icon('shield','rare',2)} Equipo</button></div>
       <div class="maprow"><button class="pb sm" id="bStory">Historia</button><button class="pb sm" id="bHow">Cómo se juega</button><button class="pb sm" id="bMus">Música: ${MUSIC?'sí':'no'}</button><button class="pb sm" id="bSnd" aria-label="Efectos de sonido">${icon(SOUND?'sound':'mute','stone',2)}</button></div>
-      <div class="records"><span>Mejor piso <b>${META.best||'–'}</b></span><span>Jefes <b>${META.wins}</b></span><span>Tesoro <b>${META.bank||0}</b></span><span>Poder <b>${gearPower()}</b></span></div>
+      <div class="records"><span>Mejor piso <b>${META.best||'–'}</b></span><span>Jefes <b>${META.wins}</b></span><span>Tesoro <b>${META.bank||0}</b></span><span>Gemas <b>${META.gems||0}</b></span><span>Poder <b>${gearPower()}</b></span></div>
     </div>
   </section>`;
   const start=()=>{ac(); sfx('door');};
@@ -2803,6 +2869,7 @@ function renderTitle(){
   $('#bHow').onclick=showHow;
   $('#bStory').onclick=()=>{ ac(); sfx('tap'); playIntro(()=>{ G=null; view='title'; render(); },'Volver al menú'); };
   $('#bArm').onclick=()=>{ ac(); sfx('tap'); showArmory(); };
+  $('#bHero').onclick=()=>{ ac(); sfx('tap'); showHeroes(); };
   $('#bGear').onclick=()=>{ ac(); sfx('tap'); showGear(); };
   $('#bMus').onclick=()=>{ toggleMusic(); $('#bMus').textContent=`Música: ${MUSIC?'sí':'no'}`; };
   $('#bSnd').onclick=()=>{ ac(); toggleSound(); $('#bSnd').innerHTML=icon(SOUND?'sound':'mute','stone',2); };
@@ -3127,7 +3194,7 @@ function renderEnd(won){
       <div class="gate-spot" id="spot"></div>
     </div>
     <div class="menu pf dark">
-      <div class="bank" style="align-self:center">${icon('coin','coin',2)} <b>+${G.earned||0}</b>&nbsp;al Tesoro · total ${META.bank||0}</div>
+      <div class="endbank"><div class="bank">${icon('coin','coin',2)} <b>+${G.earned||0}</b>&nbsp;al Tesoro · total ${META.bank||0}</div><div class="bank gems">${icon('gem','def',2)} <b>+${G.gemsEarned||0}</b>&nbsp;gemas · total ${META.gems||0}</div></div>
       <p class="sub" style="text-align:center">${won?'Los Dados del Destino son tuyos y tu hermana vuelve a casa contigo. Valdeceniza duerme tranquila.':'Los dados no estuvieron de tu lado esta vez. Tu hermana sigue esperando ahí abajo.'}</p>
       <div class="statlist" style="align-self:center">
         <div class="pf"><b>${s.kills}</b><span>Enemigos vencidos</span></div>
