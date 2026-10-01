@@ -605,6 +605,21 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
   .pmenu .pb{min-height:44px;font-size:17px}
   .pmenu .pb.big{min-height:50px;font-size:21px}
 }
+/* ---------- title: name and dice sit in the middle of the gate ---------- */
+.title-gate{flex-direction:column;align-items:center!important;justify-content:center;gap:12px;padding:0 0 15%!important}
+.title-gate .logo{position:relative;isolation:isolate}
+.title-gate .logo::before{content:"";position:absolute;inset:-26px -44px;z-index:-1;background:radial-gradient(closest-side,rgba(5,4,9,.92) 40%,rgba(5,4,9,.55) 70%,transparent)}
+.title-gate .logo b{font-size:clamp(76px,24vw,110px)}
+.title-gate .logo span{font-size:20px;animation:emberglow 2.4s steps(6) infinite}
+@keyframes emberglow{0%,100%{text-shadow:0 var(--p) 0 var(--k),0 0 0 transparent}50%{text-shadow:0 var(--p) 0 var(--k),0 0 14px var(--ember-2,#ff7a2a)}}
+@media (orientation:landscape) and (max-height:560px){
+  .title-gate{gap:8px;padding:0 0 13%!important}
+  .title-gate .logo b{font-size:92px}
+  .title-gate .logo span{font-size:19px}
+  .title-screen .tl{justify-content:stretch}
+  .title-screen .gate-spot.title-gate{flex:1;min-height:0}
+}
+@media (orientation:landscape) and (min-height:561px){ .title-gate .logo b{font-size:120px} }
 /* ---------- intro story ---------- */
 .intro{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;padding-block:24px 22px;cursor:pointer}
 .intro .lb{position:fixed;left:0;right:0;height:18px;background:#000;z-index:3;pointer-events:none}
@@ -630,6 +645,38 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
   .intro-txt{font-size:17px;min-height:3.6em}
   .skip{top:calc(20px + env(safe-area-inset-top,0px))}
 }
+/* legibility: the blackletter face stays for big titles only, at sizes that keep its pixels crisp */
+.h-title,.sheet-card .h-title{font-size:36px!important}
+.lm-name{font-size:36px}
+.banner{font-size:54px}
+.door b{font-family:var(--f-px)!important;font-weight:700;font-size:19px!important;letter-spacing:.02em}
+.plate .nm{font-family:var(--f-px);font-weight:700;font-size:22px}
+.loot.rel b{font-family:var(--f-px);font-weight:700;font-size:19px}
+.title-gate .logo b{font-size:90px}
+@media (orientation:portrait) and (min-height:740px){ .title-gate .logo b{font-size:108px} .h-title{font-size:45px!important} }
+@media (orientation:landscape) and (min-height:561px){ .banner{font-size:72px} }
+/* reward cards are dealt one by one */
+.rcards.waiting{visibility:hidden}
+.rcards.deal .rcol{animation:deal .6s steps(8) both}
+.rcards.deal .rcol:nth-child(2){animation-delay:.18s}
+.rcards.deal .rcol:nth-child(3){animation-delay:.36s}
+@keyframes deal{0%{opacity:0;transform:translateY(70px) rotate(-12deg) scale(.5)}55%{opacity:1;transform:translateY(-10px) rotate(3deg) scale(1.06)}100%{opacity:1;transform:none}}
+/* world progress on the map */
+.wtrack{display:flex;align-items:center;gap:10px}
+.wname{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--org2);white-space:nowrap}
+.wbar{position:relative;flex:1;height:12px;background:var(--k);box-shadow:inset 0 0 0 var(--p) var(--st0)}
+.wbar i{position:absolute;left:3px;top:3px;bottom:3px;max-width:calc(100% - 6px);background:var(--org2)}
+.wbar em{position:absolute;top:-3px;width:3px;height:18px;background:var(--st1)}
+.wnum{font-weight:700;color:var(--bone3);font-variant-numeric:tabular-nums}
+/* mode picker */
+.modes{display:grid;grid-template-columns:1fr;gap:6px}
+.mode{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:14px 14px 18px;text-align:left;--rim:var(--org2)}
+.mode b{font-size:21px}
+.mode small{font-size:14px;color:var(--bone2);line-height:1.3}
+.mode .rar{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--st3)}
+.mode.locked{--rim:var(--st0);opacity:.6;cursor:default}
+.go-tag{font-style:normal;font-weight:700;color:var(--org2);align-self:flex-end}
+@media (orientation:landscape){ .modes{grid-template-columns:1fr 1fr} }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -789,6 +836,20 @@ const SWORD_PAL={
 };
 const SWORD_ROWS=['...g..........','...gcbbbbbbb..','phhgbwwwwwwbbt','...gcccccccc..','...g..........'];
 const swordCache={};
+const ORB_ARCANE={b:'#a655dc',w:'#f0d0ff',o:'#2e1447',trail:['#6a2c9c','#c27ae8','#f0d0ff'],hit:'crit'};
+const orbPal=skin=>skin==='bone'?ORB_ARCANE:(SWORD_PAL[skin]||ORB_ARCANE);
+const orbCache={};
+function orbSprite(skin){
+  if(orbCache[skin]) return orbCache[skin];
+  const pal=orbPal(skin),N=13,c=document.createElement('canvas'); c.width=c.height=N; const x=c.getContext('2d');
+  for(let y=0;y<N;y++) for(let X=0;X<N;X++){
+    const d=Math.hypot(X-6,y-6); let col=null;
+    if(d<=2.2) col=pal.w; else if(d<=4.6) col=pal.b; else if(d<=5.6) col=pal.o;
+    if(col){ x.fillStyle=col; x.fillRect(X,y,1,1); }
+  }
+  x.fillStyle='#ffffff'; x.fillRect(4,4,2,1); x.fillRect(4,5,1,1);
+  return orbCache[skin]=c;
+}
 function swordSprite(skin){
   if(swordCache[skin]) return swordCache[skin];
   const pal=SWORD_PAL[skin]||SWORD_PAL.bone,W=16,H=7,c=document.createElement('canvas'); c.width=W; c.height=H;
@@ -921,6 +982,11 @@ const SPR={
     '...kkrrrrrrkk...','...krrrrrrrrk...','..krreerreerrk..','..krrekrrkerrk..',
     '..krrrrrrrrrrk..','..krwkwkwkwkrk..','...krrkkkkrrk...','..kkrrrrrrrrkk..',
     '.krrkrrddrrkrrk.','.krk.krddrk.krk.','..k..krrrrk..k..','.....kk..kk.....']},
+  wisp:{pal:{k:'#0a1a3a',b:'#4f8cff',w:'#e8fbff',d:'#123262'},rows:[
+    '................','.......kk.......','......kbbk......','.....kbwbbk.....',
+    '....kbwwbbbk....','...kbbwbbbbbk...','...kbbbbbbbbk...','..kbbkbbbbkbbk..',
+    '..kbbkbbbbkbbk..','..kbbbbbbbbbbk..','..kbbbbddbbbbk..','...kbbbbbbbbk...',
+    '....kbbkkbbk....','....kbk..kbk....','.....k....k.....','................']},
   hero:{pal:{k:'#0b0a12',s:'#8f82a3',b:'#241f31',y:'#ffd35c',r:'#8e1f2a',g:'#b87d18',l:'#4a3f5c'},rows:[
     '................','....kkkkkkkk....','...kssssssssk...','...ksbbbbbbsk...',
     '...ksbybbybsk...','...kssssssssk...','....kksssskk....','..kkrrrrrrrrkk..',
@@ -932,7 +998,15 @@ const SPR={
     '..kpppkwwkpppk..','.krrppkwwkpprrk.','.krrrrrkkrrrrrk.','krrhhrrrrrrhhrrk',
     'krrhhrrggrrhhrrk','krrrrrrrrrrrrrrk','krrrrrrrrrrrrrrk','kkkkkkkkkkkkkkkk']}
 };
-const PAL_ALT={gold:{w:'#f0cf6a',s:'#b08a2c',k:'#2a1b08',r:'#6ff3ff'},iron:{b:'#5a5566',y:'#c9d4e8',k:'#0b0a12'}};
+const PAL_ALT={gold:{w:'#f0cf6a',s:'#b08a2c',k:'#2a1b08',r:'#6ff3ff'},iron:{b:'#5a5566',y:'#c9d4e8',k:'#0b0a12'},
+  ghoul:{g:'#7a8a6a',l:'#a8b898',y:'#e04040',b:'#3a3a2a',n:'#6a6a5a'},
+  imp:{g:'#c4302a',l:'#ff6a4a',y:'#ffe14a',b:'#3a1a1e',n:'#e8b52a',k:'#1a0608'},
+  stone:{p:'#6a5c7e',q:'#8f82a3',r:'#ff3b4f',f:'#c7bdd6'},
+  wraith:{b:'#8a3fc4',w:'#f0d0ff',d:'#2e1447',k:'#120a1e'},
+  cultist:{p:'#3a1a55',q:'#6a2c9c',r:'#241634',h:'#b89a8a',w:'#2e1a3a',y:'#ff3b4f',g:'#8a3fc4'},
+  runic:{w:'#5a6aa0',s:'#3a4670',r:'#8fd8ff',k:'#0a0f1e'},
+  battlemage:{p:'#1f6f86',q:'#3fb0c9',r:'#123245',y:'#9eeaf0',w:'#d8d0c0',g:'#e8b52a'},
+  archmage:{p:'#2a1460',q:'#6a2c9c',r:'#120a2e',y:'#ffe27a',w:'#f0e8ff',g:'#ffe27a',h:'#c9a8ff'}};
 const procCache={};
 function procSprite(name,alt,blink){
   const key=name+(alt||'')+(blink?'b':''); if(procCache[key]) return procCache[key];
@@ -1120,7 +1194,7 @@ const TYPES={
   atk:{name:'Ataque',icon:'sword',desc:'Daño al enemigo'},
   def:{name:'Escudo',icon:'shield',desc:'Bloquea daño este turno'},
   heal:{name:'Cura',icon:'heart',desc:'Recuperas vida'},
-  crit:{name:'Crítico',icon:'burst',desc:'Suma ataque y lo duplica'},
+  crit:{name:'Magia',icon:'burst',desc:'Ataque mágico: suma y duplica tu ataque'},
   coin:{name:'Oro',icon:'coin',desc:'Consigues oro'},
   blank:{name:'Vacía',icon:'blank',desc:'No hace nada'}
 };
@@ -1129,7 +1203,7 @@ const RELICS={
   whet:{name:'Piedra de afilar',desc:'Cada cara de ataque hace +1.',icon:'sword',rk:'atk'},
   amulet:{name:'Amuleto del tahúr',desc:'+1 relanzamiento cada turno.',icon:'dice',rk:'ember'},
   runic:{name:'Escudo rúnico',desc:'Empiezas cada combate con 6 de escudo.',icon:'shield',rk:'def'},
-  vamp:{name:'Cáliz vampírico',desc:'Curas 3 cada turno en que sacas un crítico.',icon:'cup',rk:'crit'},
+  vamp:{name:'Cáliz vampírico',desc:'Curas 3 cada turno en que sacas una cara de magia.',icon:'cup',rk:'crit'},
   loaded:{name:'Dado trucado',desc:'Las caras vacías hacen 2 de ataque.',icon:'blank',rk:'bone'},
   purse:{name:'Bolsa sin fondo',desc:'Ganas un 50% más de oro.',icon:'bag',rk:'coin'},
   ember:{name:'Corazón de brasa',desc:'+10 de vida máxima.',icon:'heart',rk:'heal'},
@@ -1144,7 +1218,16 @@ const ENEMIES={
   skeleton:{name:'Esqueleto',sprite:'skel',hp:19,intents:[['atk',6],['block',5],['atk',7]]},
   mimic:{name:'Mímico',sprite:'mimic',hp:30,elite:true,intents:[['atk',8],['multi',3,3],['block',8]]},
   king:{name:'Rey Esqueleto',sprite:'skel',pal:'gold',hp:34,elite:true,intents:[['atk',9],['buff',3],['block',9],['atk',7]]},
-  boss:{name:'Azhrak',sprite:'demon',hp:95,boss:true,intents:[['atk',12],['multi',4,3],['buff',3],['block',12],['heal',8],['atk',10]]}
+  boss:{name:'Azhrak',sprite:'demon',hp:95,boss:true,intents:[['atk',12],['multi',4,3],['buff',3],['block',12],['heal',8],['atk',10]]},
+  ghoul:{name:'Necrófago',sprite:'goblin',pal:'ghoul',hp:20,intents:[['atk',7],['drain',4],['buff',2]]},
+  wraith:{name:'Espectro',sprite:'wisp',pal:'wraith',hp:15,intents:[['drain',5],['multi',2,3],['block',6]]},
+  imp:{name:'Diablillo',sprite:'goblin',pal:'imp',hp:15,intents:[['multi',3,2],['atk',6],['buff',2]]},
+  wisp:{name:'Fuego fatuo',sprite:'wisp',hp:13,intents:[['drain',4],['atk',6],['block',5]]},
+  gargoyle:{name:'Gárgola',sprite:'bat',pal:'stone',hp:22,intents:[['block',8],['atk',8],['atk',6]]},
+  cultist:{name:'Cultista',sprite:'merchant',pal:'cultist',hp:18,intents:[['drain',5],['heal',6],['buff',3],['atk',7]]},
+  golem:{name:'Gólem rúnico',sprite:'skel',pal:'runic',hp:40,elite:true,intents:[['atk',11],['block',12],['multi',2,6]]},
+  battlemage:{name:'Mago de batalla',sprite:'merchant',pal:'battlemage',hp:34,elite:true,intents:[['multi',3,4],['drain',7],['block',10],['buff',3]]},
+  archmage:{name:'Malakar',sprite:'merchant',pal:'archmage',hp:170,boss:true,intents:[['atk',14],['multi',5,3],['drain',9],['block',14],['buff',3],['heal',12]]}
 };
 const DOORS={
   combat:{name:'Combate',hint:'Un monstruo',icon:'skull',ramp:'atk'},
@@ -1153,8 +1236,19 @@ const DOORS={
   shop:{name:'Mercader',hint:'Compra mejoras',icon:'bag',ramp:'ember'},
   rest:{name:'Hoguera',hint:'Descansa o forja',icon:'flame',ramp:'ember'},
   event:{name:'Misterio',hint:'Puede pasar de todo',icon:'quest',ramp:'rare'},
-  boss:{name:'Azhrak',hint:'El señor de la fosa',icon:'horns',ramp:'atk'}
+  boss:{name:'Jefe',hint:'El señor de este mundo',icon:'horns',ramp:'atk'}
 };
+
+/* ================= worlds (infinite mode) ================= */
+const WORLD_LEN=25;
+const WORLDS=[
+  {key:'crypt',name:'La Cripta',boss:'boss',scene:'crypt',music:'dungeon',
+   pools:[['slime','bat'],['slime','bat','goblin','skeleton'],['goblin','skeleton','ghoul','bat'],['ghoul','skeleton','wraith','goblin']],elites:['mimic','king']},
+  {key:'tower',name:'La Torre del Archimago',boss:'archmage',scene:'tower',music:'tower',
+   pools:[['imp','wisp'],['imp','wisp','gargoyle'],['gargoyle','cultist','wisp','imp'],['cultist','gargoyle','imp','wisp']],elites:['golem','battlemage']}
+];
+function worldOf(f){ f=f||(G?G.floor:1); const n=Math.floor((f-1)/WORLD_LEN); return {idx:n,w:WORLDS[n%WORLDS.length],cycle:Math.floor(n/WORLDS.length),local:((f-1)%WORLD_LEN)+1}; }
+function poolFor(){ const {w,local}=worldOf(); return w.pools[local<=4?0:local<=10?1:local<=18?2:3]; }
 
 /* ================= storage ================= */
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
@@ -1256,7 +1350,7 @@ function openLootModal(){
   let m=$('#lootModal'); if(!m){ m=document.createElement('div'); m.id='lootModal'; document.body.appendChild(m); }
   m.innerHTML=`<div class="lm-card pf dark">${lootModalHTML()}</div>`; m.hidden=false; bindLootModal();
 }
-function closeLootModal(){ const m=$('#lootModal'); if(m) m.hidden=true; G.reward.stage='cards'; saveRun(); }
+function closeLootModal(){ const m=$('#lootModal'); if(m) m.hidden=true; G.reward.stage='cards'; saveRun(); dealCards(); }
 function bindLootModal(){
   const R=G.reward;
   if($('#lmBox')) $('#lmBox').onclick=()=>{
@@ -1455,6 +1549,15 @@ const TRACKS={
       mnote(mtof(c[[0,1,2,1][s%4]]+12),t,d*.9,'triangle',.02);
       if(this.mel[st]) mnote(mtof(this.mel[st]),t,d*1.8,'square',.02);
     }},
+  // E minor with bell-like arpeggios for the tower: Em C D Bm | Em Am D B
+  tower:{bpm:76,len:64,ch:[[52,55,59],[48,52,55],[50,54,57],[47,50,54],[52,55,59],[45,48,52],[50,54,57],[47,51,54]],
+    mel:{4:76,6:79,8:78,12:74,20:72,22:74,24:76,36:79,38:81,40:79,44:76,52:74,54:71,56:72,60:71},
+    play(st,t,d){ const c=this.ch[Math.floor(st/8)],s=st%8;
+      if(s===0) mnote(mtof(c[0]-24),t,d*7.6,'triangle',.06);
+      mnote(mtof(c[[0,1,2,1,2,1,0,1][s]]+24),t,d*2.2,'sine',.015);
+      if(s===2||s===6) mnote(mtof(c[2]+12),t,d*1.2,'triangle',.014);
+      if(this.mel[st]) mnote(mtof(this.mel[st]),t,d*2.4,'triangle',.026);
+    }},
   // F major, warm campfire / merchant: F Dm Bb C
   camp:{bpm:64,len:64,ch:[[53,57,60,64],[50,53,57,60],[46,50,53,57],[48,52,55,59]],
     mel:{4:72,6:74,8:76,20:77,22:76,24:72,36:74,38:72,40:69,52:70,54:72,56:72},
@@ -1503,6 +1606,7 @@ function trackFor(){
   if(s==='combat'&&G.combat&&G.combat.kind==='boss') return 'boss';
   if(['shop','rest','victory'].includes(s)) return 'camp';
   if(s==='forge'&&G.pending&&(G.pending.back==='shop'||G.pending.mode==='upgrade')) return 'camp';
+  if(worldOf().w.key==='tower') return 'tower';
   return 'dungeon';
 }
 document.addEventListener('pointerdown',()=>{ if(ac()) setMusic(MU.want); },true);
@@ -1606,12 +1710,14 @@ function lightPass(x){
 
 /* ---------- scene pieces ---------- */
 const WALL={
+  tower:{m:'#0d1018',b:['#2c3346','#323a50','#272d3e'],hi:'#48526e',lo:'#1a1f2c'},
   stone:{m:'#100d17',b:['#2e2640','#352c49','#29223a'],hi:'#43395a',lo:'#1c1728'},
   red:{m:'#12060a',b:['#3a1016','#45151b','#300d12'],hi:'#5a1d22',lo:'#1f080c'},
   cool:{m:'#0b0f18',b:['#222d45','#28344f','#1d263b'],hi:'#35466a',lo:'#141b2a'},
   warm:{m:'#140f0b',b:['#43352a','#4c3c2e','#3a2e24'],hi:'#63503b',lo:'#271e17'}
 };
 const FLOOR={
+  tower:{m:'#0a0c14',b:['#1e2232','#232838','#1a1e2c'],hi:'#323a50'},
   stone:{m:'#0c0a12',b:['#241e31','#2a2338','#201a2c'],hi:'#3a3149'},
   red:{m:'#0e0406',b:['#2a0c10','#321014','#240a0e'],hi:'#4a171c'},
   cool:{m:'#080b12',b:['#1a2236','#1e273d','#161d2e'],hi:'#2b3854'},
@@ -1672,17 +1778,18 @@ const FL=[
   ['.o...','.oo..','.ooo.','oyyo.','oyyyo','oywyo','.ooo.'],
   ['..o..','.oo..','.ooo.','.oyo.','oyyyo','oywyo','.ooo.']
 ];
-function flame(c,x0,y0,t,ph=0,sc=1){
-  const f=FL[Math.floor(t/110+ph)%4];
-  for(let y=0;y<7;y++) for(let i=0;i<5;i++){ const ch=f[y][i]; if(ch==='.') continue; c.fillStyle=ch==='o'?P.org:ch==='y'?P.yel:P.yel2; c.fillRect(x0+i*sc,y0+y*sc,sc,sc); }
+function flame(c,x0,y0,t,ph=0,sc=1,pal){
+  const f=FL[Math.floor(t/110+ph)%4],fp=pal||[P.org,P.yel,P.yel2];
+  for(let y=0;y<7;y++) for(let i=0;i<5;i++){ const ch=f[y][i]; if(ch==='.') continue; c.fillStyle=ch==='o'?fp[0]:ch==='y'?fp[1]:fp[2]; c.fillRect(x0+i*sc,y0+y*sc,sc,sc); }
 }
 function glow(c,x,y,r,col,a){ c.globalAlpha=a; c.fillStyle=col; c.beginPath(); c.arc(Math.round(x),Math.round(y),Math.max(1,r),0,7); c.fill(); c.globalAlpha=1; }
 function torch(x,tx,ty,red){
   fill(x,'#1a1520',tx-2,ty,5,2); fill(x,'#5a4a3a',tx-1,ty+2,3,1); fill(x,'#2a2230',tx,ty+3,1,6); fill(x,P.wd2,tx-1,ty-1,3,1);
-  S.lights.push({x:tx,y:ty-4,r:50,i:.78,c:red?[1.55,.8,.6]:[1.4,1.05,.66]});
-  S.emit.push({x:tx,y:ty-8,rate:.035});
-  const ph=hash(tx,ty,1)*10;
-  S.anim.push((c,t)=>{ const fl=Math.sin(t/90+ph)*.5+Math.sin(t/37+ph*2)*.5; glow(c,tx,ty-4,15+fl*1.5,P.org2,.07); glow(c,tx,ty-4,8+fl,P.yel,.09); flame(c,tx-2,ty-7,t,ph); });
+  const blue=red==='blue';
+  S.lights.push({x:tx,y:ty-4,r:50,i:.78,c:blue?[.8,1,1.6]:red?[1.55,.8,.6]:[1.4,1.05,.66]});
+  if(!blue) S.emit.push({x:tx,y:ty-8,rate:.035});
+  const ph=hash(tx,ty,1)*10,fp=blue?['#3f6fd8','#8fd8ff','#e8fbff']:null;
+  S.anim.push((c,t)=>{ const fl=Math.sin(t/90+ph)*.5+Math.sin(t/37+ph*2)*.5; glow(c,tx,ty-4,15+fl*1.5,blue?'#4f8cff':P.org2,.07); glow(c,tx,ty-4,8+fl,blue?'#8fd8ff':P.yel,.09); flame(c,tx-2,ty-7,t,ph,1,fp); });
 }
 function chain(x,X,y0,y1){ for(let y=y0,k=0;y<y1;y+=3,k++){ if(k%2){ fill(x,'#6a5c7e',X,y,1,3); fill(x,'#2a2338',X+1,y,1,3); } else { fill(x,'#6a5c7e',X-1,y+1,3,1); } } fill(x,'#8f82a3',X-1,y1,3,2); fill(x,'#4a3f5c',X-2,y1+2,2,2); }
 function web(x,X0,Y0,dir){
@@ -1707,11 +1814,32 @@ function lavaCracks(x,A,hz){
   pts.forEach(([a,b])=>fill(x,'#3a0a08',a,b,1,1));
   S.anim.push((c,t)=>{ c.globalAlpha=.45+.35*Math.sin(t/420); c.fillStyle='#ff5a1a'; pts.forEach(([a,b],i)=>{ if((i+Math.floor(t/140))%5) c.fillRect(a,b,1,1); }); c.globalAlpha=1; });
 }
-function sigil(A){
+function sigil(A,col='#ff4a2a'){
   const cx=A.cx,cy=A.b-4,pts=new Set();
   for(let a=0;a<Math.PI*2;a+=.02){ pts.add(Math.round(cx+Math.cos(a)*40)+','+Math.round(cy+Math.sin(a)*7)); pts.add(Math.round(cx+Math.cos(a)*32)+','+Math.round(cy+Math.sin(a)*5)); }
   const arr=[...pts].map(s=>s.split(',').map(Number));
-  S.anim.push((c,t)=>{ c.globalAlpha=.35+.25*Math.sin(t/300); c.fillStyle='#ff4a2a'; arr.forEach(([a,b])=>c.fillRect(a,b,1,1)); c.globalAlpha=1; });
+  S.anim.push((c,t)=>{ c.globalAlpha=.35+.25*Math.sin(t/300); c.fillStyle=col; arr.forEach(([a,b])=>c.fillRect(a,b,1,1)); c.globalAlpha=1; });
+}
+function towerWindow(x,X,bottom,w,h){
+  const cy=bottom-h+w;
+  for(let y=bottom-h-3;y<bottom+2;y++) for(let Xp=X-w-3;Xp<=X+w+3;Xp++){
+    const inI=archPix(Xp,y,X,cy,w)&&y<bottom, inO=archPix(Xp,y,X,cy,w+3)&&y<bottom+2;
+    if(inI){ let c=hash(Xp,y,81)<.04?'#e8fbff':(y<cy?'#0a1430':'#0d1a3a'); if(Xp===X||y===bottom-Math.round(h*.45)) c='#1a2032'; x.fillStyle=c; x.fillRect(Xp,y,1,1); }
+    else if(inO){ x.fillStyle=y>=bottom?'#5a6488':'#48526e'; x.fillRect(Xp,y,1,1); }
+  }
+  fill(x,'#e8fbff',X-w+2,cy-w+3,2,2);
+  S.lights.push({x:X,y:bottom-h*.5,r:42,i:.5,c:[.7,.9,1.5]});
+}
+function crystals(A,hz){
+  S.anim.push((c,t)=>{
+    for(let k=0;k<3;k++){
+      const a=t/1400+k*2.1,cx=Math.round(A.cx+Math.cos(a)*38),cy=Math.round(hz-46+Math.sin(a*1.3)*6);
+      glow(c,cx,cy,6,'#b46bff',.12);
+      c.fillStyle=k%2?'#8fd8ff':'#c27ae8';
+      [[0,-3],[-1,-2],[0,-2],[1,-2],[-2,-1],[-1,-1],[0,-1],[1,-1],[2,-1],[-1,0],[0,0],[1,0],[0,1]].forEach(([u,v])=>c.fillRect(cx+u,cy+v,1,1));
+      c.fillStyle='#ffffff'; c.fillRect(cx,cy-2,1,1);
+    }
+  });
 }
 function fog(hz,A){
   S.anim.push((c,t)=>{ c.globalAlpha=.07; c.fillStyle='#b0a4c8'; for(let k=0;k<7;k++){ const w=50+k*9,xx=((t/(60+k*13)+k*83)%(A.BW+w))-w; c.fillRect(Math.round(xx),hz+2+k*4,w,3+(k%3)); } c.globalAlpha=1; });
@@ -1735,7 +1863,7 @@ const SCN={
   title(x,A,o){
     const hz=A.b; S.amb=.34;
     bricks(x,0,0,A.BW,hz,WALL.stone,11); floorTiles(x,hz,A.BW,A.BH,FLOOR.stone,12);
-    const gw=Math.min(A.BW-44,86),gh=Math.min(Math.round(A.r?A.r.h+8:110),Math.max(40,hz-8)),r=gw>>1;
+    const gw=Math.min(A.BW-44,Math.max(86,Math.round((A.r?A.r.w:0)*.8))),gh=Math.min(Math.round(A.r?A.r.h+8:110),Math.max(40,hz-8)),r=gw>>1;
     const gtop=hz-gh+8,gcy=gtop+r;
     archFrame(x,A.cx,hz,r,gh,8,ARCH.stone,(X,y)=>{
       const rx=X-(A.cx-r),yy=hz-y; let c=(Math.floor(rx/5)%2)?'#5a331c':'#4a2a17';
@@ -1761,13 +1889,13 @@ const SCN={
     bone(x,A.cx-r-30,hz+14); skull(x,A.cx+r+26,hz+10);
     fog(hz,A);
   },
-  hall(x,A){
+  hall(x,A,o={}){
     const s=S.s,rs=[...document.querySelectorAll('.door img')].map(i=>i.getBoundingClientRect());
     const hz=rs.length?Math.round(rs[0].bottom/s)-1:A.b; S.amb=.36;
-    bricks(x,0,0,A.BW,hz,WALL.stone,31); floorTiles(x,hz,A.BW,A.BH,FLOOR.stone,32);
+    bricks(x,0,0,A.BW,hz,o.tower?WALL.tower:WALL.stone,31,o.tower?16:12,o.tower?8:6); floorTiles(x,hz,A.BW,A.BH,o.tower?FLOOR.tower:FLOOR.stone,32);
     const top=rs.length?Math.round(rs[0].top/s):hz-50,xs=[];
     if(rs.length){ const L=rs.map(r=>({l:r.left/s,r:r.right/s})); xs.push(L[0].l-12); for(let i=0;i<L.length-1;i++) if(L[i+1].l-L[i].r>=5) xs.push((L[i].r+L[i+1].l)/2); xs.push(L[L.length-1].r+12); }
-    xs.forEach(tx=>{ if(tx>4&&tx<A.BW-4) torch(x,Math.round(tx),top+10); });
+    xs.forEach(tx=>{ if(tx>4&&tx<A.BW-4) torch(x,Math.round(tx),top+10,o.tower?'blue':false); });
     for(let X=18;X<A.BW;X+=64) if(!xs.some(tx=>Math.abs(tx-X)<14)) chain(x,X,0,Math.max(10,top-18-Math.floor(hash(X,2,5)*20)));
     web(x,0,0,1); web(x,A.BW-1,0,-1);
     bone(x,20,hz+20); skull(x,A.BW-30,hz+14);
@@ -1786,6 +1914,18 @@ const SCN={
     if(o.elite){ flag(x,A.cx-(aw>>1)-14,0,hz-ah-6); flag(x,A.cx+(aw>>1)+2,0,hz-ah-6); }
     web(x,0,0,1); web(x,A.BW-1,0,-1);
     bone(x,A.cx-50,hz+16); bone(x,A.cx+40,hz+27); skull(x,A.cx+58,hz+11); skull(x,A.cx-64,hz+30);
+  },
+  tower(x,A,o={}){
+    const hz=A.b-10,boss=!!o.boss; S.amb=o.dim?.26:.36;
+    bricks(x,0,0,A.BW,hz,WALL.tower,71,16,8); floorTiles(x,hz,A.BW,A.BH,FLOOR.tower,72);
+    const aw=boss?70:50,ah=Math.max(30,Math.min(boss?104:78,hz-4)),tx=(aw>>1)+18;
+    archFrame(x,A.cx,hz,aw>>1,ah,5,ARCH.cool,(X,y,dep)=>{ x.fillStyle=dep<.35?'#05060c':dep<.75?'#090c16':'#0e1220'; x.fillRect(X,y,1,1); });
+    for(const wx of [A.cx-tx-34,A.cx+tx+34]) if(wx>14&&wx<A.BW-14&&hz>50) towerWindow(x,wx,hz-30,9,Math.min(46,hz-36));
+    torch(x,A.cx-tx,hz-46,'blue'); torch(x,A.cx+tx,hz-46,'blue');
+    if(A.BW>260){ torch(x,A.cx-tx-70,hz-46,'blue'); torch(x,A.cx+tx+70,hz-46,'blue'); }
+    if(o.elite){ flag(x,A.cx-(aw>>1)-14,0,hz-ah-6); flag(x,A.cx+(aw>>1)+2,0,hz-ah-6); }
+    if(boss){ sigil(A,'#b46bff'); crystals(A,hz); S.lights.push({x:A.cx,y:hz,r:64,i:.55,c:[1.1,.8,1.7]}); }
+    for(let y=hz+3;y<A.BH;y++){ const half=Math.round(12+(y-hz)*.55); fill(x,'#4a1d3a',A.cx-half,y,half*2,1); fill(x,'#b87d18',A.cx-half,y,1,1); fill(x,'#b87d18',A.cx+half-1,y,1,1); }
   },
   shop(x,A){
     const hz=A.b-16; S.amb=.42;
@@ -1905,8 +2045,10 @@ function drawProj(now){
     const x=u*u*q.x0+2*u*e*q.cx+e*e*q.x1, y=u*u*q.y0+2*u*e*q.cy+e*e*q.y1;
     const dx=2*u*(q.cx-q.x0)+2*e*(q.x1-q.cx), dy=2*u*(q.cy-q.y0)+2*e*(q.y1-q.cy);
     const ang=Math.round(Math.atan2(dy,dx)/(Math.PI/8))*(Math.PI/8);
-    fc.save(); fc.translate(Math.round(x),Math.round(y)); fc.rotate(ang); fc.scale(q.sc,q.sc);
-    fc.drawImage(q.img,-9,-3); fc.restore();
+    if(q.orb){ const pl=orbPal(q.skin),pul=1+Math.sin(now/60)*.15; glow(fc,x,y,9*pul,pl.b,.25); fc.save(); fc.translate(Math.round(x),Math.round(y)); fc.scale(q.sc,q.sc); fc.drawImage(q.img,-6,-6); fc.restore();
+      for(let k=0;k<2;k++) S.parts.push({x:x-Math.cos(ang)*8+(Math.random()-.5)*6,y:y-Math.sin(ang)*8+(Math.random()-.5)*6,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,g:-.01,life:1,dec:.04,c:pl.trail,sz:Math.random()<.5?2:1}); }
+    else { fc.save(); fc.translate(Math.round(x),Math.round(y)); fc.rotate(ang); fc.scale(q.sc,q.sc);
+    fc.drawImage(q.img,-9,-3); fc.restore(); }
     const pal=SWORD_PAL[q.skin];
     if(Math.random()<.8) S.parts.push({x:x-Math.cos(ang)*7*q.sc,y:y-Math.sin(ang)*7*q.sc,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,g:q.skin==='obsidian'?-.01:.02,life:1,dec:.05,c:pal.trail,sz:q.skin==='obsidian'&&Math.random()<.4?2:1});
   }
@@ -1956,9 +2098,10 @@ function throwSwords(r){
       const el=$('#die'+sh.i),rr=el?el.getBoundingClientRect():{left:innerWidth/2,top:innerHeight-120,width:0,height:0};
       const x0=(rr.left+rr.width/2)/s,y0=(rr.top+rr.height/2)/s,x1=tgt.x/s+rnd(-6,6),y1=tgt.y/s+rnd(-6,6);
       const side=(x0<x1?-1:1)*(18+k*4);
-      S.proj.push({x0,y0,x1,y1,cx:(x0+x1)/2+side,cy:Math.min(y0,y1)-30-k*3,t0:performance.now()+k*(REDUCED?0:110),dur:REDUCED?120:360,img,skin,sc:sh.crit?2:1,
+      S.proj.push({x0,y0,x1,y1,cx:(x0+x1)/2+side,cy:Math.min(y0,y1)-30-k*3,t0:performance.now()+k*(REDUCED?0:110),dur:REDUCED?120:sh.crit?460:360,img:sh.crit?orbSprite(skin):img,orb:sh.crit,skin,sc:sh.crit?2:1,
         hit:()=>{
-          burstXY(x1,y1,pal.hit,sh.crit?26:14,sh.crit?2.6:1.8);
+          if(sh.crit){ const op=orbPal(skin); burstXY(x1,y1,op.hit,40,3.2); S.parts.push(...Array.from({length:16},(_,n)=>{ const a=n/16*Math.PI*2; return {x:x1,y:y1,vx:Math.cos(a)*2.4,vy:Math.sin(a)*2.4,g:0,life:1,dec:.05,c:op.trail,sz:2}; })); tone(180,.4,'sawtooth',.06,60); }
+          else burstXY(x1,y1,pal.hit,14,1.8);
           if(S.foe){ S.foe.flash=.8; S.foe.shake=Math.max(S.foe.shake,sh.crit?5:3); }
           applyPerk(skin,x1,y1,perk);
           sfx(pal.snd); buzz(15);
@@ -2020,7 +2163,7 @@ const faceName=f=>f.t==='blank'?'Cara vacía':`${TYPES[f.t].name} ${f.v}`;
 
 /* ================= run flow ================= */
 function newRun(){
-  G={screen:'map',hp:32,maxHp:32,gold:10,floor:1,relics:[],over:false,
+  G={mode:'infinite',screen:'map',hp:32,maxHp:32,gold:10,floor:1,relics:[],over:false,
     dice:[
       {faces:[F('atk',3),F('atk',3),F('atk',4),F('def',3),F('def',2),F('blank',0)]},
       {faces:[F('atk',2),F('atk',2),F('def',3),F('def',3),F('heal',2),F('blank',0)]},
@@ -2034,9 +2177,10 @@ function newRun(){
 }
 function genDoors(){
   const f=G.floor;
-  if(f===MAXF) return ['boss'];
-  if(f===1) return ['combat','combat'];
-  if(f===MAXF-1) return ['rest','shop'];
+  const lc=worldOf(f).local;
+  if(lc===WORLD_LEN) return ['boss'];
+  if(lc===1) return ['combat','combat'];
+  if(lc===WORLD_LEN-1) return ['rest','shop'];
   const w={combat:38,event:18,treasure:f>=3?8:0,shop:f>=2?11:0,rest:f>=3?11:0,elite:f>=3?14:0};
   const n=Math.random()<.55?3:2,out=[];
   let guard=0;
@@ -2047,16 +2191,18 @@ function genDoors(){
 function nextFloor(){
   G.floor++; G.combat=null; G.reward=null; G.shop=null; G.event=null; G.treasure=null; G.pending=null;
   META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
-  G.doors=genDoors(); go('map');
+  G.doors=genDoors();
+  if(worldOf().local===1&&G.floor>1){ saveRun(); const st=worldStory(); playStory(st.panels,()=>{ view='game'; go('map'); },{endLabel:'Seguir',final:st.final,music:'dungeon'}); }
+  else go('map');
 }
 function go(s){ G.screen=s; view='game'; saveRun(); retrigger($('#wipe'),'on'); render(); }
 function enterDoor(t,btn){
   sfx('door');
   if(btn){ btn.classList.add('open'); btn.querySelector('img').src=doorURL(t,true); }
   setTimeout(()=>{
-    if(t==='combat') startCombat(pick(G.floor<=2?['slime','bat']:G.floor<=4?['slime','bat','goblin','skeleton']:['goblin','skeleton','bat','skeleton']),'normal');
-    else if(t==='elite') startCombat(pick(['mimic','king']),'elite');
-    else if(t==='boss') startCombat('boss','boss');
+    if(t==='combat') startCombat(pick(poolFor()),'normal');
+    else if(t==='elite') startCombat(pick(worldOf().w.elites),'elite');
+    else if(t==='boss') startCombat(worldOf().w.boss,'boss');
     else if(t==='treasure'){ const g=gainGold(rnd(25,45)),r=randomRelic(); gainRelic(r); G.treasure={gold:g,relic:r}; go('treasure'); }
     else if(t==='shop'){ genShop(); go('shop'); }
     else if(t==='rest') go('rest');
@@ -2066,8 +2212,8 @@ function enterDoor(t,btn){
 
 /* ================= combat ================= */
 function makeEnemy(key){
-  const d=ENEMIES[key],f=G.floor,hp=d.boss?d.hp:Math.round(d.hp*(1+.11*(f-1)));
-  return {key,name:d.name,hp,maxHp:hp,block:0,str:d.boss?1:Math.floor((f-1)/3),intent:null,last:null};
+  const d=ENEMIES[key],f=G.floor,wi=worldOf().idx,hp=d.boss?Math.round(d.hp*(1+.6*Math.floor(wi/2))):Math.round(d.hp*(1+.075*(f-1)));
+  return {key,name:d.name,hp,maxHp:hp,block:0,str:d.boss?1+2*Math.floor(wi/2):Math.floor((f-1)/5),intent:null,last:null};
 }
 function pickIntent(e){
   const d=ENEMIES[e.key],opts=d.intents.filter(i=>!(e.last&&i[0]===e.last[0]&&i[0]!=='atk'));
@@ -2244,7 +2390,7 @@ async function resolve(){
     const blocked=perk.pierce?0:Math.min(e.block,total),dealt=total-blocked;
     e.block-=blocked; e.hp-=dealt; G.stats.dmg+=dealt;
     if(S.foe){ S.foe.flash=1; S.foe.shake=r.crits?7:4; }
-    if(r.crits){ banner('¡Crítico!'); sfx('crit'); shake(); buzz([30,30,60]); burstFoe('crit',40,3.2); }
+    if(r.crits){ banner('¡Ataque mágico!'); sfx('crit'); shake(); buzz([30,30,60]); burstFoe('crit',40,3.2); }
     else { sfx('hit'); buzz(25); }
     burstFoe('atk',dealt>=12?36:20,dealt>=12?3:2.2);
     if(dealt>0) floatAt(foePt(),`-${dealt}`,r.crits||dealt>=15?'big':'dmg');
@@ -2301,11 +2447,11 @@ async function winCombat(){
   G.stats.kills++;
   { const wh=gearTotal().winHeal; if(wh){ const h=heal(wh); if(h) floatAt('#hpBar',`+${h}`,'heal'); } }
   await wait(900);
-  if(C.kind==='boss'){ banner('¡Victoria!'); sfx('win'); await wait(900); return victory(); }
+  if(C.kind==='boss'){ banner('¡Jefe vencido!'); sfx('win'); META.wins++; store('cripta-meta',META); await wait(900); }
   sfx('win');
-  const gold=gainGold(C.kind==='elite'?rnd(28,40):rnd(9,16));
-  let relic=null; if(C.kind==='elite'){ relic=randomRelic(); gainRelic(relic); }
-  const b=C.kind==='elite'?1:0,opts=[{kind:'face',face:genFace(b)},{kind:'face',face:genFace(b)}];
+  const big=C.kind!=='normal',gold=gainGold(C.kind==='boss'?rnd(60,80):big?rnd(28,40):rnd(9,16));
+  let relic=null; if(big){ relic=randomRelic(); gainRelic(relic); }
+  const b=big?1:0,opts=[{kind:'face',face:genFace(b)},{kind:'face',face:genFace(b)}];
   if(G.dice.length<5&&Math.random()<.4) opts[1]={kind:'die',die:genDie()};
   opts.push({kind:'bless',b:pick(Object.keys(BLESS).filter(k=>k!=='heal'||G.hp<G.maxHp*.8))});
   G.reward={title:`${e.name} derrotado`,gold,relic,opts,stage:'box',box:Math.random()<BOX_CHANCE?{open:false}:null};
@@ -2318,15 +2464,15 @@ function lose(){
   setTimeout(()=>{ G.screen='gameover'; retrigger($('#wipe'),'on'); render(); },900);
 }
 function victory(){
-  bankRun(true); G.over=true; drop('cripta-run'); META.wins++; META.best=Math.max(META.best,MAXF); store('cripta-meta',META);
+  bankRun(true); G.over=true; drop('cripta-run'); META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
   G.screen='victory'; retrigger($('#wipe'),'on'); render();
 }
 
 /* ================= intro story (first run, skippable) ================= */
 const INTRO=[
   {scene:['title',{}],
-   txt:'Bajo el pueblo de Valdeceniza hay una cripta que nadie ha logrado vaciar. Diez pisos de piedra, huesos y oscuridad.',
-   html:'Bajo el pueblo de <b>Valdeceniza</b> hay una cripta que nadie ha logrado vaciar. <b>Diez pisos</b> de piedra, huesos y oscuridad.'},
+   txt:'Bajo el pueblo de Valdeceniza hay una cripta que nadie ha logrado vaciar. Veinticinco pisos de piedra, huesos y oscuridad. Y eso es solo el principio.',
+   html:'Bajo el pueblo de <b>Valdeceniza</b> hay una cripta que nadie ha logrado vaciar. <b>Veinticinco pisos</b> de piedra, huesos y oscuridad. Y eso es solo el principio.'},
   {scene:['crypt',{boss:1}],foe:'demon',
    txt:'En el fondo duerme Azhrak, el Señor de la Fosa. Hace un siglo robó los Dados del Destino, y con ellos decide quién vive... y quién no vuelve jamás.',
    html:'En el fondo duerme <b>Azhrak</b>, el Señor de la Fosa. Hace un siglo robó los <b>Dados del Destino</b>, y con ellos decide quién vive... y quién no vuelve jamás.'},
@@ -2341,8 +2487,9 @@ const INTRO=[
    html:'Cada puerta esconde un destino. Cada tirada, una oportunidad. <b>Baja hasta el fondo</b>, vence a Azhrak y <b>trae a tu hermana de vuelta</b>.'}
 ];
 let INTRO_ST=null;
-function playIntro(done,endLabel){
-  view='intro'; INTRO_ST={i:0,done,endLabel:endLabel||'Empezar la partida',typing:null};
+/* plays a list of story panels; used for the opening and for every world transition */
+function playStory(panels,done,opts={}){
+  view='intro'; INTRO_ST={i:0,panels,done,endLabel:opts.endLabel||'Empezar la partida',final:opts.final||'Tira los dados.',isIntro:!!opts.isIntro,music:opts.music||'dungeon',typing:null};
   $('#sheet').hidden=true; hideTip(); updateTop(); S.foe=null;
   M.innerHTML=`<section class="intro" id="intro">
     <div class="lb top"></div><div class="lb bot"></div>
@@ -2353,14 +2500,15 @@ function playIntro(done,endLabel){
   </section>`;
   $('#iSkip').onclick=e=>{ e.stopPropagation(); sfx('tap'); endIntro(); };
   $('#intro').onclick=()=>introTap();
-  setMusic('dungeon'); showPanel(0);
+  setMusic(INTRO_ST.music); showPanel(0);
 }
+function playIntro(done,endLabel){ playStory(INTRO,done,{endLabel,isIntro:true}); }
 function showPanel(i){
-  const P0=INTRO[i]; INTRO_ST.i=i; retrigger($('#wipe'),'on');
-  S.foe=P0.foe?Object.assign({},procSprite(P0.foe),{flash:0,shake:0,lunge:0,dead:0,boss:true,elite:false,sc:2}):null;
+  const PS=INTRO_ST.panels,P0=PS[i]; INTRO_ST.i=i; retrigger($('#wipe'),'on');
+  S.foe=P0.foe?Object.assign({},procSprite(SPR[P0.foe]?P0.foe:ENEMIES[P0.foe].sprite,P0.pal||(ENEMIES[P0.foe]&&ENEMIES[P0.foe].pal)),{flash:0,shake:0,lunge:0,dead:0,boss:true,elite:false,sc:2}):null;
   setScene(P0.scene[0],P0.scene[1]);
-  $('#idots').innerHTML=INTRO.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('');
-  $('#itap').innerHTML=''; const old=$('.intro-final'); if(old) old.remove();
+  $('#idots').innerHTML=PS.map((_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('');
+  $('#itap').innerHTML='';
   const el=$('#itxt'); el.textContent='';
   let n=0; clearInterval(INTRO_ST.typing);
   INTRO_ST.typing=setInterval(()=>{
@@ -2372,10 +2520,10 @@ function showPanel(i){
 function finishType(){
   if(!INTRO_ST) return;
   clearInterval(INTRO_ST.typing); INTRO_ST.typing=null;
-  const P0=INTRO[INTRO_ST.i]; $('#itxt').innerHTML=P0.html;
-  if(INTRO_ST.i===INTRO.length-1){
+  const PS=INTRO_ST.panels,P0=PS[INTRO_ST.i]; $('#itxt').innerHTML=P0.html;
+  if(INTRO_ST.i===PS.length-1){
     const f=document.createElement('div'); f.className='intro-final';
-    f.innerHTML=`<b>Tira los dados.</b><button class="pb go" id="iGo">${INTRO_ST.endLabel}</button>`;
+    f.innerHTML=`<b>${INTRO_ST.final}</b><button class="pb go" id="iGo">${INTRO_ST.endLabel}</button>`;
     $('#itap').replaceChildren(f); sfx('combo');
     $('#iGo').onclick=e=>{ e.stopPropagation(); endIntro(); };
   } else $('#itap').textContent='Toca para continuar ▸';
@@ -2383,13 +2531,36 @@ function finishType(){
 function introTap(){
   if(!INTRO_ST) return;
   if(INTRO_ST.typing){ finishType(); return; }
-  if(INTRO_ST.i<INTRO.length-1){ sfx('tap'); showPanel(INTRO_ST.i+1); }
+  if(INTRO_ST.i<INTRO_ST.panels.length-1){ sfx('tap'); showPanel(INTRO_ST.i+1); }
 }
 function endIntro(){
   if(!INTRO_ST) return;
-  clearInterval(INTRO_ST.typing); const d=INTRO_ST.done; INTRO_ST=null;
-  META.introSeen=true; store('cripta-meta',META); S.foe=null;
-  retrigger($('#wipe'),'on'); d();
+  clearInterval(INTRO_ST.typing); const d=INTRO_ST.done,wasIntro=INTRO_ST.isIntro; INTRO_ST=null;
+  if(wasIntro){ META.introSeen=true; store('cripta-meta',META); }
+  S.foe=null; retrigger($('#wipe'),'on'); d();
+}
+/* story shown when you reach a new world */
+function worldStory(){
+  const {w,cycle}=worldOf();
+  if(w.key==='tower') return {final:'Sube a la torre.',panels:[
+    {scene:['crypt',{dim:1}],txt:'Azhrak cae entre cenizas... pero tu hermana no está aquí. Tras su trono, una escalera de caracol sube hacia la oscuridad.',
+     html:'<b>Azhrak</b> cae entre cenizas... pero <b>tu hermana no está aquí</b>. Tras su trono, una escalera de caracol sube hacia la oscuridad.'},
+    {scene:['tower',{boss:1}],foe:'archmage',txt:'La Torre del Archimago. Malakar le compró a Azhrak los Dados del Destino a cambio de almas. Veinticinco pisos más arriba, alguien grita tu nombre.',
+     html:'<b>La Torre del Archimago</b>. <b>Malakar</b> le compró a Azhrak los Dados del Destino a cambio de almas. Veinticinco pisos más arriba, <b>alguien grita tu nombre</b>.'}]};
+  return {final:'Baja otra vez.',panels:[
+    {scene:['tower',{dim:1}],txt:'Malakar se desvanece entre carcajadas: «Los dados siempre vuelven a la cripta». El suelo se abre bajo tus pies.',
+     html:'Malakar se desvanece entre carcajadas: <i>«Los dados siempre vuelven a la cripta»</i>. El suelo se abre bajo tus pies.'},
+    {scene:['title',{}],txt:`Despiertas otra vez ante la cripta. Todo es igual, pero más oscuro. Ciclo ${cycle+1}: los monstruos son más fuertes.`,
+     html:`Despiertas otra vez ante la cripta. Todo es igual, pero más oscuro. <b>Ciclo ${cycle+1}</b>: los monstruos son más fuertes.`}]};
+}
+/* mode picker */
+function chooseMode(){
+  openSheet(`<h2 class="h-title">Elige un modo</h2>
+    <div class="modes">
+      <button class="mode pf dark" id="mInf"><span class="rar" style="color:var(--org2)">Disponible</span><b>Modo infinito</b><small>Mundos de ${WORLD_LEN} pisos que no se acaban: la Cripta, la Torre del Archimago… y vuelta a empezar, cada vez más difícil. ¿Hasta dónde llegarás?</small><em class="go-tag">Jugar ▸</em></button>
+      <button class="mode pf dark locked" disabled><span class="rar">Próximamente</span><b>Campaña</b><small>Una historia por capítulos, con mecánicas nuevas en cada uno.</small></button>
+    </div>`);
+  $('#mInf').onclick=()=>{ ac(); sfx('door'); newRun(); };
 }
 
 /* ================= screens ================= */
@@ -2397,18 +2568,20 @@ function renderTitle(){
   const saved=load('cripta-run',null);
   M.innerHTML=`<section class="title-screen">
     <div class="tl">
-      <h1 class="logo"><b>Cripta</b><span>de los Dados</span></h1>
-      <div class="gate-spot" id="spot"><div class="tdice">${dieImg(F('atk',4))}${dieImg(F('crit',3,'epic'))}${dieImg(F('def',3,'rare'))}</div></div>
+      <div class="gate-spot title-gate" id="spot">
+        <h1 class="logo"><b>Cripta</b><span>de los Dados</span></h1>
+        <div class="tdice">${dieImg(F('atk',4))}${dieImg(F('crit',3,'epic'))}${dieImg(F('def',3,'rare'))}</div>
+      </div>
     </div>
     <div class="menu pf dark">
       ${saved&&!saved.over?`<button class="pb go big" id="bCont">Continuar · Piso ${saved.floor}</button><button class="pb" id="bNew">Nueva partida</button>`:`<button class="pb go big" id="bNew">Nueva partida</button>`}
       <div class="maprow"><button class="pb sm" id="bArm">${icon('dice','bone',2)} Armería</button><button class="pb sm" id="bGear">${icon('shield','rare',2)} Equipo</button></div>
       <div class="maprow"><button class="pb sm" id="bStory">Historia</button><button class="pb sm" id="bHow">Cómo se juega</button><button class="pb sm" id="bMus">Música: ${MUSIC?'sí':'no'}</button><button class="pb sm" id="bSnd" aria-label="Efectos de sonido">${icon(SOUND?'sound':'mute','stone',2)}</button></div>
-      <div class="records"><span>Mejor piso <b>${META.best||'–'}</b></span><span>Victorias <b>${META.wins}</b></span><span>Tesoro <b>${META.bank||0}</b></span><span>Poder <b>${gearPower()}</b></span></div>
+      <div class="records"><span>Mejor piso <b>${META.best||'–'}</b></span><span>Jefes <b>${META.wins}</b></span><span>Tesoro <b>${META.bank||0}</b></span><span>Poder <b>${gearPower()}</b></span></div>
     </div>
   </section>`;
   const start=()=>{ac(); sfx('door');};
-  $('#bNew').onclick=()=>{start(); newRun();};
+  $('#bNew').onclick=()=>{start(); chooseMode();};
   if($('#bCont')) $('#bCont').onclick=()=>{start(); G=saved; normalize(); view='game'; retrigger($('#wipe'),'on'); render();};
   $('#bHow').onclick=showHow;
   $('#bStory').onclick=()=>{ ac(); sfx('tap'); playIntro(()=>{ G=null; view='title'; render(); },'Volver al menú'); };
@@ -2421,10 +2594,10 @@ function showHow(){
   openSheet(`<h2 class="h-title" style="font-size:34px">Cómo se juega</h2><ul class="how">
     <li>${icon('dice','bone',2)}<span>Cada turno tiras tus dados. Toca uno para fijarlo y relanza el resto (2 veces por turno).</span></li>
     <li>${icon('sword','atk',2)}<span>Ataque hace daño. Escudo bloquea el golpe enemigo. Cura recupera vida. Oro sirve en la tienda.</span></li>
-    <li>${icon('burst','crit',2)}<span>Un crítico duplica todo tu ataque de ese turno.</span></li>
+    <li>${icon('burst','crit',2)}<span>Una cara de magia lanza un orbe y duplica todo tu ataque de ese turno.</span></li>
     <li>${icon('up','ember',2)}<span>Tres caras del mismo tipo forman una racha y dan bonus.</span></li>
     <li>${icon('eye','rare',2)}<span>Mira la intención del enemigo antes de resolver. A veces conviene defender.</span></li>
-    <li>${icon('horns','atk',2)}<span>Baja diez pisos y derrota a Azhrak.</span></li></ul>`);
+    <li>${icon('horns','atk',2)}<span>Cada mundo tiene 25 pisos y un jefe al final. Después llega otro mundo, y otro… ¿Hasta dónde llegarás?</span></li></ul>`);
 }
 function openSheet(html,custom){
   const s=$('#sheet'); s.innerHTML=`<div class="sheet-card pf dark">${html}${custom?'':'<button class="pb" id="closeSheet">Cerrar</button>'}</div>`;
@@ -2432,12 +2605,13 @@ function openSheet(html,custom){
 }
 function renderMap(){
   const f=G.floor;
-  let track=''; for(let i=1;i<=MAXF;i++) track+=i===MAXF?`<span class="node boss">${icon('horns','atk',1)}</span>`:`<span class="node ${i<f?'done':i===f?'here':''}"></span>`;
+  const wo=worldOf(f),W=wo.w;
+  const track=`<div class="wtrack"><span class="wname">${W.name}${wo.cycle?` · Ciclo ${wo.cycle+1}`:''}</span><div class="wbar"><i style="width:${(wo.local-1)/(WORLD_LEN-1)*100}%"></i>${[5,10,15,20].map(n=>`<em style="left:${(n-1)/(WORLD_LEN-1)*100}%"></em>`).join('')}</div><span class="wnum">${wo.local}/${WORLD_LEN}</span>${icon('horns','atk',1)}</div>`;
   M.innerHTML=`<section class="screen fill">
-    <div class="floorbar pf dark"><div class="track">${track}</div>
-      <div class="fl-row"><h1 class="h-title">Piso ${f}</h1><span class="sub">${f===MAXF?'Solo queda una puerta':'Elige una puerta'}</span></div></div>
+    <div class="floorbar pf dark">${track}
+      <div class="fl-row"><h1 class="h-title">Piso ${f}</h1><span class="sub">${wo.local===WORLD_LEN?'Solo queda una puerta':'Elige una puerta'}</span></div></div>
     <div class="grow"></div>
-    <div class="doors">${G.doors.map((t,i)=>{const d=DOORS[t];return `<button class="door" data-i="${i}"><img src="${doorURL(t)}" width="93" height="150" alt=""><b>${d.name}</b><small>${d.hint}</small></button>`}).join('')}</div>
+    <div class="doors">${G.doors.map((t,i)=>{const d=DOORS[t];return `<button class="door" data-i="${i}"><img src="${doorURL(t)}" width="93" height="150" alt=""><b>${t==='boss'?ENEMIES[worldOf().w.boss].name:d.name}</b><small>${d.hint}</small></button>`}).join('')}</div>
     <div class="grow" style="flex:.5"></div>
     <div class="maprow"><button class="pb sm" id="viewDice">${icon('dice','bone',2)} Ver tus dados</button><button class="pb sm" id="mapArm">Armería</button><button class="pb sm" id="mapGear">Equipo</button></div>
   </section>`;
@@ -2478,12 +2652,22 @@ function newOpt(){
   if(r<.6&&G.dice.length<5) return {kind:'die',die:genDie()};
   return {kind:'bless',b:pick(Object.keys(BLESS).filter(k=>k!=='heal'||G.hp<G.maxHp*.8))};
 }
+function dealCards(){
+  const rc=$('.rcards'); if(!rc||!G.reward) return;
+  G.reward.dealt=true; saveRun();
+  rc.classList.remove('waiting'); retrigger(rc,'deal');
+  rc.querySelectorAll('.rcol').forEach((col,i)=>setTimeout(()=>{
+    sfx('tap'); const card=col.querySelector('.card'); if(!card) return;
+    const rk=card.classList.contains('r-epic')?'epic':card.classList.contains('r-rare')?'rare':card.classList.contains('r-bless')?'heal':'ember';
+    burstAt(card,rk,rk==='epic'?30:16,2.2); if(rk==='epic') sfx('combo');
+  },REDUCED?0:330+i*180));
+}
 function renderReward(){
   const R=G.reward;
   M.innerHTML=`<section class="screen fill reward2">
     <div class="grow"></div>
     <div class="rhead"><p class="eyebrow">${R.title}</p><h1 class="h-title">Elige una mejora</h1></div>
-    <div class="rcards">${R.opts.map((o,i)=>`<div class="rcol">${optCard(o,i)}<button class="pb sm reroll" data-rr="${i}" ${o.rr?'disabled':''}>${icon('dice','bone',1)} ${o.rr?'Usado':'Reroll'}</button></div>`).join('')}</div>
+    <div class="rcards ${R.stage!=='cards'&&R.box?'waiting':''}">${R.opts.map((o,i)=>`<div class="rcol">${optCard(o,i)}<button class="pb sm reroll" data-rr="${i}" ${o.rr?'disabled':''}>${icon('dice','bone',1)} ${o.rr?'Usado':'Reroll'}</button></div>`).join('')}</div>
     <div class="grow"></div>
   </section>`;
   M.querySelectorAll('.card').forEach(b=>b.onclick=()=>{
@@ -2499,7 +2683,7 @@ function renderReward(){
     const col=M.querySelectorAll('.rcol')[i]; if(col){ col.classList.add('flip'); burstAt(col.querySelector('.card'),'ember',20,2); }
   });
   if(R.stage!=='cards'&&R.box) openLootModal();
-  else if(R.stage!=='cards'){ R.stage='cards'; toast(`<b>+${R.gold}</b> de oro${R.relic?` · ${RELICS[R.relic].name}`:''}`); saveRun(); }
+  else { if(R.stage!=='cards'){ R.stage='cards'; toast(`<b>+${R.gold}</b> de oro${R.relic?` · ${RELICS[R.relic].name}`:''}`); saveRun(); } if(!R.dealt) dealCards(); }
 }
 function renderForge(){
   const P2=G.pending,rep=P2.mode==='replace';
@@ -2614,7 +2798,7 @@ const EVENTS=[
     {label:'Apostar todo tu oro',sub:'50%: lo doblas · 50%: lo pierdes',need:()=>G.gold>0,run:()=>{ const g=G.gold; if(Math.random()<.5){ G.gold*=2; sfx('win'); return `Sacas un doble seis. Ganas ${g} de oro.`; } G.gold=0; sfx('lose'); return `Sus dados sacan dos seises. Pierdes ${g} de oro.`; }},
     {label:'Rechazar',run:()=>'“Cobarde”, murmura mientras vuelve a agitar el cubilete.'}]},
   {id:'shrine',title:'Santuario del dado',art:'burst',ramp:'crit',text:'Un pedestal con seis caras talladas. Puedes ofrecer una cara vacía a cambio de su bendición.',choices:[
-    {label:'Aceptar la bendición',sub:'Una cara vacía pasa a Crítico 3',need:()=>G.dice.some(d=>d.faces.some(f=>f.t==='blank')),run:()=>{ const d=G.dice.find(d=>d.faces.some(f=>f.t==='blank')); d.faces[d.faces.findIndex(f=>f.t==='blank')]=F('crit',3,'rare'); sfx('forge'); return 'Una de tus caras vacías arde y se convierte en Crítico 3.'; }},
+    {label:'Aceptar la bendición',sub:'Una cara vacía pasa a Magia 3',need:()=>G.dice.some(d=>d.faces.some(f=>f.t==='blank')),run:()=>{ const d=G.dice.find(d=>d.faces.some(f=>f.t==='blank')); d.faces[d.faces.findIndex(f=>f.t==='blank')]=F('crit',3,'rare'); sfx('forge'); return 'Una de tus caras vacías arde y se convierte en Magia 3.'; }},
     {label:'Rezar',sub:'Recuperas 5 de vida',run:()=>{ const h=heal(5); sfx('heal'); return `Una calma extraña te recorre. Recuperas ${h} de vida.`; }}]}
 ];
 function renderEvent(){
@@ -2641,7 +2825,7 @@ function renderEnd(won){
   const s=G.stats;
   M.innerHTML=`<section class="title-screen">
     <div class="tl">
-      <h1 class="logo"><b style="font-size:clamp(46px,14vw,68px)">${won?'Victoria':'Has caído'}</b><span>${won?'Azhrak ha caído':`Piso ${G.floor} de ${MAXF}`}</span></h1>
+      <h1 class="logo"><b style="font-size:clamp(46px,14vw,68px)">${won?'Victoria':'Has caído'}</b><span>${won?'Azhrak ha caído':`Piso ${G.floor} · ${worldOf().w.name}`}</span></h1>
       <div class="gate-spot" id="spot"></div>
     </div>
     <div class="menu pf dark">
@@ -2715,14 +2899,14 @@ function sceneFor(){
   if(!G||view==='title') return ['title',{}];
   const k=G.combat&&G.combat.kind,co=k==='boss'?{boss:1}:k==='elite'?{elite:1}:{};
   switch(G.screen){
-    case 'map': return ['hall',{}];
-    case 'combat': case 'reward': return ['crypt',co];
+    case 'map': return ['hall',{tower:worldOf().w.key==='tower'}];
+    case 'combat': case 'reward': return [worldOf().w.scene,co];
     case 'shop': return ['shop',{}];
     case 'rest': return ['rest',{}];
     case 'forge': return G.pending&&G.pending.back==='shop'?['shop',{}]:G.pending&&G.pending.mode==='upgrade'?['rest',{}]:['crypt',co];
     case 'treasure': return ['treasure',{}];
     case 'event': { const ev=EVENTS.find(e=>e.id===G.event.id); return ['event',{icon:ev.art,ramp:ev.ramp}]; }
-    case 'gameover': return ['crypt',{dim:1}];
+    case 'gameover': return [worldOf().w.scene,{dim:1}];
     case 'victory': return ['title',{dawn:1}];
   }
   return ['crypt',co];
