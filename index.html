@@ -4,6 +4,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jacquarda+Bastarda+9&family=Pixelify+Sans:wght@400;500;600;700&display=swap">
+<!-- digits only: a pixel face whose 3/8 and 5/S never get confused; letters fall back to the fonts below -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&text=0123456789%2F%25%2B&display=swap">
 <style>
 /* Layout: one-screen phone game. A procedurally drawn pixel-art crypt fills the screen behind chunky pixel panels.
    One committed dark look; every scene is lit by torches with dithered light. */
@@ -17,8 +19,8 @@
   --grn2:#5fb843; --grn3:#b0e86a; --tea2:#3fb0c9; --tea3:#9eeaf0; --pur2:#a655dc; --pur3:#dca8ff;
   --blu2:#4f8cff; --gld2:#e8b52a; --gld3:#ffe27a;
   --wd0:#2b170e; --wd1:#512e19; --wd2:#7a4726; --wd3:#a86a3a;
-  --f-title:'Jacquarda Bastarda 9', 'Pixelify Sans', Georgia, serif;
-  --f-px:'Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif;
+  --f-title:'Silkscreen','Jacquarda Bastarda 9', 'Pixelify Sans', Georgia, serif;
+  --f-px:'Silkscreen','Pixelify Sans', 'Trebuchet MS', system-ui, sans-serif;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -549,6 +551,8 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
   .doll .hero img{width:80px;height:80px}
   .gslot small{font-size:10px}
   .gdet{min-height:0;padding:8px 10px 11px;gap:5px}
+  .gearwrap .gdet{max-height:calc(100vh - 92px);overflow-y:auto;scrollbar-width:thin}
+  .gearwrap .gdet>*{flex-shrink:0}
   .gdet .gear{padding:6px 8px 10px}
   .gdet .gear .pi{width:36px;height:36px}
   .gdet .sub{font-size:14px}
@@ -567,8 +571,8 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
   .gearwrap .doll{grid-column:1;grid-row:1 / span 2}
   .gearwrap .gdet{grid-column:2;grid-row:1 / span 2;align-self:start}
   .gearwrap .h-sec{grid-column:3;grid-row:1;font-size:12px}
-  .gearwrap .gtiles{grid-column:3;grid-row:2;grid-template-columns:repeat(3,46px);align-content:start}
-  .gtiles .gtile{width:46px}
+  .gearwrap .gtiles{grid-column:3;grid-row:2;grid-template-columns:repeat(5,42px);gap:5px;align-content:start}
+  .gtiles .gtile{width:42px}
   /* armory: 4 compact cards per row */
   .skins{grid-template-columns:repeat(4,minmax(0,1fr))}
   .skins .skin{padding:8px 8px 11px;column-gap:8px;grid-template-areas:"dice txt" "act act"}
@@ -693,6 +697,9 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .pactc small{font-size:14px;color:var(--bone2);line-height:1.3}
 .pactc:active{transform:translateY(var(--p))}
 @media (orientation:landscape){ .pacts{grid-template-columns:repeat(3,1fr)} }
+.card.r-legend{--rc:#ffa640;box-shadow:inset 0 0 0 1.5px #ffa640,0 5px 0 #09070b,0 0 22px rgba(255,166,64,.4)}
+.gtile[style*="ffa640"]{animation:legendglow 1.4s steps(2) infinite}
+@keyframes legendglow{50%{box-shadow:inset 0 0 0 var(--p) #ffa640,0 0 12px #ffa640}}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -1308,7 +1315,7 @@ function saveRun(){ if(G&&!G.over) store('cripta-run',G); }
 /* ================= equipment: 5 slots, 3 qualities, levels 1-10 ================= */
 const BOX_CHANCE=1; // probabilidad de que un enemigo suelte una caja (1 = siempre, para pruebas)
 const MAXLV=10;
-const QUAL={common:{name:'Común',c:'#b8ad9c',rk:'stone',scrap:40,up:40,w:1},rare:{name:'Rara',c:'#4f8cff',rk:'rare',scrap:100,up:80,w:2},epic:{name:'Épica',c:'#c27ae8',rk:'epic',scrap:250,up:150,w:4}};
+const QUAL={common:{name:'Común',c:'#b8ad9c',rk:'stone',scrap:40,up:40,w:1},rare:{name:'Rara',c:'#4f8cff',rk:'rare',scrap:100,up:80,w:2},epic:{name:'Épica',c:'#c27ae8',rk:'epic',scrap:250,up:150,w:4},legend:{name:'Legendaria',c:'#ffa640',rk:'ember',scrap:600,up:260,w:7}};
 const SLOTS=['helm','amulet','shield','chest','boots'];
 const SLOTN={helm:'Casco',amulet:'Amuleto',shield:'Escudo',chest:'Pechera',boots:'Botas'};
 const SLOTI={helm:'helm',amulet:'amulet',shield:'shield',chest:'armor',boots:'boots'};
@@ -1329,13 +1336,23 @@ const GEAR={
   ch_paladin:{slot:'chest',name:'Coraza del paladín',q:'epic',drop:2,st:L=>({hp:14+4*(L-1),winHeal:3+fl(L/2)})},
   bt_rag:{slot:'boots',name:'Botas de trapo',q:'common',drop:10,st:L=>({dodge:5+2*(L-1)})},
   bt_scout:{slot:'boots',name:'Botas de explorador',q:'rare',drop:5,st:L=>({dodge:8+2*(L-1)})},
-  bt_shadow:{slot:'boots',name:'Botas de sombra',q:'epic',drop:2,st:L=>({dodge:12+fl(2.5*(L-1)),dodgeHeal:2})}
+  bt_shadow:{slot:'boots',name:'Botas de sombra',q:'epic',drop:2,st:L=>({dodge:12+fl(2.5*(L-1)),dodgeHeal:2})},
+  hm_wolf:{slot:'helm',name:'Capucha de lobo',q:'rare',drop:5,st:L=>({dmg:1+fl((L-1)/4),dodge:3+L})},
+  hm_crown:{slot:'helm',name:'Corona del rey muerto',q:'legend',drop:1,st:L=>({dmg:4+fl((L-1)/2),reroll:1,regen:1})},
+  am_coin:{slot:'amulet',name:'Moneda de la suerte',q:'rare',drop:5,st:L=>({goldPct:20+5*L,regen:L>=6?1:0})},
+  am_eye:{slot:'amulet',name:'Ojo de Azhrak',q:'legend',drop:1,st:L=>({regen:2+fl((L-1)/3),dmg:2+fl((L-1)/3)})},
+  sh_mirror:{slot:'shield',name:'Escudo espejo',q:'rare',drop:5,st:L=>({block:1+fl((L-1)/3),thorns:2+fl(L/3)})},
+  sh_aegis:{slot:'shield',name:'Égida solar',q:'legend',drop:1,st:L=>({block:5+fl((L-1)/2),regen:1})},
+  ch_thorn:{slot:'chest',name:'Coraza de espinas',q:'rare',drop:5,st:L=>({hp:6+2*(L-1),thorns:1+fl(L/3)})},
+  ch_titan:{slot:'chest',name:'Armadura del titán',q:'legend',drop:1,st:L=>({hp:20+5*(L-1),block:1+fl(L/4)})},
+  bt_wind:{slot:'boots',name:'Botas de viento',q:'rare',drop:5,st:L=>({dodge:6+2*(L-1),reroll:L>=8?1:0})},
+  bt_wander:{slot:'boots',name:'Botas del errante',q:'legend',drop:1,st:L=>({dodge:15+fl(2.5*(L-1)),dodgeHeal:3,goldPct:10})}
 };
 const STATTXT={
   dmg:v=>`+${v} de daño en cada ataque`, block:v=>`+${v} de escudo al empezar cada turno`, hp:v=>`+${v} de vida máxima`,
   regen:v=>`Curas ${v} al empezar cada turno`, dodge:v=>`${v}% de esquivar un golpe`, thorns:v=>`Devuelves ${v} de daño al recibir un golpe`,
   winHeal:v=>`Curas ${v} al ganar un combate`, reroll:v=>`+${v} relanzamiento por turno`, phoenix:v=>`Una vez por partida, revives con el ${v}% de vida`,
-  dodgeHeal:v=>`Esquivar te cura ${v}`
+  dodgeHeal:v=>`Esquivar te cura ${v}`, goldPct:v=>`+${v}% de oro`
 };
 const DROP_TOTAL=Object.values(GEAR).reduce((a,g)=>a+g.drop,0);
 const dropPct=id=>Math.round(GEAR[id].drop/DROP_TOTAL*1000)/10;
@@ -1347,13 +1364,13 @@ for(const s of SLOTS){ const id=META.gear.eq[s]; if(id&&(!GEAR[id]||!META.gear.o
 const lvOf=id=>META.gear.owned[id]||0;
 const gearIcon=(id,k=2)=>icon(SLOTI[GEAR[id].slot],QUAL[GEAR[id].q].rk,k);
 const eqGear=slot=>{ const id=META.gear.eq[slot]; return id&&GEAR[id]?GEAR[id]:null; };
-function gearStats(id,L){ const lv=L||lvOf(id)||1,st=GEAR[id].st(lv); if(GEAR[id].slot!=='chest'&&lv>1) st.hp=(st.hp||0)+(lv-1); return st; }
+function gearStats(id,L){ const lv=L||lvOf(id)||1,st=GEAR[id].st(lv); if(GEAR[id].slot!=='chest'&&lv>1) st.hp=(st.hp||0)+(lv-1); for(const k in st) if(!st[k]) delete st[k]; return st; }
 function gearTotal(){ const t={}; for(const s of SLOTS){ const id=META.gear.eq[s]; if(!id) continue; const st=gearStats(id); for(const k in st) t[k]=k==='phoenix'?Math.max(t[k]||0,st[k]):(t[k]||0)+st[k]; } return t; }
 function gearPower(){ let p=0; for(const s of SLOTS){ const id=META.gear.eq[s]; if(id) p+=QUAL[GEAR[id].q].w*lvOf(id); } return p; }
 function gearBlock(){ return (gearTotal().block||0)+(G&&G.pact==='iron'?5:0); }
 /* comparison between a piece and the one already in its slot */
-const SW={dmg:3,block:2.5,hp:.6,regen:2.5,dodge:.4,thorns:1.5,winHeal:.5,reroll:6,phoenix:.15,dodgeHeal:1};
-const SLBL={dmg:'Daño',block:'Escudo',hp:'Vida máx.',regen:'Cura por turno',dodge:'Esquiva',thorns:'Espinas',winHeal:'Cura al ganar',reroll:'Relanzamientos',phoenix:'Fénix',dodgeHeal:'Cura al esquivar'};
+const SW={dmg:3,block:2.5,hp:.6,regen:2.5,dodge:.4,thorns:1.5,winHeal:.5,reroll:6,phoenix:.15,dodgeHeal:1,goldPct:.08};
+const SLBL={goldPct:'Oro',dmg:'Daño',block:'Escudo',hp:'Vida máx.',regen:'Cura por turno',dodge:'Esquiva',thorns:'Espinas',winHeal:'Cura al ganar',reroll:'Relanzamientos',phoenix:'Fénix',dodgeHeal:'Cura al esquivar'};
 const sunit=k=>k==='dodge'||k==='phoenix'?'%':'';
 function gearScore(id){ const st=gearStats(id); return Object.keys(st).reduce((a,k)=>a+st[k]*(SW[k]||1),0); }
 function compareHTML(nid,cid){
@@ -1362,6 +1379,11 @@ function compareHTML(nid,cid){
   const diff=gearScore(nid)-gearScore(cid),v=Math.abs(diff)<.5?'eq':diff>0?'up':'down';
   return `<div class="cmp"><div class="cmp-v ${v}">${v==='up'?'▲ Mejor que tu':v==='down'?'▼ Peor que tu':'≈ Parecida a tu'} ${GEAR[cid].name} (Nv ${lvOf(cid)})</div>
     <table><thead><tr><th></th><th>Ahora</th><th>Nueva</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function nextDiff(id,L){
+  const a=gearStats(id,L),b=gearStats(id,L+1),out=[];
+  for(const k of new Set([...Object.keys(a),...Object.keys(b)])) if((a[k]||0)!==(b[k]||0)) out.push(`${SLBL[k]||k} ${a[k]||0}→${b[k]||0}${sunit(k)}`);
+  return out.join(' · ')||'sin cambios';
 }
 function statLines(id,L){ const st=gearStats(id,L); return Object.keys(st).map(k=>STATTXT[k](st[k])); }
 function upCost(id){ return QUAL[GEAR[id].q].up*lvOf(id); }
@@ -1418,8 +1440,8 @@ function bindLootModal(){
       else if(had<MAXLV){ META.gear.owned[id]=had+1; R.box={open:true,item:id,dup:true,from:had,to:had+1}; applyGear(); }
       else { const v=scrapVal(id); META.bank=(META.bank||0)+v; R.box={open:true,item:id,dup:true,maxed:true,gold:v}; }
       store('cripta-meta',META); saveRun();
-      const r=b.getBoundingClientRect(); burstXY((r.left+r.width/2)/S.s,(r.top+r.height/2)/S.s,QUAL[g.q].rk,g.q==='epic'?70:40,3.4);
-      sfx(g.q==='epic'?'win':'forge'); if(g.q!=='common') banner(g.q==='epic'?'¡Épica!':'¡Rara!');
+      const r=b.getBoundingClientRect(); burstXY((r.left+r.width/2)/S.s,(r.top+r.height/2)/S.s,QUAL[g.q].rk,g.q==='legend'?110:g.q==='epic'?70:40,3.4);
+      sfx(g.q==='epic'||g.q==='legend'?'win':'forge'); if(g.q!=='common') banner({rare:'¡Rara!',epic:'¡Épica!',legend:'¡Legendaria!'}[g.q]);
       openLootModal(); updateTop();
     },REDUCED?100:1000);
   };
@@ -1444,7 +1466,7 @@ function showGear(back){
   let det='<p class="sub center-t">Arrastra una pieza a su hueco o tócala para ver sus detalles y mejorarla.</p>';
   if(gearSel&&GEAR[gearSel]&&lvOf(gearSel)){
     const id=gearSel,g=GEAR[id],L=lvOf(id),cur=eqGear(g.slot),on=eq[g.slot]===id,max=L>=MAXLV;
-    const next=max?'':`<p class="sub nextlv">Nivel ${L+1}: ${statLines(id,L+1).join('. ')}.</p>`;
+    const next=max?'':`<p class="sub nextlv">Nivel ${L+1}: ${nextDiff(id,L)}</p>`;
     const btns=(on?`<button class="pb sm" id="dUn">Quitar</button>`:`<button class="pb sm go" id="dEq">${cur?'Reemplazar':'Equipar'}</button>`)
       +(max?`<em class="gdone">Nivel máximo</em>`:`<button class="pb sm" id="dUp">Mejorar ${icon('coin','coin',1)}${upCost(id)}</button>`)
       +(on?'':`<button class="pb sm" id="dSc">Desmantelar +${scrapVal(id)}</button>`);
@@ -1507,9 +1529,12 @@ const BLESS={
   heal:{name:'Descanso',icon:'heart',rk:'heal',desc:'Recuperas el 35% de tu vida ahora mismo.'},
   luck:{name:'Bendición de la suerte',icon:'clover',rk:'heal',desc:'En la próxima pelea cada dado tira dos veces y se queda con la mejor cara.'},
   fury:{name:'Furia',icon:'up',rk:'ember',desc:'En la próxima pelea tus ataques hacen +3 de daño.'},
-  ward:{name:'Guardia',icon:'shield',rk:'def',desc:'En la próxima pelea empiezas cada turno con +3 de escudo.'}
+  ward:{name:'Guardia',icon:'shield',rk:'def',desc:'En la próxima pelea empiezas cada turno con +3 de escudo.'},
+  swift:{name:'Manos rápidas',icon:'dice',rk:'ember',desc:'En la próxima pelea tienes +1 relanzamiento por turno.'},
+  gild:{name:'Codicia',icon:'coin',rk:'coin',desc:'La próxima pelea te da el triple de oro.'},
+  leech:{name:'Sed de sangre',icon:'cup',rk:'crit',desc:'En la próxima pelea curas 1 por cada 4 de daño que hagas.'}
 };
-const BUFFK=['luck','fury','ward'];
+const BUFFK=['luck','fury','ward','swift','gild','leech'];
 function applyBless(b){
   if(b==='heal'){ const h=heal(Math.ceil(G.maxHp*.35)); floatAt('#hpBar',`+${h}`,'heal'); burstAt('#hpBar','heal',20,2); sfx('heal'); }
   else { G.buffs=G.buffs||{}; G.buffs[b]=(G.buffs[b]||0)+1; sfx('combo'); toast(`<b>${BLESS[b].name}</b>: activa en la próxima pelea`); }
@@ -2302,10 +2327,10 @@ const F=(t,v,rar='common')=>({t,v,rar});
 const has=r=>G.relics.includes(r);
 function wpick(w){let tot=0;for(const k in w)tot+=w[k];let r=Math.random()*tot;for(const k in w){r-=w[k];if(r<0)return k}return Object.keys(w)[0]}
 function heal(n){const b=G.hp;G.hp=Math.min(G.maxHp,G.hp+n);return G.hp-b}
-function gainGold(n){n=Math.round(n*(has('purse')?1.5:1)*(G.pact==='gold'?2:1));G.gold+=n;return n}
+function gainGold(n){n=Math.round(n*(has('purse')?1.5:1)*(G.pact==='gold'?2:1)*(1+(gearTotal().goldPct||0)/100));G.gold+=n;return n}
 function randomRelic(){const pool=Object.keys(RELICS).filter(r=>!G.relics.includes(r));return pool.length?pick(pool):null}
 function gainRelic(r){ if(!r||G.relics.includes(r)) return; G.relics.push(r); if(r==='ember'){G.maxHp+=10;G.hp+=10} }
-function maxRerolls(){ let n=2+(has('amulet')?1:0)+(gearTotal().reroll||0); if(G&&G.pact==='luck') n-=1; if(G&&G.pact==='echo') n=1; return Math.max(1,n); }
+function maxRerolls(){ let n=2+(has('amulet')?1:0)+(gearTotal().reroll||0)+(G&&G.combat&&G.combat.buffs&&G.combat.buffs.swift?1:0); if(G&&G.pact==='luck') n-=1; if(G&&G.pact==='echo') n=1; return Math.max(1,n); }
 function genFace(boost=0){
   const r=Math.random()-boost*.12, rar=r<.1?'epic':r<.4?'rare':'common';
   const t=wpick({atk:32,def:26,heal:14,crit:12,coin:10});
@@ -2394,9 +2419,9 @@ function startCombat(key,kind){
   const e=makeEnemy(key); pickIntent(e);
   G.combat={enemy:e,kind,faces:G.dice.map(()=>null),held:G.dice.map(()=>false),rerolls:maxRerolls(),phase:'start',pBlock:(has('runic')?6:0)+gearBlock(),turn:1,
     log:kind==='boss'?`El suelo tiembla. ${e.name} despierta.`:kind==='elite'?`Cuidado: enemigo de élite.`:`Algo se mueve en la oscuridad.`};
-  G.combat.buffs=takeBuffs(); if(G.pact==='luck') G.combat.buffs.luck=true; if(G.combat.buffs.ward) G.combat.pBlock+=3;
+  G.combat.buffs=takeBuffs(); if(G.pact==='luck') G.combat.buffs.luck=true; G.combat.rerolls=maxRerolls(); if(G.combat.buffs.ward) G.combat.pBlock+=3;
   go('combat');
-  { const bn=BUFFK.filter(k=>G.combat.buffs[k]); if(bn.length&&kind!=='boss') setTimeout(()=>{ banner(bn.includes('luck')?'¡Suerte!':bn.includes('fury')?'¡Furia!':'¡Guardia!'); sfx('combo'); },350); }
+  { const bn=BUFFK.filter(k=>G.combat.buffs[k]); if(bn.length&&kind!=='boss') setTimeout(()=>{ banner(BLESS[bn[0]].name); sfx('combo'); },350); }
   if(kind==='boss'){ banner(e.name); sfx('buff'); }
 }
 function calc(faces){
@@ -2567,6 +2592,7 @@ async function resolve(){
     const perk=await throwSwords(r),total=r.dmg+perk.bonus,hadBlock=e.block;
     const blocked=perk.pierce?0:Math.min(e.block,total),dealt=total-blocked;
     e.block-=blocked; e.hp-=dealt; G.stats.dmg+=dealt;
+    if(C.buffs&&C.buffs.leech&&dealt>=4){ const h=heal(Math.floor(dealt/4)); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),260); }
     if(G.pact==='blood'&&dealt>0){ const h=heal(2); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),200); }
     if(S.foe){ S.foe.flash=1; S.foe.shake=r.crits?7:4; }
     if(r.crits){ banner('¡Ataque mágico!'); sfx('crit'); shake(); buzz([30,30,60]); burstFoe('crit',40,3.2); }
@@ -2628,11 +2654,9 @@ async function winCombat(){
   await wait(900);
   if(C.kind==='boss'){ banner('¡Jefe vencido!'); sfx('win'); META.wins++; store('cripta-meta',META); await wait(900); }
   sfx('win');
-  const big=C.kind!=='normal',gold=gainGold(C.kind==='boss'?rnd(60,80):big?rnd(28,40):rnd(9,16));
+  const big=C.kind!=='normal',gold=gainGold((C.kind==='boss'?rnd(60,80):big?rnd(28,40):rnd(9,16))*(C.buffs&&C.buffs.gild?3:1));
   let relic=null; if(big){ relic=randomRelic(); gainRelic(relic); }
-  const b=big?1:0,opts=[{kind:'face',face:genFace(b)},{kind:'face',face:genFace(b)}];
-  if(G.dice.length<5&&Math.random()<.4) opts[1]={kind:'die',die:genDie()};
-  opts.push({kind:'bless',b:pick(Object.keys(BLESS).filter(k=>k!=='heal'||G.hp<G.maxHp*.8))});
+  const opts=genOpts(big?1:0);
   G.reward={title:`${e.name} derrotado`,gold,relic,opts,stage:'box',box:Math.random()<BOX_CHANCE?{open:false}:null};
   go('reward');
 }
@@ -2829,6 +2853,7 @@ function optCard(o,i,price){
   if(o.kind==='die') return `<button class="card pf r-rare" data-i="${i}" ${o.sold?'disabled':''}><span class="rar">Dado nuevo</span><div class="die-net">${o.die.faces.map(f=>dieImg(f)).join('')}</div><b>+1 dado</b><small>Tiras uno más cada turno</small>${tag}</button>`;
   if(o.kind==='relic'){ const R=RELICS[o.relic]; return `<button class="card pf r-relic" data-i="${i}" ${o.sold?'disabled':''}><span class="rar">Reliquia</span>${icon(R.icon,R.rk,4)}<b>${R.name}</b><small>${R.desc}</small>${tag}</button>`; }
   if(o.kind==='bless'){ const B=BLESS[o.b]; return `<button class="card pf r-bless" data-i="${i}"><span class="rar">Bendición</span>${icon(B.icon,B.rk,4)}<b>${B.name}</b><small>${B.desc}</small></button>`; }
+  if(o.kind==='up') return upgCard(o,i,tag);
   if(o.kind==='potion') return `<button class="card pf r-common" data-i="${i}" ${o.sold?'disabled':''}><span class="rar">Poción</span>${icon('heart','heal',4)}<b>Poción roja</b><small>Recuperas ${o.heal} de vida</small>${tag}</button>`;
   return '';
 }
@@ -2837,12 +2862,67 @@ function lootHTML(gold,relic){
   return `<div class="loot pf" id="lootGold">${icon('coin','coin',3)}<b>+${gold}</b><span>de oro</span></div>
     ${R?`<div class="loot rel pf">${icon(R.icon,R.rk,3)}<div><b>${R.name}</b><span>${R.desc}</span></div></div>`:''}`;
 }
-function newOpt(){
-  const r=Math.random();
-  if(r<.45) return {kind:'face',face:genFace()};
-  if(r<.6&&G.dice.length<5) return {kind:'die',die:genDie()};
-  return {kind:'bless',b:pick(Object.keys(BLESS).filter(k=>k!=='heal'||G.hp<G.maxHp*.8))};
+/* ================= upgrade cards (beyond new faces) ================= */
+const UPGR={common:{w:10,name:'Común'},rare:{w:5,name:'Rara'},epic:{w:2,name:'Épica'}};
+const worstFace=()=>{ let best=null; G.dice.forEach((d,di)=>d.faces.forEach((f,fi)=>{ const sc=faceScore(f); if(!best||sc<best.sc) best={di,fi,sc}; })); return best; };
+const bestFace=()=>{ let best=null; G.dice.forEach((d,di)=>d.faces.forEach((f,fi)=>{ const sc=faceScore(f); if(!best||sc>best.sc) best={di,fi,sc}; })); return best; };
+const hasBlank=()=>G.dice.some(d=>d.faces.some(f=>f.t==='blank'));
+const hasAtk=()=>G.dice.some(d=>d.faces.some(f=>f.t==='atk'));
+const UPG={
+  hone:{name:'Mejorar cara',icon:'up',rk:'ember',rar:'common',pick:'face',desc:'Elige una cara de tus dados: gana +2. Una vacía pasa a Ataque 2.'},
+  sharpen:{name:'Afilar',icon:'sword',rk:'atk',rar:'common',pick:'die',ok:hasAtk,desc:'Elige un dado: todas sus caras de ataque y magia ganan +1.'},
+  temper:{name:'Templar',icon:'shield',rk:'def',rar:'common',pick:'die',ok:()=>G.dice.some(d=>d.faces.some(f=>f.t==='def')),desc:'Elige un dado: todas sus caras de escudo ganan +2.'},
+  polish:{name:'Pulir hueso',icon:'blank',rk:'bone',rar:'common',pick:'die',ok:hasBlank,desc:'Elige un dado: sus caras vacías se convierten en Ataque 3.'},
+  heart:{name:'Corazón robusto',icon:'heart',rk:'heal',rar:'common',desc:'+6 de vida máxima y te curas 6.',run:()=>{ G.maxHp+=6; const h=heal(6); toast(`<b>+6</b> de vida máxima`); return h; }},
+  purse:{name:'Bolsa perdida',icon:'bag',rk:'coin',rar:'common',desc:'Encuentras una bolsa con 30–50 de oro.',run:()=>{ const g=gainGold(rnd(30,50)); toast(`<b>+${g}</b> de oro`); sfx('coin'); }},
+  mirror:{name:'Espejo de cara',icon:'gem',rk:'rare',rar:'rare',desc:'Tu mejor cara se copia encima de tu peor cara.',run:()=>{ const b=bestFace(),w=worstFace(); if(!b||!w) return; const f=G.dice[b.di].faces[b.fi]; G.dice[w.di].faces[w.fi]={...f}; toast(`Copiada: <b>${faceName(f)}</b> sobre tu peor cara`); sfx('forge'); }},
+  transmute:{name:'Transmutar',icon:'burst',rk:'crit',rar:'rare',ok:hasAtk,desc:'Tu cara de ataque más baja se convierte en Magia del mismo valor +1.',run:()=>{ let t=null; G.dice.forEach((d,di)=>d.faces.forEach((f,fi)=>{ if(f.t==='atk'&&(!t||f.v<t.v)) t={di,fi,v:f.v}; })); if(!t) return; G.dice[t.di].faces[t.fi]=F('crit',t.v+1,'rare'); toast(`Una cara de ataque se vuelve <b>Magia ${t.v+1}</b>`); sfx('forge'); }},
+  twin:{name:'Gemelos',icon:'dice',rk:'rare',rar:'rare',pick:'face',desc:'Elige una cara: se copia sobre otra cara al azar del mismo dado.'},
+  ascend:{name:'Ascender dado',icon:'dice',rk:'epic',rar:'epic',pick:'die',desc:'Elige un dado: todas sus caras ganan +1 y las vacías pasan a Ataque 3.'},
+  relic:{name:'Reliquia antigua',icon:'cup',rk:'ember',rar:'epic',ok:()=>!!randomRelic(),desc:'Consigues una reliquia al azar.',run:()=>{ const r=randomRelic(); gainRelic(r); if(r){ toast(`<b>${RELICS[r].name}</b>: ${RELICS[r].desc}`); sfx('win'); } }}
+};
+function pickUpg(){
+  const keys=Object.keys(UPG).filter(k=>!UPG[k].ok||UPG[k].ok());
+  let tot=0; keys.forEach(k=>tot+=UPGR[UPG[k].rar].w);
+  let r=Math.random()*tot; for(const k of keys){ r-=UPGR[UPG[k].rar].w; if(r<0) return k; } return keys[0];
 }
+function upgCard(o,i,tag=''){
+  const U=UPG[o.u];
+  return `<button class="card pf r-${U.rar}" data-i="${i}" ${o.sold?'disabled':''}><span class="rar">Mejora · ${UPGR[U.rar].name}</span>${icon(U.icon,U.rk,4)}<b>${U.name}</b><small>${U.desc}</small>${tag}</button>`;
+}
+/* runs an upgrade; returns true if it opened the face/die picker */
+function applyUpg(u,back){
+  const U=UPG[u];
+  if(U.pick){ G.pending={mode:U.pick==='face'?(u==='twin'?'twin':'upgrade'):'die',op:u,back}; go('forge'); return true; }
+  U.run(); updateTop(); return false;
+}
+function dieOp(op,d){
+  d.faces=d.faces.map(f=>{
+    if(op==='sharpen') return (f.t==='atk'||f.t==='crit')?{...f,v:f.v+1}:f;
+    if(op==='temper') return f.t==='def'?{...f,v:f.v+2}:f;
+    if(op==='polish') return f.t==='blank'?F('atk',3):f;
+    if(op==='ascend') return f.t==='blank'?F('atk',3):{...f,v:f.v+1};
+    return f;
+  });
+}
+/* reward options: a weighted mix of faces, dice, blessings and upgrades, never two of the same */
+function genOpts(boost=0){
+  const pool=[
+    [34,()=>({kind:'face',face:genFace(boost)})],
+    [G.dice.length<5?9:0,()=>({kind:'die',die:genDie()})],
+    [18,()=>({kind:'bless',b:pick(Object.keys(BLESS).filter(k=>k!=='heal'||G.hp<G.maxHp*.8))})],
+    [30,()=>({kind:'up',u:pickUpg()})]
+  ];
+  const out=[],used=new Set(); let guard=0;
+  while(out.length<3&&guard++<50){
+    let tot=0; pool.forEach(p=>tot+=p[0]); let r=Math.random()*tot,fn=pool[0][1];
+    for(const p of pool){ r-=p[0]; if(r<0){ fn=p[1]; break; } }
+    const o=fn(),key=o.kind+(o.u||o.b||(o.face?o.face.t:''));
+    if(used.has(key)) continue; used.add(key); out.push(o);
+  }
+  return out;
+}
+function newOpt(){ return genOpts()[0]; }
 function dealCards(){
   const rc=$('.rcards'); if(!rc||!G.reward) return;
   G.reward.dealt=true; saveRun();
@@ -2866,6 +2946,7 @@ function renderReward(){
     if(o.kind==='face'){ G.pending={mode:'replace',face:o.face,back:'next'}; go('forge'); }
     else if(o.kind==='die'){ G.dice.push(o.die); sfx('forge'); toast('<b>+1 dado</b> para el resto de la partida'); nextFloor(); }
     else if(o.kind==='bless'){ applyBless(o.b); nextFloor(); }
+    else if(o.kind==='up'){ if(!applyUpg(o.u,'next')) nextFloor(); }
   });
   M.querySelectorAll('.reroll').forEach(b=>b.onclick=()=>{
     const i=+b.dataset.rr; if(R.opts[i].rr) return;
@@ -2878,6 +2959,7 @@ function renderReward(){
 }
 function renderForge(){
   const P2=G.pending,rep=P2.mode==='replace';
+  if(P2.mode==='die'||P2.mode==='twin') return renderForgePick();
   M.innerHTML=`<section class="screen">
     <div class="pf dark inner">
       <div><p class="eyebrow">${rep?'Forja':'Hoguera'}</p><h1 class="h-title">${rep?'Coloca la cara':'Mejora una cara'}</h1></div>
@@ -2885,7 +2967,7 @@ function renderForge(){
         <p class="sub">Toca la cara que quieres sustituir.</p>`
         :`<p class="sub">Toca una cara para darle +2. Una cara vacía se convierte en Ataque 2.</p>`}
       <div class="dice-list">${diceRows(true)}</div>
-      <button class="pb" id="cancel">${rep?'Descartar la cara':'Volver a la hoguera'}</button>
+      <button class="pb" id="cancel">${rep?'Descartar la cara':P2.op?'Renunciar a la mejora':'Volver a la hoguera'}</button>
     </div>
   </section>`;
   M.querySelectorAll('.pickable').forEach(b=>b.onclick=()=>{
@@ -2897,7 +2979,26 @@ function renderForge(){
     sfx('forge'); buzz(30); burstAt(b,'ember',26,2.4);
     setTimeout(finishPending,800);
   });
-  $('#cancel').onclick=()=>{ if(rep) finishPending(); else { G.pending=null; go('rest'); } };
+  $('#cancel').onclick=()=>{ if(rep||P2.op) finishPending(); else { G.pending=null; go('rest'); } };
+}
+function renderForgePick(){
+  const P2=G.pending,U=UPG[P2.op],die=P2.mode==='die';
+  M.innerHTML=`<section class="screen">
+    <div class="pf dark inner">
+      <div><p class="eyebrow">Mejora · ${UPGR[U.rar].name}</p><h1 class="h-title">${U.name}</h1></div>
+      <p class="sub">${die?'Toca cualquier cara del dado que quieres mejorar.':'Toca la cara que quieres duplicar dentro de su dado.'} ${U.desc}</p>
+      <div class="dice-list">${diceRows(true)}</div>
+    </div>
+  </section>`;
+  M.querySelectorAll('.pickable').forEach(b=>b.onclick=()=>{
+    const di=+b.dataset.d,fi=+b.dataset.f,d=G.dice[di];
+    if(die) dieOp(P2.op,d);
+    else { const others=d.faces.map((_,k)=>k).filter(k=>k!==fi); d.faces[pick(others)]={...d.faces[fi]}; }
+    M.querySelectorAll('.pickable').forEach(x=>x.disabled=true);
+    const row=b.closest('.dice-row'); row.querySelectorAll('.pickable').forEach((x,k)=>{ x.innerHTML=dieImg(d.faces[k]); retrigger(x,'forged'); });
+    sfx('forge'); buzz(30); burstAt(row,'ember',36,2.6);
+    setTimeout(finishPending,900);
+  });
 }
 function finishPending(){ const back=G.pending&&G.pending.back; G.pending=null; if(back==='shop') go('shop'); else nextFloor(); }
 function genShop(){
@@ -2906,6 +3007,7 @@ function genShop(){
   const r=randomRelic(); if(r) items.push({kind:'relic',relic:r,price:rnd(68,82)});
   items.push({kind:'potion',heal:12,price:18});
   items.push({kind:'bless',b:pick(BUFFK),price:rnd(30,40)});
+  { const u=pickUpg(); items.push({kind:'up',u,price:{common:rnd(28,36),rare:rnd(48,58),epic:rnd(78,90)}[UPG[u].rar]}); }
   if(G.dice.length<5) items.push({kind:'die',die:genDie(),price:rnd(80,95)});
   else { const f=genFace(1); items.push({kind:'face',face:f,price:priceOf(f)}); }
   if(G.pact==='gold') items.forEach(it=>it.price*=2);
@@ -2919,6 +3021,7 @@ function wareCard(it,i){
   if(it.kind==='face'){ art=dieImg(it.face,'dimg'); title=faceName(it.face); desc=TYPES[it.face.t].desc; rar=RAR[it.face.rar]; rc=it.face.rar; }
   else if(it.kind==='die'){ art=`<div class="die-net">${it.die.faces.map(f=>dieImg(f)).join('')}</div>`; title='+1 dado'; desc='Tiras uno más cada turno'; rar='Dado nuevo'; rc='rare'; }
   else if(it.kind==='relic'){ const R=RELICS[it.relic]; art=icon(R.icon,R.rk,4); title=R.name; desc=R.desc; rar='Reliquia'; rc='relic'; }
+  else if(it.kind==='up'){ const U=UPG[it.u]; art=icon(U.icon,U.rk,4); title=U.name; desc=U.desc; rar='Mejora'; rc=U.rar; }
   else if(it.kind==='bless'){ const B=BLESS[it.b]; art=icon(B.icon,B.rk,4); title=B.name; desc=B.desc; rar='Bendición'; rc='relic'; }
   else { art=icon('heart','heal',4); title='Poción roja'; desc=`Recuperas ${it.heal} de vida`; rar='Poción'; rc='potion'; }
   return `<button class="ware r-${rc}" data-i="${i}" ${it.sold?'disabled':''}><span class="nail"></span><span class="rar">${rar}</span>${art}<b>${title}</b><small>${desc}</small><span class="tag ${!it.sold&&G.gold<it.price?'poor':''}">${icon('coin','coin',1)}${it.price}</span>${it.sold?'<span class="stamp">Vendido</span>':''}</button>`;
@@ -2941,6 +3044,7 @@ function renderShop(){
     if(G.gold<it.price){ $('#say').textContent=pick(POOR_SAY); toast(`Te faltan <b>${it.price-G.gold}</b> de oro`); sfx('tap'); return; }
     G.gold-=it.price; it.sold=true; Sh.say=pick(BUY_SAY); sfx('coin'); updateTop(); burstAt(b,'coin',18,2);
     if(it.kind==='face'){ G.pending={mode:'replace',face:it.face,back:'shop'}; go('forge'); return; }
+    if(it.kind==='up'&&applyUpg(it.u,'shop')) return;
     if(it.kind==='relic'){ gainRelic(it.relic); toast(`<b>${RELICS[it.relic].name}</b>: ${RELICS[it.relic].desc}`); }
     if(it.kind==='potion'){ const h=heal(it.heal); floatAt('#hpBar',`+${h}`,'heal'); sfx('heal'); }
     if(it.kind==='die'){ G.dice.push(it.die); toast('<b>+1 dado</b> para el resto de la partida'); }
@@ -3095,7 +3199,7 @@ function sceneFor(){
     case 'combat': case 'reward': return [worldOf().w.scene,co];
     case 'shop': return ['shop',{}];
     case 'rest': return ['rest',{}];
-    case 'forge': return G.pending&&G.pending.back==='shop'?['shop',{}]:G.pending&&G.pending.mode==='upgrade'?['rest',{}]:['crypt',co];
+    case 'forge': return G.pending&&G.pending.back==='shop'?['shop',{}]:G.pending&&G.pending.mode==='upgrade'&&!G.pending.op?['rest',{}]:[worldOf().w.scene,co];
     case 'treasure': return ['treasure',{}];
     case 'event': { const ev=EVENTS.find(e=>e.id===G.event.id); return ['event',{icon:ev.art,ramp:ev.ramp}]; }
     case 'gameover': return [worldOf().w.scene,{dim:1}];
