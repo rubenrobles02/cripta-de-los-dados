@@ -721,6 +721,13 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .card.r-legend{--rc:#ffa640;box-shadow:inset 0 0 0 1.5px #ffa640,0 5px 0 #09070b,0 0 22px rgba(255,166,64,.4)}
 .gtile[style*="ffa640"]{animation:legendglow 1.4s steps(2) infinite}
 @keyframes legendglow{50%{box-shadow:inset 0 0 0 var(--p) #ffa640,0 0 12px #ffa640}}
+/* hero skins: the card flips between the idle and the attack frame */
+.hskin .trio{position:relative;width:68px;height:68px;flex:none}
+.hskin .trio img{position:absolute;left:0;top:0;width:68px;height:68px;image-rendering:pixelated}
+.hskin .trio img:first-child{animation:hsIdle 1.8s steps(1) infinite}
+.hskin .trio .atkf{animation:hsAtk 1.8s steps(1) infinite}
+@keyframes hsIdle{0%,64%{opacity:1}65%,100%{opacity:0}}
+@keyframes hsAtk{0%,64%{opacity:0}65%,100%{opacity:1}}
 /* hero ability + sealed die */
 .ability{position:absolute;top:-15px;left:14px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:3px 10px 6px 8px;
   font-family:var(--f-px);font-weight:700;font-size:13px;letter-spacing:.04em;color:var(--bone2);text-shadow:0 2px 0 var(--k);background:var(--st0);
@@ -846,6 +853,8 @@ const ICD={
   boots:[['f','M5.5 2.5h7.5v10l7.5 3.5V21.5H3.5V18l2-2z'],['d','M5.5 9h7.5']],
   lock:[['s','M7.5 11V7.5a4.5 4.5 0 0 1 9 0V11'],['f','M4.5 10.5h15V21h-15z'],['h','M11 14h2v4h-2z']],
   unlock:[['s','M7.5 11V7.5a4.5 4.5 0 0 1 8.6-1.8'],['f','M4.5 10.5h15V21h-15z'],['h','M11 14h2v4h-2z']],
+  hourglass:[['f','M5 2h14v3.5l-5 6.5 5 6.5V22H5v-3.5l5-6.5-5-6.5z'],['d','M8 19h8']],
+  leaf:[['f','M4 20C4 9 10 3 21 3c0 11-6 17-17 17z'],['d','M5 19L16 8']],
   clover:[['f',circ(7.5,7.5,4.6)],['f',circ(16.5,7.5,4.6)],['f',circ(7.5,15.5,4.6)],['f',circ(16.5,15.5,4.6)],['d','M12 2.5v19M2.5 11.5h19']]
 };
 const icCache={},icURLs={};
@@ -1096,6 +1105,16 @@ const SPR={
     '...khhhhhhhhk...','...khffffffhk.o.','...khfyffyfhkooo','....khffffhk..o.',
     '..kkhhrrrrhhkkt.','.khrrrrrrrrrrkt.','.khrrrerrrrrrkt.','..krrggggggrrkt.',
     '..krrrrrrrrrrkt.','..krrrrrrrrrrkt.','...kkkkkkkkkk.t.','..............t.']},
+  h_druida_sk:{pal:{k:'#0b0a12',a:'#e9e3cf',l:'#5fb843',w:'#f4efd6',e:'#5ff0c0',m:'#2f7a3a',c:'#1f3a24',d:'#142a18',g:'#c9a24a',t:'#4a2a17',o:'#7fffd0'},rows:[
+    '.a.a........a.a.','.aaa.a....a.aaa.','..aaa.llll.aaa..','...akwwwwwwka...',
+    '...kwwwwwwwwk...','...kwekwwkewk.o.','...kwwwwwwwwkooo','....kwkwwkwk..o.',
+    '..kkmlcccclmkkt.','.kmcccccccccmkt.','.kcccclcccccckt.','..kccggggggcckt.',
+    '..kcdcccccdcckt.','..kdcccdcccdckt.','...kkkkkkkkkk.t.','..............t.']},
+  h_druida_sk_atk:{pal:{k:'#0b0a12',a:'#e9e3cf',l:'#5fb843',w:'#f4efd6',e:'#5ff0c0',m:'#2f7a3a',c:'#1f3a24',d:'#142a18',g:'#c9a24a',t:'#4a2a17',o:'#7fffd0'},rows:[
+    '.a.a........a.a.','.aaa.a....a.aaa.','..aaa.llll.aaa..','...akwwwwwwka...',
+    '...kwwwwwwwwk...','...kwekwwkewk...','...kwwwwwwwwk.oo','....kwkwwkwk.ooo',
+    '..kkmlccccltttoo','.kmcccccccckk...','.kcccclccccck...','..kccggggggck...',
+    '..kcdcccccdck...','..kdcccdcccdk...','...kkkkkkkkk....','................']},
   merchant:{pal:{k:'#0b0a12',p:'#5a3a5e',q:'#7a5480',n:'#140c16',y:'#ffd35c',w:'#d8d0c0',r:'#3e2a4a',h:'#c99a6e',g:'#e8b52a'},rows:[
     '......kkkk......','.....kppppk.....','....kppqqppk....','...kppkkkkppk...',
     '...kpknnnnkpk...','...kpkynnykpk...','...kpknnnnkpk...','..kppkkwwkkppk..',
@@ -1326,7 +1345,11 @@ const RELICS={
   ember:{name:'Corazón de brasa',desc:'+10 de vida máxima.',icon:'heart',rk:'heal'},
   eye:{name:'Ojo del augur',desc:'Tu primera tirada de cada turno relanza las caras vacías.',icon:'eye',rk:'rare'},
   thorns:{name:'Cota de espinas',desc:'Devuelves 3 de daño cada vez que te golpean.',icon:'thorn',rk:'atk'},
-  idol:{name:'Ídolo trino',desc:'Las rachas de 3 o más dan el doble de bonus.',icon:'gem',rk:'epic'}
+  idol:{name:'Ídolo trino',desc:'Las rachas de 3 o más dan el doble de bonus.',icon:'gem',rk:'epic'},
+  hourglass:{name:'Reloj de arena',desc:'Empiezas cada combate con +1 carga de habilidad.',icon:'hourglass',rk:'ember'},
+  lantern:{name:'Farol del saqueador',desc:'Los cofres que encuentras son de mejor calidad.',icon:'flame',rk:'coin'},
+  fang:{name:'Colmillo de lobo',desc:'Cada golpe tuyo de 15 o más te cura 3.',icon:'horns',rk:'atk'},
+  diadem:{name:'Diadema de gemas',desc:'Ganas 2 gemas por cada élite o jefe que venzas.',icon:'crown',rk:'rare'}
 };
 const ENEMIES={
   slime:{name:'Limo Ácido',sprite:'slime',hp:13,intents:[['atk',4],['atk',5],['block',4]]},
@@ -1362,7 +1385,7 @@ const ENEMIES={
 const DOORS={
   combat:{name:'Combate',hint:'Un monstruo',icon:'skull',ramp:'atk'},
   elite:{name:'Élite',hint:'Peligro. Reliquia segura',icon:'crown',ramp:'crit'},
-  treasure:{name:'Tesoro',hint:'Oro y reliquia',icon:'chest',ramp:'coin'},
+  treasure:{name:'Tesoro',hint:'Oro, cofres o algo mejor',icon:'chest',ramp:'coin'},
   shop:{name:'Mercader',hint:'Compra mejoras',icon:'bag',ramp:'ember'},
   rest:{name:'Hoguera',hint:'Descansa o forja',icon:'flame',ramp:'ember'},
   event:{name:'Misterio',hint:'Puede pasar de todo',icon:'quest',ramp:'rare'},
@@ -1388,7 +1411,7 @@ function poolFor(){ const {w,local}=worldOf(); return w.pools[local<=4?0:local<=
 function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function drop(k){try{localStorage.removeItem(k)}catch(e){}}
-const META=Object.assign({best:0,wins:0,runs:0,bank:0,skins:['bone'],gems:0,heroes:['errante'],hero:'errante'},load('cripta-meta',{}));
+const META=Object.assign({best:0,wins:0,runs:0,bank:0,skins:['bone'],gems:0,heroes:['errante'],hero:'errante',hskins:[],hskin:{}},load('cripta-meta',{}));
 if(!META.skins.includes('bone')) META.skins.unshift('bone');
 if(!META.skins.includes(SKIN)) SKIN='bone';
 let SOUND=load('cripta-sound',true);
@@ -1482,7 +1505,7 @@ const CHESTS={
   gold:{name:'Cofre de oro',pal:'c_gold',c:'#ffe27a',rk:'coin',w:{common:0,rare:6,epic:6,legend:2},gold:25,gems:2},
   legend:{name:'Cofre legendario',pal:'c_legend',c:'#ffa640',rk:'epic',w:{common:0,rare:0,epic:6,legend:4},gold:50,gems:5}
 };
-function chestOdds(kind){ const s=worldOf().idx+(kind==='boss'?2:kind==='elite'?1:0); return {wood:Math.max(5,60-12*s),iron:25+4*s,gold:5+5*s,legend:1+3*s}; }
+function chestOdds(kind){ const s=worldOf().idx+(kind==='boss'?2:kind==='elite'?1:0)+(G&&G.relics.includes('lantern')?1:0); return {wood:Math.max(5,60-12*s),iron:25+4*s,gold:5+5*s,legend:1+3*s}; }
 function rollChest(kind){ return wpick(chestOdds(kind)); }
 function rollGear(tier){
   const q=wpick((CHESTS[tier]||CHESTS.wood).w),ids=Object.keys(GEAR).filter(k=>GEAR[k].q===q);
@@ -1660,7 +1683,20 @@ function updateAbility(){
   b.setAttribute('aria-label',`${A.name}: ${A.desc}`); b.onclick=useAbility;
 }
 function heroMods(){ const h=G&&!G.over&&HEROES[G.hero]; return h?h.mods:{}; }
-const heroSpr=k=>(HEROES[k]||HEROES.errante).spr;
+/* hero skins: cosmetic, bought with gems; atk is the frame shown while the hero attacks */
+const HSKINS={
+  druida_ciervo:{hero:'druida',name:'Guardián del Ciervo',cost:150,spr:'h_druida_sk',atk:'h_druida_sk_atk',fx:'leaf',desc:'Máscara de cráneo de ciervo y báculo de jade. Al atacar apunta con el báculo y lanza un torrente de hojas.'}
+};
+const heroSkin=k=>HSKINS[(META.hskin||{})[k]]||null;
+const heroSpr=k=>{ const sk=heroSkin(k); return sk?sk.spr:(HEROES[k]||HEROES.errante).spr; };
+function heroAtkFx(){
+  const H=S.hero; if(!H||!H.skin) return; H.atk=1;
+  if(H.skin.fx==='leaf'){
+    const w=34*(H.sc||2),x=H.px+w*.41,y=H.py-w*.06,tx=(S.foe&&S.foe.px)||x+60;
+    for(let i=0;i<(REDUCED?10:34);i++){ const sp=.6+Math.random()*1.1; S.parts.push({x:x+rnd(-2,2),y:y+rnd(-3,3),vx:(tx-x)/38*sp+(Math.random()-.5)*.5,vy:-1.1+Math.random()*1.3,g:.03,life:1,dec:.012+Math.random()*.01,c:['#2f7a3a','#5fb843','#b0e86a'],sz:Math.random()<.4?2:1}); }
+    burstXY(x,y,'heal',16,1.6); sfx('sizzle');
+  }
+}
 function showHeroes(back){
   const owned=META.heroes, nextK=HERO_KEYS.find(k=>!owned.includes(k)), gems=META.gems||0;
   const list=HERO_KEYS.map(k=>{
@@ -1674,8 +1710,26 @@ function showHeroes(back){
   const ECON='Las gemas se ganan al terminar cada partida: 1 por cada 5 pisos, +10 por cada jefe vencido. Cada héroe desbloquea al siguiente. El héroe elegido se usa al empezar una partida nueva.';
   openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">Héroes</h2><span class="info" data-tip="<b>Gemas</b>${ECON}">?</span><span class="grow"></span><button class="pb sm" id="devGems">+100 gemas (pruebas)</button><span class="bank gems">${icon('gem','def',2)} <b>${gems}</b></span></div>
     <p class="sub arm-sub">${ECON}</p>
-    <div class="skins">${list}</div>${back?'<button class="pb" id="sBack">Volver</button>':''}`,!!back);
-  $('#sheet').querySelectorAll('.hero-card').forEach(b=>b.onclick=()=>{
+    <div class="skins">${list}</div>
+    <h3 class="h-sec">Aspectos</h3>
+    <div class="skins">${Object.entries(HSKINS).map(([id,sk])=>{
+      const h=HEROES[sk.hero],ownH=META.heroes.includes(sk.hero),own=(META.hskins||[]).includes(id),eq=(META.hskin||{})[sk.hero]===id;
+      const act=eq?'<em class="gdone">Puesto</em>':own?'<em>Ponérselo</em>':!ownH?`<em class="lockd">Desbloquea antes a ${h.name}</em>`:`<em class="cost ${gems>=sk.cost?'':'poor'}">${icon('gem','def',1)}${sk.cost}</em>`;
+      return `<button class="skin hero-card hskin pf dark ${eq?'on':''} ${ownH?'':'locked'}" data-s="${id}"><span class="trio"><img src="${spriteURL34(sk.spr)}" width="68" height="68" alt=""><img class="atkf" src="${spriteURL34(sk.atk)}" width="68" height="68" alt=""></span><span class="txt"><span class="rar" style="color:#ffa640">Aspecto · ${h.name}</span><b>${sk.name}</b><small>${sk.desc}</small><small class="perk ab">${icon('leaf','heal',1)} Animación de ataque propia</small></span>${act}</button>`;
+    }).join('')}</div>${back?'<button class="pb" id="sBack">Volver</button>':''}`,!!back);
+  $('#sheet').querySelectorAll('.hskin').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.s,sk=HSKINS[id],h=HEROES[sk.hero];
+    META.hskins=META.hskins||[]; META.hskin=META.hskin||{};
+    if(!META.heroes.includes(sk.hero)){ toast(`Primero desbloquea a <b>${h.name}</b>`); sfx('tap'); return; }
+    if(!META.hskins.includes(id)){
+      if((META.gems||0)<sk.cost){ toast(`Te faltan <b>${sk.cost-(META.gems||0)}</b> gemas`); sfx('tap'); return; }
+      META.gems-=sk.cost; META.hskins.push(id); META.hskin[sk.hero]=id; banner('¡Nuevo aspecto!'); sfx('win');
+    } else if(META.hskin[sk.hero]===id){ delete META.hskin[sk.hero]; sfx('tap'); toast(`${h.name} vuelve a su aspecto normal`); }
+    else { META.hskin[sk.hero]=id; sfx('forge'); }
+    store('cripta-meta',META); buzz(30); showHeroes(back);
+    burstAt($('#sheet').querySelector(`.hskin[data-s="${id}"] .trio`),'heal',30,2.4);
+  });
+  $('#sheet').querySelectorAll('.hero-card[data-k]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.k,h=HEROES[k];
     if(!META.heroes.includes(k)){
       if(k!==nextK){ toast(`Primero desbloquea a <b>${HEROES[HERO_KEYS[HERO_KEYS.indexOf(k)-1]].name}</b>`); sfx('tap'); return; }
@@ -2406,8 +2460,10 @@ function drawHero(c,t){
   groundShadow(c,H,cx,fy,w,sc,Math.max(0,-bob),1);
   if(H.heal>0){ glow(c,cx,fy-w*.45,w*.5,'#5fb843',.16*H.heal); H.heal=Math.max(0,H.heal-.02); }
   const x0=Math.round(cx-w/2),y0=Math.round(fy-w+sc+bob);
-  c.drawImage(H.img,x0,y0,w,w);
-  occlusion(c,H,x0,y0,w);
+  const fr=H.atk>0&&H.atkF?H.atkF:H;
+  c.drawImage(fr.img,x0,y0,w,w);
+  occlusion(c,fr,x0,y0,w);
+  if(H.atk>0){ if(H.skin&&H.skin.fx==='leaf') glow(c,x0+w*.91,y0+w*.44,(4+3*sc)*H.atk,'#7fffd0',.35*H.atk); H.atk=Math.max(0,H.atk-.022); }
   if(H.flash>0){ c.globalAlpha=Math.ceil(H.flash*3)/3*.8; c.drawImage(tintSil(H,'#ff3a3a'),x0,y0,w,w); c.globalAlpha=1; H.flash=Math.max(0,H.flash-.07); }
   // a shield floats in front of the hero while there is block (gold while Bulwark is up), and flashes when it stops a hit
   const C=G.combat,guard=C&&(C.bulwark||C.pBlock>0);
@@ -2492,7 +2548,7 @@ function throwSwords(r){
   if(!src.length) src.push({i:0,crit:false});
   const tgt=foePt(),skin=SKIN,img=swordSprite(skin),pal=SWORD_PAL[skin]||SWORD_PAL.bone;
   const shots=src.slice(0,6),perk={bonus:0,pierce:skin==='shadow'};
-  if(S.hero) S.hero.lunge=1;
+  if(S.hero){ S.hero.lunge=1; heroAtkFx(); }
   return new Promise(res=>{
     let left=shots.length;
     shots.forEach((sh,k)=>{
@@ -2611,7 +2667,7 @@ function enterDoor(t,btn){
     if(t==='combat') startCombat(pick(poolFor()),'normal');
     else if(t==='elite') startCombat(pick(worldOf().w.elites),'elite');
     else if(t==='boss') startCombat(worldOf().w.boss,'boss');
-    else if(t==='treasure'){ const g=gainGold(rnd(25,45)),r=randomRelic(); gainRelic(r); G.treasure={gold:g,relic:r}; go('treasure'); }
+    else if(t==='treasure') openTreasure();
     else if(t==='shop'){ genShop(); go('shop'); }
     else if(t==='rest') go('rest');
     else if(t==='event'){ G.event={id:pick(EVENTS).id,result:null,next:null}; go('event'); }
@@ -2655,7 +2711,7 @@ function startCombat(key,kind){
   G.combat={enemy:e,kind,faces:G.dice.map(()=>null),held:G.dice.map(()=>false),rerolls:maxRerolls(),phase:'start',pBlock:(has('runic')?6:0)+gearBlock(),turn:1,
     log:kind==='boss'?`${e.name} despierta. ${BOSS_RULE[key]||''}`:kind==='elite'?`Cuidado: enemigo de élite.`:`Algo se mueve en la oscuridad.`};
   G.combat.buffs=takeBuffs(); if(G.pact==='luck') G.combat.buffs.luck=true; G.combat.rerolls=maxRerolls(); if(G.combat.buffs.ward) G.combat.pBlock+=3;
-  sealDie(G.combat); chargeUp();
+  sealDie(G.combat); chargeUp(); if(has('hourglass')) chargeUp();
   go('combat');
   { const bn=BUFFK.filter(k=>G.combat.buffs[k]); if(bn.length&&kind!=='boss') setTimeout(()=>{ banner(BLESS[bn[0]].name); sfx('combo'); },350); }
   if(kind==='boss'){ banner(e.name); sfx('buff'); if(BOSS_RULE[key]) setTimeout(()=>toast(`<b>${e.name}</b>: ${BOSS_RULE[key]}`),1300); }
@@ -2834,6 +2890,7 @@ async function resolve(){
     e.block-=blocked; e.hp-=dealt; G.stats.dmg+=dealt;
     if(C.buffs&&C.buffs.leech&&dealt>=4){ const h=heal(Math.floor(dealt/4)); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),260); }
     if(G.pact==='blood'&&dealt>0){ const h=heal(2); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),200); }
+    if(has('fang')&&dealt>=15){ const h=heal(3); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),320); }
     if(S.foe){ S.foe.flash=1; S.foe.shake=r.crits?7:4; }
     if(r.crits){ banner('¡Ataque mágico!'); sfx('crit'); shake(); buzz([30,30,60]); burstFoe('crit',40,3.2); }
     else { sfx('hit'); buzz(25); }
@@ -2903,6 +2960,7 @@ async function winCombat(){
   if(S.foe){ S.foe.flash=0; S.foe.dead=.01; }
   sfx('die'); burstFoe('ember',60,3.5); burstFoe('bone',30,2.5); buzz([40,40,80]);
   G.stats.kills++;
+  if(C.kind!=='normal'&&has('diadem')){ META.gems=(META.gems||0)+2; store('cripta-meta',META); setTimeout(()=>toast('<b>Diadema de gemas</b>: +2 gemas'),700); }
   { const wh=gearTotal().winHeal; if(wh){ const h=heal(wh); if(h) floatAt('#hpBar',`+${h}`,'heal'); } }
   await wait(900);
   if(C.kind==='boss'){ banner('¡Jefe vencido!'); sfx('win'); META.wins++; G.stats.bosses=(G.stats.bosses||0)+1; store('cripta-meta',META); await wait(900); }
@@ -3137,6 +3195,12 @@ const UPG={
   transmute:{name:'Transmutar',icon:'burst',rk:'crit',rar:'rare',ok:hasAtk,desc:'Tu cara de ataque más baja se convierte en Magia del mismo valor +1.',run:()=>{ let t=null; G.dice.forEach((d,di)=>d.faces.forEach((f,fi)=>{ if(f.t==='atk'&&(!t||f.v<t.v)) t={di,fi,v:f.v}; })); if(!t) return; G.dice[t.di].faces[t.fi]=F('crit',t.v+1,'rare'); toast(`Una cara de ataque se vuelve <b>Magia ${t.v+1}</b>`); sfx('forge'); }},
   twin:{name:'Gemelos',icon:'dice',rk:'rare',rar:'rare',pick:'face',desc:'Elige una cara: se copia sobre otra cara al azar del mismo dado.'},
   ascend:{name:'Ascender dado',icon:'dice',rk:'epic',rar:'epic',pick:'die',desc:'Elige un dado: todas sus caras ganan +1 y las vacías pasan a Ataque 3.'},
+  heavy:{name:'Dado pesado',icon:'sword',rk:'atk',rar:'rare',pick:'die',ok:hasAtk,desc:'Elige un dado: sus caras de ataque ganan +3, pero su mejor cara de otro tipo pasa a vacía.'},
+  wall:{name:'Muro de piedra',icon:'shield',rk:'def',rar:'common',pick:'die',desc:'Elige un dado: sus caras de escudo ganan +1 y las vacías pasan a Escudo 3.'},
+  miser:{name:'Dado del avaro',icon:'coin',rk:'coin',rar:'common',pick:'die',desc:'Elige un dado: sus caras de oro ganan +3 y las vacías pasan a Oro 3.'},
+  prism:{name:'Prisma arcano',icon:'burst',rk:'crit',rar:'epic',desc:'Todas tus caras de Magia ganan +2. Si no tienes ninguna, tu peor cara pasa a Magia 4.',run:()=>{ let n=0; G.dice.forEach(d=>d.faces.forEach((f,i)=>{ if(f.t==='crit'){ d.faces[i]={...f,v:f.v+2}; n++; } })); if(!n){ const w=worstFace(); if(w) G.dice[w.di].faces[w.fi]=F('crit',4,'epic'); toast('Tu peor cara se vuelve <b>Magia 4</b>'); } else toast(`<b>${n}</b> caras de Magia ganan +2`); sfx('forge'); }},
+  vigor:{name:'Vigor',icon:'heart',rk:'heal',rar:'common',desc:'+4 de vida máxima y te curas por completo.',run:()=>{ G.maxHp+=4; const h=heal(G.maxHp); toast(`<b>+4</b> de vida máxima${h?` y +${h} de vida`:''}`); sfx('heal'); }},
+  destiny:{name:'Tirada del destino',icon:'dice',rk:'ember',rar:'rare',desc:'60%: una cara al azar gana +4. 40%: pierde 1.',run:()=>{ const d=pick(G.dice),i=rnd(0,d.faces.length-1),f=d.faces[i]; if(f.t==='blank'){ d.faces[i]=F('atk',4); toast('Una cara vacía se vuelve <b>Ataque 4</b>'); sfx('win'); return; } const up=Math.random()<.6; d.faces[i]={...f,v:Math.max(1,f.v+(up?4:-1))}; toast(up?`¡Suerte! <b>${faceName(d.faces[i])}</b>`:`Mala suerte: <b>${faceName(d.faces[i])}</b>`); sfx(up?'win':'lose'); }},
   relic:{name:'Reliquia antigua',icon:'cup',rk:'ember',rar:'epic',ok:()=>!!randomRelic(),desc:'Consigues una reliquia al azar.',run:()=>{ const r=randomRelic(); gainRelic(r); if(r){ toast(`<b>${RELICS[r].name}</b>: ${RELICS[r].desc}`); sfx('win'); } }}
 };
 function pickUpg(){
@@ -3155,7 +3219,10 @@ function applyUpg(u,back){
   U.run(); updateTop(); return false;
 }
 function dieOp(op,d){
+  if(op==='heavy'){ d.faces=d.faces.map(f=>f.t==='atk'?{...f,v:f.v+3}:f); let bi=-1; d.faces.forEach((f,i)=>{ if(f.t!=='atk'&&f.t!=='blank'&&(bi<0||faceScore(f)>faceScore(d.faces[bi]))) bi=i; }); if(bi>=0) d.faces[bi]=F('blank',0); return; }
   d.faces=d.faces.map(f=>{
+    if(op==='wall') return f.t==='def'?{...f,v:f.v+1}:f.t==='blank'?F('def',3):f;
+    if(op==='miser') return f.t==='coin'?{...f,v:f.v+3}:f.t==='blank'?F('coin',3):f;
     if(op==='sharpen') return (f.t==='atk'||f.t==='crit')?{...f,v:f.v+1}:f;
     if(op==='temper') return f.t==='def'?{...f,v:f.v+2}:f;
     if(op==='polish') return f.t==='blank'?F('atk',3):f;
@@ -3325,17 +3392,29 @@ function renderRest(){
   $('#sleep').onclick=()=>{ $('#sleep').disabled=$('#forge').disabled=true; heal(h); updateTop(); floatAt('#hpBar',`+${real}`,'heal'); burstAt('#hpBar','heal',20,2); sfx('heal'); setTimeout(nextFloor,900); };
   $('#forge').onclick=()=>{ G.pending={mode:'upgrade',back:'next'}; go('forge'); };
 }
+/* treasure rooms come in five flavours so they don't repeat */
+function openTreasure(){
+  const kind=wpick({chest:28,arsenal:24,altar:20,fountain:16,gems:12});
+  if(kind==='arsenal'){ G.reward={title:'Arsenal olvidado',gold:gainGold(rnd(10,20)),relic:null,opts:genOpts(1),stage:'box',box:{open:false,tier:rollChest('elite')},boxQ:[],boxN:1}; go('reward'); return; }
+  if(kind==='altar'){ const opts=[],used=new Set(); let g=0; while(opts.length<3&&g++<30){ const f=genFace(2); if(used.has(f.t)) continue; used.add(f.t); if(f.rar==='common'){ f.rar='rare'; f.v+=1; } opts.push({kind:'face',face:f}); }
+    G.reward={title:'Altar de las caras',gold:0,relic:null,opts,stage:'cards',box:null,boxQ:[],boxN:0}; go('reward'); return; }
+  if(kind==='fountain'){ const h=heal(Math.ceil(G.maxHp*.4)); G.treasure={kind,gold:gainGold(rnd(40,60)),heal:h}; go('treasure'); return; }
+  if(kind==='gems'){ const n=rnd(3,6); META.gems=(META.gems||0)+n; store('cripta-meta',META); G.treasure={kind,gold:gainGold(rnd(15,25)),gems:n}; go('treasure'); return; }
+  const r=randomRelic(); gainRelic(r); G.treasure={kind:'chest',gold:gainGold(rnd(25,45)),relic:r}; go('treasure');
+}
 function renderTreasure(){
-  const T=G.treasure;
+  const T=G.treasure,k=T.kind||'chest';
+  const TT={chest:'Un cofre olvidado',fountain:'La fuente dorada',gems:'Una veta de gemas'}[k]||'Un cofre olvidado';
+  const extra=k==='fountain'?`<div class="loot pf">${icon('heart','heal',3)}<b>+${T.heal}</b><span>de vida</span></div>`:k==='gems'?`<div class="loot pf">${icon('gem','def',3)}<b>+${T.gems}</b><span>gemas para desbloquear héroes</span></div>`:'';
   M.innerHTML=`<section class="screen split">
     <div class="spacer" id="spot"></div>
     <div class="pf dark inner">
-      <div><p class="eyebrow">Tesoro · Piso ${G.floor}</p><h1 class="h-title">Un cofre olvidado</h1></div>
-      ${lootHTML(T.gold,T.relic)}
+      <div><p class="eyebrow">Tesoro · Piso ${G.floor}</p><h1 class="h-title">${TT}</h1></div>
+      ${lootHTML(T.gold,T.relic)}${extra}
       <button class="pb go" id="cont">Continuar</button>
     </div>
   </section>`;
-  setTimeout(()=>{ const r=spotRect(); if(r) burstXY(r.cx,r.b-30,'coin',40,3); sfx('coin'); sfx('win'); },300);
+  setTimeout(()=>{ const r=spotRect(); if(r) burstXY(r.cx,r.b-30,k==='gems'?'def':k==='fountain'?'heal':'coin',40,3); sfx('coin'); sfx('win'); },300);
   $('#cont').onclick=nextFloor;
 }
 const EVENTS=[
@@ -3353,8 +3432,34 @@ const EVENTS=[
     {label:'Rechazar',run:()=>'“Cobarde”, murmura mientras vuelve a agitar el cubilete.'}]},
   {id:'shrine',title:'Santuario del dado',art:'burst',ramp:'crit',text:'Un pedestal con seis caras talladas. Puedes ofrecer una cara vacía a cambio de su bendición.',choices:[
     {label:'Aceptar la bendición',sub:'Una cara vacía pasa a Magia 3',need:()=>G.dice.some(d=>d.faces.some(f=>f.t==='blank')),run:()=>{ const d=G.dice.find(d=>d.faces.some(f=>f.t==='blank')); d.faces[d.faces.findIndex(f=>f.t==='blank')]=F('crit',3,'rare'); sfx('forge'); return 'Una de tus caras vacías arde y se convierte en Magia 3.'; }},
-    {label:'Rezar',sub:'Recuperas 5 de vida',run:()=>{ const h=heal(5); sfx('heal'); return `Una calma extraña te recorre. Recuperas ${h} de vida.`; }}]}
+    {label:'Rezar',sub:'Recuperas 5 de vida',run:()=>{ const h=heal(5); sfx('heal'); return `Una calma extraña te recorre. Recuperas ${h} de vida.`; }}]},
+  {id:'ghost',title:'Mercader fantasma',art:'bag',ramp:'epic',text:'Un mercader translúcido abre su abrigo. Dentro brillan objetos que no deberían existir.',choices:[
+    {label:'Pagar 45 de oro',sub:'Una reliquia',need:()=>G.gold>=45&&!!randomRelic(),run:()=>{ G.gold-=45; const r=randomRelic(); gainRelic(r); sfx('coin'); return `El fantasma sonríe y te entrega: ${RELICS[r].name}. ${RELICS[r].desc}`; }},
+    {label:'Pagar 6 de vida',sub:'Una mejora al azar',run:()=>{ G.hp=Math.max(1,G.hp-6); const k=randomUpg(); UPG[k].run(); sfx('buff'); return `El frío te atraviesa. A cambio recibes: ${UPG[k].name}. ${UPG[k].desc}`; }},
+    {label:'Seguir tu camino',run:()=>'El mercader se desvanece entre risas.'}]},
+  {id:'anvil',title:'Yunque olvidado',art:'up',ramp:'ember',text:'Un yunque aún tibio y un martillo clavado en la roca. Alguien trabajó aquí hace poco.',choices:[
+    {label:'Forjar',sub:'Una cara gana +2',run:()=>{ G.pending={mode:'upgrade',op:'hone',back:'next'}; return {text:'Agarras el martillo. El metal canta.',next:'forge'}; }},
+    {label:'Fundir el martillo',sub:'+35 de oro',run:()=>{ const g=gainGold(35); sfx('coin'); return `Funde bien. Sacas ${g} de oro.`; }}]},
+  {id:'blades',title:'Pasillo de cuchillas',art:'sword',ramp:'atk',text:'Cuchillas oxidadas asoman de las paredes. Al fondo brilla algo.',choices:[
+    {label:'Cruzar corriendo',sub:'Pierdes 6 de vida · una bendición',run:()=>{ G.hp=Math.max(1,G.hp-6); redFlash(); sfx('hurt'); const b=pick(BUFFK); applyBless(b); return `Las cuchillas te rozan, pero llegas al fondo: ${BLESS[b].name}. ${BLESS[b].desc}`; }},
+    {label:'Cruzar con cuidado',sub:'50%: +40 de oro · 50%: pierdes 12',run:()=>{ if(Math.random()<.5){ const g=gainGold(40); sfx('coin'); return `Pasas sin un rasguño y encuentras ${g} de oro.`; } G.hp=Math.max(1,G.hp-12); redFlash(); sfx('hurt'); return 'Una cuchilla salta de golpe. Pierdes 12 de vida.'; }}]},
+  {id:'statue',title:'Estatua del Tahúr',art:'dice',ramp:'crit',text:'Una estatua de piedra sostiene un dado gigante. La inscripción dice: «Tira».',choices:[
+    {label:'Tirar el dado',sub:'1-2: daño · 3-4: oro · 5-6: cara épica',run:()=>{ const n=rnd(1,6); sfx('roll');
+      if(n<=2){ G.hp=Math.max(1,G.hp-8); redFlash(); return `Sale un ${n}. La estatua te golpea: pierdes 8 de vida.`; }
+      if(n<=4){ const g=gainGold(35); return `Sale un ${n}. De la boca de la estatua caen ${g} monedas.`; }
+      const f=genFace(2); f.rar='epic'; f.v+=2; G.pending={mode:'replace',face:f,back:'next'}; return {text:`¡Sale un ${n}! El dado de piedra se abre: dentro hay una cara épica, ${faceName(f)}.`,next:'forge'}; }},
+    {label:'Marcharte',run:()=>'Juras que la estatua te sigue con la mirada.'}]},
+  {id:'library',title:'Biblioteca prohibida',art:'eye',ramp:'rare',text:'Estanterías hasta el techo y un libro abierto que susurra tu nombre.',choices:[
+    {label:'Leer el libro',sub:'Pierdes 5 de vida · una mejora al azar',run:()=>{ G.hp=Math.max(1,G.hp-5); const k=randomUpg(); UPG[k].run(); return `Las letras te arden en los ojos, pero aprendes algo: ${UPG[k].name}. ${UPG[k].desc}`; }},
+    {label:'Llevarte un pergamino',sub:'Una bendición',run:()=>{ const b=pick(BUFFK); applyBless(b); return `Guardas el pergamino: ${BLESS[b].name}. ${BLESS[b].desc}`; }}]},
+  {id:'well',title:'Pozo de los deseos',art:'gem',ramp:'def',text:'Un pozo sin fondo. Al asomarte ves gemas brillando muy, muy abajo.',choices:[
+    {label:'Lanzar 25 de oro',sub:'+3 gemas',need:()=>G.gold>=25,run:()=>{ G.gold-=25; META.gems=(META.gems||0)+3; store('cripta-meta',META); sfx('tink'); return 'El pozo devuelve un destello: ganas 3 gemas.'; }},
+    {label:'Bajar a por ellas',sub:'50%: +6 gemas · 50%: pierdes 10',run:()=>{ if(Math.random()<.5){ META.gems=(META.gems||0)+6; store('cripta-meta',META); sfx('win'); return 'Bajas por la cuerda y vuelves con 6 gemas en los bolsillos.'; } G.hp=Math.max(1,G.hp-10); redFlash(); sfx('hurt'); return 'La cuerda se rompe. Pierdes 10 de vida y no encuentras nada.'; }}]},
+  {id:'prisoner',title:'Prisionero encadenado',art:'lock',ramp:'stone',text:'Un caballero encadenado te suplica que lo liberes. Algo en su sonrisa no encaja.',choices:[
+    {label:'Liberarlo',sub:'¿Gratitud o trampa?',run:()=>{ if(Math.random()<.65){ const r=randomRelic(); if(r){ gainRelic(r); sfx('win'); return `Agradecido, te da lo único que conserva: ${RELICS[r].name}. ${RELICS[r].desc}`; } const g=gainGold(50); return `Agradecido, te da su bolsa: ${g} de oro.`; } sfx('buff'); return {text:'¡Era una trampa! El caballero se quita las cadenas y desenvaina.',next:'fight',foe:pick(worldOf().w.elites)}; }},
+    {label:'Dejarlo ahí',run:()=>'Sus gritos te persiguen un buen rato por el pasillo.'}]}
 ];
+function randomUpg(){ const ks=Object.keys(UPG).filter(k=>!UPG[k].pick&&(!UPG[k].ok||UPG[k].ok())); return pick(ks); }
 function renderEvent(){
   const E=G.event,ev=EVENTS.find(x=>x.id===E.id);
   const btns=E.result
@@ -3371,9 +3476,9 @@ function renderEvent(){
   M.querySelectorAll('.choice').forEach(b=>b.onclick=()=>{
     let out=ev.choices[+b.dataset.i].run();
     if(typeof out==='string') out={text:out,next:'next'};
-    E.result=out.text; E.next=out.next; saveRun(); render();
+    E.result=out.text; E.next=out.next; E.foe=out.foe; saveRun(); render();
   });
-  if($('#evNext')) $('#evNext').onclick=()=>{ if(E.next==='fight') startCombat('mimic','elite'); else if(E.next==='forge') go('forge'); else nextFloor(); };
+  if($('#evNext')) $('#evNext').onclick=()=>{ if(E.next==='fight') startCombat(E.foe&&ENEMIES[E.foe]?E.foe:'mimic','elite'); else if(E.next==='forge') go('forge'); else nextFloor(); };
 }
 function renderEnd(won){
   const s=G.stats;
@@ -3471,7 +3576,7 @@ function render(){
   else ({map:renderMap,combat:renderCombat,reward:renderReward,forge:renderForge,shop:renderShop,rest:renderRest,treasure:renderTreasure,event:renderEvent,gameover:()=>renderEnd(false),victory:()=>renderEnd(true)}[G.screen]||renderMap)();
   M.scrollTop=0; updateTop();
   if(G&&view==='game'&&G.screen==='combat'){ const d=ENEMIES[G.combat.enemy.key]; S.foe=Object.assign({},procSprite(d.sprite,G.combat.enemy.phase2?'archmage2':d.pal),{flash:0,shake:0,lunge:0,dead:G.combat.phase==='won'?1:0,boss:!!d.boss,elite:!!d.elite,sc:2});
-    S.hero=Object.assign({},procSprite(heroSpr(G.hero||'errante')),{flash:0,shake:0,lunge:0,heal:0,guardHit:0}); }
+    { const hk=G.hero||'errante',sk=heroSkin(hk); S.hero=Object.assign({},procSprite(heroSpr(hk)),{flash:0,shake:0,lunge:0,heal:0,guardHit:0,atk:0,skin:sk,atkF:sk&&sk.atk?procSprite(sk.atk):null}); } }
   else { S.foe=null; S.hero=null; }
   const [name,opt]=sceneFor(); setScene(name,opt);
   setMusic(trackFor());
