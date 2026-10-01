@@ -702,6 +702,15 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .card.r-legend{--rc:#ffa640;box-shadow:inset 0 0 0 1.5px #ffa640,0 5px 0 #09070b,0 0 22px rgba(255,166,64,.4)}
 .gtile[style*="ffa640"]{animation:legendglow 1.4s steps(2) infinite}
 @keyframes legendglow{50%{box-shadow:inset 0 0 0 var(--p) #ffa640,0 0 12px #ffa640}}
+/* chests */
+.lm-chests{display:flex;flex-direction:column;align-items:center;gap:2px}
+.lm-row{display:flex;align-items:flex-end;gap:4px}
+.lm-luck{margin:0;font-weight:700;font-size:18px;color:var(--grn3);animation:blink2 .6s steps(2) infinite}
+.lm-next{display:flex;flex-direction:column;align-items:center;gap:2px;opacity:.8;padding-bottom:14px}
+.lm-next img{width:68px;height:68px;image-rendering:pixelated}
+.lm-next small{font-size:12px;font-weight:700}
+.lm-from{font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+@media (orientation:landscape) and (max-height:560px){ .lm-card>.lm-chests{grid-column:1;grid-row:1 / span 9} }
 /* heroes */
 .bank.gems{box-shadow:inset 0 0 0 var(--p) #1f6f86}
 .bank.gems b{color:#9eeaf0}
@@ -1026,17 +1035,38 @@ const SPR={
     '...ksbybbybsk...','...kssssssssk...','....kksssskk....','..kkrrrrrrrrkk..',
     '.ksrrrrrrrrrrsk.','.ksrrrrrrrrrrsk.','.kskrrrrrrrrksk.','..k.kggggggk.k..',
     '....kllkkllk....','....kllkkllk....','....kkkkkkkk....','................']},
+  h_paladin:{pal:{k:'#0b0a12',s:'#c7bdd6',w:'#f4f0ff',b:'#1a2440',y:'#9eeaf0',r:'#2a55b8',g:'#e8b52a',l:'#4a3f5c',m:'#8f82a3',h:'#7a4726'},rows:[
+    '................','.w............w.','.ww.kkkkkkkk.ww.','..wwksssssskww..',
+    '....ksbbbbsk..m.','....ksybbysk.mmm','.....kssssk..mmm','kkkkkkrrrrrrkkh.',
+    'krgrkrrgrrrskh..','kgggkrgggrrskh..','krgrkrrgrrrkkh..','krgrkggggggk.h..',
+    '.krk.kllkllk..h.','..k..kllkllk..h.','.....kkkkkkk....','................']},
+  h_barbaro:{pal:{k:'#120a08',s:'#8a8fa0',h:'#f4e9cf',b:'#2a1a12',y:'#ff3b4f',f:'#c99a6e',d:'#c4541a',u:'#7a5a3a',r:'#6e3a1a',g:'#3a2a24',a:'#c7bdd6',t:'#6b3f22'},rows:[
+    '.h............h.','.h..kkkkkkkk..h.','.hhksssssssskhh.','..hksbbbbbbskh..',
+    '...ksbybbybsk..a','...kfddddddfk.aa','....kddddddk.aaa','.kuuukddddkuuk.t',
+    'kuuuufrrrrfuuuft','.kfkrrrrrrrrkfft','.kfkggggggggk..t','..k.krrrrrrk...t',
+    '....krrkkrrk...t','....kffkkffk...t','....kkkk.kkkk..t','...............t']},
+  h_mago:{pal:{k:'#0b0a12',p:'#6a2c9c',q:'#a655dc',y:'#ffe27a',f:'#c99a6e',w:'#f0e8ff',r:'#3a1a55',g:'#e8b52a',t:'#6b3f22',o:'#dca8ff'},rows:[
+    '.......kk.....o.','......kpqk...ooo','......kppqk...o.','.....kpypppk..t.',
+    '....kpppppqpk.t.','..kkkkkkkkkkkkt.','....kfyffyfk..t.','....kfwwwwfk..t.',
+    '...kkwwwwwwkk.t.','..krrrwwwwrrrkf.','..krrrrwwrrrrkt.','..krrggggggrrkt.',
+    '..krrrryrrrrrkt.','.krrrrrrrrrrrkt.','.kkkkkkkkkkkkkt.','..............t.']},
+  h_picaro:{pal:{k:'#0b0a12',h:'#3e5a34',d:'#24361e',m:'#1a1a14',y:'#b0e86a',f:'#c99a6e',c:'#6e1f2a',r:'#4a3a24',g:'#a88c62',a:'#c7bdd6',t:'#b87d18'},rows:[
+    '................','.....kkkkkk.....','....khhhhhhk....','...khhddddhhk...',
+    '...khdffffdhk...','...khmymmymhk...','...khdffffdhk...','..kchhkffkhhck..',
+    '.kccrrrrrrrrcck.','.kccrrrrrrrrcck.','kfkcrggggggrckfk','ktkcrrrrrrrrcktk',
+    'kakcrrrrrrrrckak','.a.kcrrkkrrck.a.','....kkkk.kkkk...','................']},
+  h_druida:{pal:{k:'#0b0a12',a:'#c9a24a',e:'#b0e86a',l:'#5fb843',h:'#2f7a3a',f:'#c99a6e',y:'#ffe27a',r:'#2f5a24',g:'#8a5a30',t:'#6b3f22',o:'#9eeaf0'},rows:[
+    '.a.a........a.a.','.aaa.a....a.aaa.','..aaa.eeee.aaa..','...akelleelka...',
+    '...khhhhhhhhk...','...khffffffhk.o.','...khfyffyfhkooo','....khffffhk..o.',
+    '..kkhhrrrrhhkkt.','.khrrrrrrrrrrkt.','.khrrrerrrrrrkt.','..krrggggggrrkt.',
+    '..krrrrrrrrrrkt.','..krrrrrrrrrrkt.','...kkkkkkkkkk.t.','..............t.']},
   merchant:{pal:{k:'#0b0a12',p:'#5a3a5e',q:'#7a5480',n:'#140c16',y:'#ffd35c',w:'#d8d0c0',r:'#3e2a4a',h:'#c99a6e',g:'#e8b52a'},rows:[
     '......kkkk......','.....kppppk.....','....kppqqppk....','...kppkkkkppk...',
     '...kpknnnnkpk...','...kpkynnykpk...','...kpknnnnkpk...','..kppkkwwkkppk..',
     '..kpppkwwkpppk..','.krrppkwwkpprrk.','.krrrrrkkrrrrrk.','krrhhrrrrrrhhrrk',
     'krrhhrrggrrhhrrk','krrrrrrrrrrrrrrk','krrrrrrrrrrrrrrk','kkkkkkkkkkkkkkkk']}
 };
-const PAL_ALT={h_paladin:{s:'#c7bdd6',b:'#1a2440',y:'#9eeaf0',r:'#2a55b8',g:'#e8b52a',l:'#4a3f5c'},
-  h_barbaro:{s:'#c99a6e',b:'#5a2a12',y:'#ff3b4f',r:'#6e3a1a',g:'#8a8fa0',l:'#3a2a24'},
-  h_mago:{s:'#8a4cc4',b:'#1e0c30',y:'#dca8ff',r:'#3a1a55',g:'#ffe27a',l:'#241634'},
-  h_picaro:{s:'#5a7a48',b:'#0b0a12',y:'#b0e86a',r:'#1f3a24',g:'#a88c62',l:'#1a1a14'},
-  h_druida:{s:'#7a5a2a',b:'#1a2a10',y:'#ffe27a',r:'#2f7a3a',g:'#b0e86a',l:'#4a3a1a'},
+const PAL_ALT={c_gold:{b:'#e8b52a',y:'#fff1a8',k:'#3a2206'},c_legend:{b:'#4a1d6e',y:'#ffa640',k:'#120a1e'},
   gold:{w:'#f0cf6a',s:'#b08a2c',k:'#2a1b08',r:'#6ff3ff'},  ghoul:{g:'#7a8a6a',l:'#a8b898',y:'#e04040',b:'#3a3a2a',n:'#6a6a5a'},
   imp:{g:'#c4302a',l:'#ff6a4a',y:'#ffe14a',b:'#3a1a1e',n:'#e8b52a',k:'#1a0608'},
   stone:{p:'#6a5c7e',q:'#8f82a3',r:'#ff3b4f',f:'#c7bdd6'},
@@ -1244,7 +1274,7 @@ const TYPES={
   atk:{name:'Ataque',icon:'sword',desc:'Daño al enemigo'},
   def:{name:'Escudo',icon:'shield',desc:'Bloquea daño este turno'},
   heal:{name:'Cura',icon:'heart',desc:'Recuperas vida'},
-  crit:{name:'Magia',icon:'burst',desc:'Ataque mágico: suma y duplica tu ataque'},
+  crit:{name:'Magia',icon:'burst',desc:'Ataque mágico: multiplica por 1,5 lo que sacan tus dados'},
   coin:{name:'Oro',icon:'coin',desc:'Consigues oro'},
   blank:{name:'Vacía',icon:'blank',desc:'No hace nada'}
 };
@@ -1408,7 +1438,19 @@ function applyGear(){
   const bonus=gearTotal().hp||0,prev=G.gearHp||0;
   if(bonus!==prev){ G.maxHp+=bonus-prev; G.hp=Math.max(1,Math.min(G.maxHp,G.hp+Math.max(0,bonus-prev))); G.gearHp=bonus; }
 }
-function rollGear(){ let r=Math.random()*DROP_TOTAL; for(const k in GEAR){ r-=GEAR[k].drop; if(r<0) return k; } return 'sh_oak'; }
+/* four chest tiers: deeper floors, elites and bosses drop better ones */
+const CHESTS={
+  wood:{name:'Cofre de madera',pal:null,c:'#c98a4a',rk:'ember',w:{common:10,rare:4,epic:1,legend:.3},gold:0,gems:0},
+  iron:{name:'Cofre de hierro',pal:'iron',c:'#c9d4e8',rk:'stone',w:{common:4,rare:8,epic:3,legend:.8},gold:10,gems:0},
+  gold:{name:'Cofre de oro',pal:'c_gold',c:'#ffe27a',rk:'coin',w:{common:0,rare:6,epic:6,legend:2},gold:25,gems:2},
+  legend:{name:'Cofre legendario',pal:'c_legend',c:'#ffa640',rk:'epic',w:{common:0,rare:0,epic:6,legend:4},gold:50,gems:5}
+};
+function chestOdds(kind){ const s=worldOf().idx+(kind==='boss'?2:kind==='elite'?1:0); return {wood:Math.max(5,60-12*s),iron:25+4*s,gold:5+5*s,legend:1+3*s}; }
+function rollChest(kind){ return wpick(chestOdds(kind)); }
+function rollGear(tier){
+  const q=wpick((CHESTS[tier]||CHESTS.wood).w),ids=Object.keys(GEAR).filter(k=>GEAR[k].q===q);
+  let r=Math.random()*ids.reduce((a,k)=>a+GEAR[k].drop,0); for(const k of ids){ r-=GEAR[k].drop; if(r<0) return k; } return ids[0]||'sh_oak';
+}
 function gearCard(id,extra=''){
   const g=GEAR[id],q=QUAL[g.q],L=lvOf(id)||1;
   return `<div class="gear pf dark" style="--rim:${q.c}">${gearIcon(id,3)}<div class="gtxt"><span class="rar" style="color:${q.c}">${SLOTN[g.slot]} · ${q.name} · Nv ${L}</span><b>${g.name}</b><small>${statLines(id,L).join('. ')}.</small></div>${extra}</div>`;
@@ -1425,35 +1467,45 @@ function upgradeGear(id){
 function lootModalHTML(){
   const R=G.reward,B=R.box;
   const head=`<p class="eyebrow">${R.title}</p><div class="lm-loot">${icon('coin','coin',2)} <b>+${R.gold}</b> de oro${R.relic?` · ${icon(RELICS[R.relic].icon,RELICS[R.relic].rk,2)} <b>${RELICS[R.relic].name}</b>`:''}</div>`;
-  if(!B||!B.open) return `${head}<button class="lm-box" id="lmBox" aria-label="Abrir la caja"><span class="rays"></span><img src="${spriteURL34('chest','iron')}" alt="" width="170" height="170"></button><p class="lm-hint">Toca la caja para abrirla</p>`;
+  const CH=CHESTS[(B&&B.tier)||'iron'],nth=R.boxN>1?` · ${R.boxN-(R.boxQ?R.boxQ.length:0)} de ${R.boxN}`:'';
+  if(!B||!B.open){
+    const nx=R.boxQ&&R.boxQ[0]?CHESTS[R.boxQ[0].tier]:null;
+    return `${head}<div class="lm-chests">${R.boxN>1?'<p class="lm-luck">¡Suerte! Doble cofre</p>':''}<div class="lm-row"><button class="lm-box" id="lmBox" style="--qc:${CH.c}" aria-label="Abrir el ${CH.name.toLowerCase()}"><span class="rays"></span><img src="${spriteURL34('chest',CH.pal)}" alt="" width="170" height="170"></button>${nx?`<span class="lm-next"><img src="${spriteURL34('chest',nx.pal)}" alt="" width="68" height="68"><small style="color:${nx.c}">Siguiente</small></span>`:''}</div></div>
+      <span class="rar" style="color:${CH.c}">${CH.name}${nth}</span><p class="lm-hint">Toca el cofre para abrirlo</p>`;
+  }
   const id=B.item,g=GEAR[id],q=QUAL[g.q],L=lvOf(id),cur=eqGear(g.slot),on=META.gear.eq[g.slot]===id;
   let body,btns;
   if(B.dup){
     body=B.maxed?`<p class="lm-note">Ya estaba al nivel máximo. Se ha desmantelado: <b>+${B.gold}</b> de oro al Tesoro.</p>`
       :`<p class="lm-note">¡Repetida! Sube de nivel</p><div class="lvup"><span>Nv ${B.from}</span><i>▶</i><b>Nv ${B.to}</b></div>${cur&&!on?compareHTML(id,META.gear.eq[g.slot]):''}`;
-    btns=(!on&&!B.maxed?`<button class="pb go" id="lmEq">${cur?'Reemplazar':'Equipar'}</button>`:'')+`<button class="pb${on||B.maxed?' go':''}" id="lmOk">Continuar</button>`;
+    btns=(!on&&!B.maxed?`<button class="pb go" id="lmEq">${cur?'Reemplazar':'Equipar'}</button>`:'')+`<button class="pb${on||B.maxed?' go':''}" id="lmOk">${R.boxQ&&R.boxQ.length?'Siguiente cofre':'Continuar'}</button>`;
   } else {
     body=`<p class="lm-note">¡Pieza nueva!</p>${cur?compareHTML(id,META.gear.eq[g.slot]):`<p class="sub">Tu hueco de ${SLOTN[g.slot].toLowerCase()} está vacío.</p>`}`;
     btns=`<button class="pb go" id="lmEq">${cur?'Reemplazar':'Equipar'}</button><button class="pb" id="lmKeep">Guardar</button><button class="pb" id="lmScrap">Desmantelar +${scrapVal(id)}</button>`;
   }
   return `${head}<div class="lm-item" style="--qc:${q.c}"><span class="rays"></span>${gearIcon(id,6)}</div>
     <span class="rar" style="color:${q.c}">${SLOTN[g.slot]} · ${q.name} · Nv ${L}</span><h2 class="h-title lm-name">${g.name}</h2>
+    <span class="lm-from" style="color:${CH.c}">${CH.name}${nth}${B.bonusGold?` · +${B.bonusGold} de oro`:''}${B.bonusGems?` · ${icon('gem','def',1)} +${B.bonusGems} gemas`:''}</span>
     <ul class="lm-stats">${statLines(id,L).map(t=>`<li>${t}</li>`).join('')}</ul>${body}<div class="lm-btns">${btns}</div>`;
 }
 function openLootModal(){
+  const R=G.reward; if(R.boxN>1&&!R.luckShown){ R.luckShown=1; saveRun(); setTimeout(()=>{ banner('¡Suerte!'); sfx('combo'); buzz([20,30,20]); },150); }
   let m=$('#lootModal'); if(!m){ m=document.createElement('div'); m.id='lootModal'; document.body.appendChild(m); }
   m.innerHTML=`<div class="lm-card pf dark">${lootModalHTML()}</div>`; m.hidden=false; bindLootModal();
 }
-function closeLootModal(){ const m=$('#lootModal'); if(m) m.hidden=true; G.reward.stage='cards'; saveRun(); dealCards(); }
+function closeLootModal(){ const R=G.reward; if(R.boxQ&&R.boxQ.length){ R.box=R.boxQ.shift(); saveRun(); sfx('door'); openLootModal(); return; } const m=$('#lootModal'); if(m) m.hidden=true; R.stage='cards'; saveRun(); dealCards(); }
 function bindLootModal(){
   const R=G.reward;
   if($('#lmBox')) $('#lmBox').onclick=()=>{
     const b=$('#lmBox'); b.disabled=true; b.classList.add('shaking'); sfx('buff'); buzz([20,40,20,40]);
     setTimeout(()=>{
-      const id=rollGear(),g=GEAR[id],had=lvOf(id);
-      if(!had){ META.gear.owned[id]=1; R.box={open:true,item:id,dup:false}; }
-      else if(had<MAXLV){ META.gear.owned[id]=had+1; R.box={open:true,item:id,dup:true,from:had,to:had+1}; applyGear(); }
-      else { const v=scrapVal(id); META.bank=(META.bank||0)+v; R.box={open:true,item:id,dup:true,maxed:true,gold:v}; }
+      const tier=R.box.tier||'iron',CH=CHESTS[tier],id=rollGear(tier),g=GEAR[id],had=lvOf(id);
+      const bonus={tier,bonusGold:CH.gold,bonusGems:CH.gems};
+      if(CH.gold){ G.gold+=CH.gold; floatAt('#goldS',`+${CH.gold}`,'coin'); }
+      if(CH.gems) META.gems=(META.gems||0)+CH.gems;
+      if(!had){ META.gear.owned[id]=1; R.box=Object.assign({open:true,item:id,dup:false},bonus); }
+      else if(had<MAXLV){ META.gear.owned[id]=had+1; R.box=Object.assign({open:true,item:id,dup:true,from:had,to:had+1},bonus); applyGear(); }
+      else { const v=scrapVal(id); META.bank=(META.bank||0)+v; R.box=Object.assign({open:true,item:id,dup:true,maxed:true,gold:v},bonus); }
       store('cripta-meta',META); saveRun();
       const r=b.getBoundingClientRect(); burstXY((r.left+r.width/2)/S.s,(r.top+r.height/2)/S.s,QUAL[g.q].rk,g.q==='legend'?110:g.q==='epic'?70:40,3.4);
       sfx(g.q==='epic'||g.q==='legend'?'win':'forge'); if(g.q!=='common') banner({rare:'¡Rara!',epic:'¡Épica!',legend:'¡Legendaria!'}[g.q]);
@@ -1489,7 +1541,7 @@ function showGear(back){
   }
   openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">Equipo</h2><span class="power" data-tip="<b>Poder</b>Suma de la calidad por el nivel de todo lo que llevas puesto.">${icon('burst','ember',2)} Poder <b>${gearPower()}</b></span><span class="bank">${icon('coin','coin',2)} <b>${META.bank||0}</b></span></div>
     <div class="gearwrap">
-      <div class="doll pf">${SLOTS.map(slotBox).join('')}<div class="hero">${spriteImg('hero',heroPal(G&&!G.over&&G.hero?G.hero:META.hero))}</div></div>
+      <div class="doll pf">${SLOTS.map(slotBox).join('')}<div class="hero">${spriteImg(heroSpr(G&&!G.over&&G.hero?G.hero:META.hero))}</div></div>
       <div class="gright">
         <div class="gdet pf dark" id="gdet">${det}</div>
         <h3 class="h-sec">Colección · ${Object.keys(META.gear.owned).length}/${Object.keys(GEAR).length}</h3>
@@ -1541,16 +1593,16 @@ const spr34Cache={};
 const spriteImg=(n,alt)=>`<img src="${spriteURL34(n,alt)}" width="102" height="102" alt="">`;
 /* ---- heroes: unlocked one after another with gems ---- */
 const HEROES={
-  errante:{name:'El Errante',pal:null,cost:0,role:'Inicial',desc:'Sin talentos: solo tus dados y tu suerte.',perks:[],mods:{}},
-  paladin:{name:'Paladín',pal:'h_paladin',cost:100,role:'Defensa',desc:'Juró proteger Valdeceniza. Aguanta lo que le echen.',perks:['+10 de vida máxima','Empieza cada combate con 3 de escudo'],mods:{hp:10,block:3}},
-  barbaro:{name:'Bárbaro',pal:'h_barbaro',cost:200,role:'Ataque',desc:'Golpea primero y pregunta nunca.',perks:['+3 de daño en cada tirada con ataque','−4 de vida máxima'],mods:{dmg:3,hp:-4}},
-  mago:{name:'Hechicero',pal:'h_mago',cost:300,role:'Magia',desc:'Lee los dados como si fueran runas.',perks:['Las caras de Magia valen +2','Empieza con una cara de Magia en su primer dado'],mods:{critV:2},start:g=>{ const d=g.dice[0].faces,i=d.findIndex(f=>f.t==='blank'); d[i<0?5:i]=F('crit',3,'rare'); }},
-  picaro:{name:'Pícaro',pal:'h_picaro',cost:400,role:'Fortuna',desc:'Siempre encuentra otra oportunidad… y otra moneda.',perks:['+1 relanzamiento por turno','+30% de oro'],mods:{reroll:1,goldPct:30}},
-  druida:{name:'Druida',pal:'h_druida',cost:500,role:'Curación',desc:'La cripta también tiene raíces.',perks:['Se cura 5 al ganar cada combate','Las caras de curación valen +1'],mods:{winHeal:5,healV:1}}
+  errante:{name:'El Errante',spr:'hero',cost:0,role:'Inicial',desc:'Sin talentos: solo tus dados y tu suerte.',perks:[],mods:{}},
+  paladin:{name:'Paladín',spr:'h_paladin',cost:100,role:'Defensa',desc:'Juró proteger Valdeceniza. Aguanta lo que le echen.',perks:['+10 de vida máxima','Empieza cada combate con 3 de escudo'],mods:{hp:10,block:3}},
+  barbaro:{name:'Bárbaro',spr:'h_barbaro',cost:200,role:'Ataque',desc:'Golpea primero y pregunta nunca.',perks:['+3 de daño en cada tirada con ataque','−4 de vida máxima'],mods:{dmg:3,hp:-4}},
+  mago:{name:'Hechicero',spr:'h_mago',cost:300,role:'Magia',desc:'Lee los dados como si fueran runas.',perks:['Las caras de Magia valen +2','Empieza con una cara de Magia en su primer dado'],mods:{critV:2},start:g=>{ const d=g.dice[0].faces,i=d.findIndex(f=>f.t==='blank'); d[i<0?5:i]=F('crit',3,'rare'); }},
+  picaro:{name:'Pícaro',spr:'h_picaro',cost:400,role:'Fortuna',desc:'Siempre encuentra otra oportunidad… y otra moneda.',perks:['+1 relanzamiento por turno','+30% de oro'],mods:{reroll:1,goldPct:30}},
+  druida:{name:'Druida',spr:'h_druida',cost:500,role:'Curación',desc:'La cripta también tiene raíces.',perks:['Se cura 5 al ganar cada combate','Las caras de curación valen +1'],mods:{winHeal:5,healV:1}}
 };
 const HERO_KEYS=Object.keys(HEROES);
 function heroMods(){ const h=G&&!G.over&&HEROES[G.hero]; return h?h.mods:{}; }
-const heroPal=k=>(HEROES[k]||HEROES.errante).pal;
+const heroSpr=k=>(HEROES[k]||HEROES.errante).spr;
 function showHeroes(back){
   const owned=META.heroes, nextK=HERO_KEYS.find(k=>!owned.includes(k)), gems=META.gems||0;
   const list=HERO_KEYS.map(k=>{
@@ -1558,7 +1610,7 @@ function showHeroes(back){
     const prev=HEROES[HERO_KEYS[HERO_KEYS.indexOf(k)-1]];
     const act=eq?'<em class="gdone">Elegido</em>':own?'<em>Elegir</em>':isNext?`<em class="cost ${can?'':'poor'}">${icon('gem','def',1)}${h.cost}</em>`:`<em class="lockd">Desbloquea antes a ${prev.name}</em>`;
     const perks=h.perks.length?h.perks.map(p=>`<small class="perk">${icon('up','heal',1)} ${p}</small>`).join(''):'<small class="perk">Sin estadísticas extra</small>';
-    return `<button class="skin hero-card pf dark ${eq?'on':''} ${!own&&!isNext?'locked':''}" data-k="${k}"><span class="trio"><img src="${spriteURL34('hero',h.pal)}" width="68" height="68" alt=""></span><span class="txt"><span class="rar" style="color:${RC.def}">${h.role}</span><b>${h.name}</b><small>${h.desc}</small>${perks}</span>${act}</button>`;
+    return `<button class="skin hero-card pf dark ${eq?'on':''} ${!own&&!isNext?'locked':''}" data-k="${k}"><span class="trio"><img src="${spriteURL34(h.spr)}" width="68" height="68" alt=""></span><span class="txt"><span class="rar" style="color:${RC.def}">${h.role}</span><b>${h.name}</b><small>${h.desc}</small>${perks}</span>${act}</button>`;
   }).join('');
   const ECON='Las gemas se ganan al terminar cada partida: 1 por cada 5 pisos, +10 por cada jefe vencido. Cada héroe desbloquea al siguiente. El héroe elegido se usa al empezar una partida nueva.';
   openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">Héroes</h2><span class="info" data-tip="<b>Gemas</b>${ECON}">?</span><span class="grow"></span><button class="pb sm" id="devGems">+100 gemas (pruebas)</button><span class="bank gems">${icon('gem','def',2)} <b>${gems}</b></span></div>
@@ -2465,8 +2517,8 @@ function enterDoor(t,btn){
 
 /* ================= combat ================= */
 function makeEnemy(key){
-  const d=ENEMIES[key],f=G.floor,cy=worldOf().cycle,hp=d.boss?Math.round(d.hp*(1+.4*cy)):Math.round(d.hp*(1+.075*(f-1)));
-  return {key,name:d.name,hp,maxHp:hp,block:0,str:d.boss?1+2*cy:Math.floor((f-1)/5),intent:null,last:null};
+  const d=ENEMIES[key],f=G.floor,cy=worldOf().cycle,hp=d.boss?Math.round(d.hp*(1+.5*cy)*(1+cy*.01*(f-1))):Math.round(d.hp*(1+.075*(f-1)));
+  return {key,name:d.name,hp,maxHp:hp,block:0,str:d.boss?Math.max(1+2*cy,Math.floor((f-1)/5)):Math.floor((f-1)/5),intent:null,last:null};
 }
 function pickIntent(e){
   const d=ENEMIES[e.key],opts=d.intents.filter(i=>!(e.last&&i[0]===e.last[0]&&i[0]!=='atk'));
@@ -2503,11 +2555,14 @@ function calc(faces){
     else r[f.t]+=f.v+(f.t==='heal'?heroMods().healV||0:0);
   });
   for(const k in cnt) if(cnt[k]>=3){ const bonus=(cnt[k]-2)*2*(has('idol')?2:1)*(G&&G.pact==='echo'?3:1); r[k]+=bonus; r.combos.push({t:k,n:cnt[k],bonus}); }
-  { const C0=G&&G.combat; if(C0&&C0.buffs&&C0.buffs.fury&&r.atk>0) r.atk+=3; }
-  { const gd=gearTotal().dmg||0; if(gd&&r.atk>0) r.atk+=gd; }
-  if(G&&G.pact==='fury'&&r.atk>0) r.atk+=4;
+  // Magic multiplies only what the dice rolled (x1.5, +0.25 per extra magic face, max x2); flat bonuses are added afterwards
+  let flat=0;
+  { const C0=G&&G.combat; if(C0&&C0.buffs&&C0.buffs.fury) flat+=3; }
+  flat+=gearTotal().dmg||0;
+  if(G&&G.pact==='fury') flat+=4;
   if(G&&G.pact==='iron') r.heal=0;
-  r.dmg=r.atk*(r.crits?2:1);
+  r.mult=r.crits?Math.min(2,1.5+.25*(r.crits-1)):1;
+  r.dmg=r.atk>0?Math.round(r.atk*r.mult)+flat:0;
   if(has('purse')) r.coin=Math.round(r.coin*1.5);
   return r;
 }
@@ -2564,7 +2619,7 @@ function sumHTML(){
   const r=calc(C.faces);
   const chip=(t,v,extra='')=>`<span class="chip pf dark" style="--rim:${RC[t]}">${icon(TYPES[t].icon,t,2)}<b>${v}</b>${extra}</span>`;
   let s='';
-  if(r.dmg) s+=chip('atk',r.dmg,r.crits?'<i>×2</i>':'');
+  if(r.dmg) s+=chip('atk',r.dmg,r.crits?`<i>×${String(r.mult).replace('.',',')}</i>`:'');
   if(r.def) s+=chip('def',r.def);
   if(r.heal) s+=chip('heal',r.heal);
   if(r.coin) s+=chip('coin',r.coin);
@@ -2725,7 +2780,9 @@ async function winCombat(){
   const big=C.kind!=='normal',gold=gainGold((C.kind==='boss'?rnd(60,80):big?rnd(28,40):rnd(9,16))*(C.buffs&&C.buffs.gild?3:1));
   let relic=null; if(big){ relic=randomRelic(); gainRelic(relic); }
   const opts=genOpts(big?1:0);
-  G.reward={title:`${e.name} derrotado`,gold,relic,opts,stage:'box',box:Math.random()<BOX_CHANCE?{open:false}:null};
+  const box=Math.random()<BOX_CHANCE?{open:false,tier:rollChest(C.kind)}:null;
+  const lucky=box&&Math.random()<(C.kind==='boss'?.35:C.kind==='elite'?.2:.12);
+  G.reward={title:`${e.name} derrotado`,gold,relic,opts,stage:'box',box,boxQ:lucky?[{open:false,tier:rollChest(C.kind)}]:[],boxN:box?(lucky?2:1):0};
   go('reward');
 }
 function bankRun(won){ const earned=G.gold+G.floor*15+G.stats.kills*8+(won?500:0); META.bank=(META.bank||0)+earned; const gems=Math.floor(G.floor/5)+(G.stats.bosses||0)*10; META.gems=(META.gems||0)+gems; store('cripta-meta',META); G.earned=earned; G.gemsEarned=gems; }
@@ -2878,7 +2935,7 @@ function showHow(){
   openSheet(`<h2 class="h-title" style="font-size:34px">Cómo se juega</h2><ul class="how">
     <li>${icon('dice','bone',2)}<span>Cada turno tiras tus dados. Toca uno para fijarlo y relanza el resto (2 veces por turno).</span></li>
     <li>${icon('sword','atk',2)}<span>Ataque hace daño. Escudo bloquea el golpe enemigo. Cura recupera vida. Oro sirve en la tienda.</span></li>
-    <li>${icon('burst','crit',2)}<span>Una cara de magia lanza un orbe y duplica todo tu ataque de ese turno.</span></li>
+    <li>${icon('burst','crit',2)}<span>Una cara de magia lanza un orbe y multiplica por 1,5 lo que sacan tus dados ese turno (cada cara de magia extra suma 0,25, hasta ×2).</span></li>
     <li>${icon('up','ember',2)}<span>Tres caras del mismo tipo forman una racha y dan bonus.</span></li>
     <li>${icon('eye','rare',2)}<span>Mira la intención del enemigo antes de resolver. A veces conviene defender.</span></li>
     <li>${icon('horns','atk',2)}<span>Cuatro mundos de 25 pisos, cada uno con su jefe. Al final espera el Núcleo del Destino: tócalo y el ciclo vuelve a empezar con un pacto nuevo.</span></li></ul>`);

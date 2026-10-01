@@ -57,16 +57,17 @@ JS (dentro de `<script>`, en este orden):
 ## Estado de la partida `G` (se guarda en `localStorage` como `cripta-run`)
 
 `{mode, screen, hp, maxHp, gold, floor (global, 1..∞), relics[], dice[{faces[{t,v,rar}]}], doors[], combat, reward, shop, event, pending, buffs{}, pact, seen{} (enfriamiento de salas), gearHp, stats}`.
-Tipos de cara: `atk`, `def`, `heal`, `crit` (se muestra como «Magia»: lanza un orbe y duplica el ataque), `coin`, `blank`.
+Tipos de cara: `atk`, `def`, `heal`, `crit` (se muestra como «Magia»: lanza un orbe y multiplica por 1,5 lo que sacan los dados, +0,25 por cada Magia extra, máx. ×2; los bonus planos de equipo, Furia y pacto se suman después), `coin`, `blank`.
 
 ## Sistemas clave
 
 - **Mundos:** 25 pisos cada uno. Cripta (Azhrak) → Torre (Malakar) → Forjas Hundidas (Brokk) → Núcleo del Destino (El Tahúr). Al vencer al Tahúr hay historia y se eligen 1 de 3 **pactos** (`PACTS`: blood, gold, fury, luck, iron, echo), que cambian las reglas de todo el ciclo. Luego se vuelve a la Cripta con el ciclo +1.
 - **Puertas:** `genDoors` con enfriamiento por tipo (`COOL`). El último piso de cada mundo es el jefe; el penúltimo, hoguera y tienda.
-- **Recompensas:** caja de equipo (`BOX_CHANCE=1`, provisional para pruebas) y después 3 cartas: caras, dado nuevo, bendición (`BLESS`/`BUFFK`, duran la siguiente pelea) o mejora (`UPG`).
+- **Recompensas:** cofre de equipo (`BOX_CHANCE=1`, provisional para pruebas). 4 tipos en `CHESTS` (madera, hierro, oro, legendario), cada uno con su reparto de calidades, oro y gemas; `chestOdds(kind)` mejora con el mundo (`worldOf().idx`) y en élites/jefes. «¡Suerte! Doble cofre» (12% normal, 20% élite, 35% jefe) mete un segundo cofre en `G.reward.boxQ` y después 3 cartas: caras, dado nuevo, bendición (`BLESS`/`BUFFK`, duran la siguiente pelea) o mejora (`UPG`).
 - **Skins:** 8, compradas con el Tesoro. Cada una cambia el aspecto de los dados, las partículas y el efecto de las espadas al atacar.
-- **Héroes:** `HEROES` (junto a `spriteImg`): El Errante (sin bonus) → Paladín 100 → Bárbaro 200 → Hechicero 300 → Pícaro 400 → Druida 500 gemas, en cadena. Son paletas `h_*` del sprite `hero`. Sus `mods` se suman en `gearTotal()` vía `heroMods()` (solo con `G.hero` de la partida en curso); `critV`/`healV` se aplican en `calc`, y `start(G)` en `newRun`. Gemas (`META.gems`): `bankRun` da 1 por cada 5 pisos + 10 por jefe (`G.stats.bosses`). La hoja «Héroes» de la portada tiene «+100 gemas (pruebas)».
+- **Héroes:** `HEROES` (junto a `spriteImg`): El Errante (sin bonus) → Paladín 100 → Bárbaro 200 → Hechicero 300 → Pícaro 400 → Druida 500 gemas, en cadena. Cada uno tiene su sprite propio en `SPR` (`h_paladin` con casco alado, escudo y maza; `h_barbaro` cuernos, barba y hacha; `h_mago` sombrero y báculo; `h_picaro` capucha, antifaz y dagas; `h_druida` corona de astas y báculo), campo `spr` en `HEROES`. Sus `mods` se suman en `gearTotal()` vía `heroMods()` (solo con `G.hero` de la partida en curso); `critV`/`healV` se aplican en `calc`, y `start(G)` en `newRun`. Gemas (`META.gems`): `bankRun` da 1 por cada 5 pisos + 10 por jefe (`G.stats.bosses`). La hoja «Héroes» de la portada tiene «+100 gemas (pruebas)».
 - **Sombras de enemigos:** `drawFoe` pinta una sombra proyectada (silueta `foeSil` sesgada hacia arriba a la derecha), una sombra de contacto que encoge al elevarse y oclusión en la parte baja del sprite.
+- **Jefes:** su vida escala con el ciclo y, desde el ciclo 2, también con el piso; su fuerza nunca es menor que la de los enemigos normales del mismo piso.
 - **Economía:** al morir, `bankRun` ingresa en el Tesoro el oro restante + 15 por piso + 8 por enemigo. La Armería tiene un botón «+1000 (pruebas)».
 
 ## Preferencias del usuario
