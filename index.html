@@ -229,7 +229,9 @@ img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 .banner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font-family:var(--f-title);font-size:clamp(46px,15vw,72px);line-height:1;color:var(--yel);white-space:nowrap;
   text-shadow:0 var(--p) 0 var(--org0),0 calc(2*var(--p)) 0 var(--k),var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 var(--k),0 calc(-1*var(--p)) 0 var(--k);animation:banner 1.2s steps(12) forwards}
 @keyframes banner{0%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%)}}
-#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:8;width:max-content;max-width:calc(100% - 40px);padding:9px 14px 12px;font-size:16px;text-align:center}
+#toast{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:8;width:max-content;max-width:min(calc(100% - 40px),560px);padding:9px 14px 12px;font-size:16px;text-align:center;pointer-events:none;animation:toastin .25s steps(3)}
+@keyframes toastin{from{transform:translate(-50%,-8px)}to{transform:translateX(-50%)}}
+@media (orientation:landscape) and (max-height:560px){ #toast{top:calc(52px + env(safe-area-inset-top,0px));font-size:15px;padding:7px 12px 10px} }
 #toast[hidden]{display:none!important}
 #toast b{color:var(--org2)}
 #sheet{position:fixed;inset:0;z-index:8;background:rgba(5,4,8,.75);display:flex;align-items:flex-end;justify-content:center;padding:16px}
@@ -2319,7 +2321,7 @@ function banner(text){ const d=document.createElement('div'); d.className='banne
 function shake(){ if(REDUCED) return; retrigger($('#app'),'shake'); }
 function redFlash(){ retrigger($('#flash'),'on'); }
 let toastT;
-function toast(html){ const t=$('#toast'); t.innerHTML=html; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
+function toast(html){ const t=$('#toast'); t.innerHTML=html; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2400); retrigger(t,'show'); }
 function retrigger(el,cls){ if(!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 
 /* ================= game helpers ================= */
