@@ -27,9 +27,12 @@ Cripta de los Dados es un roguelike de dados en pixel art:
 Sin anuncios. Sin conexión. Solo tú, tus dados y la cripta.
 
 ## Gráficos (en esta carpeta)
-- Icono 512×512: `icon-512.png`
-- Gráfico de funciones 1024×500: `feature-1024x500.png`
-- Capturas de teléfono (horizontal, 1688×950): `captura-1-portada.png` … `captura-5-tirada.png` (mínimo 2)
+- **Icono** 512×512: `icon-512.png`
+- **Gráfico de funciones** (el banner de la ficha) 1024×500: `banner-1024x500.png`
+- **Capturas de teléfono** (1688×950, 16:9): carpeta `telefono/` (6 capturas)
+- **Capturas de tablet de 7"** (1440×900): carpeta `tablet-7/` (6 capturas)
+- **Capturas de tablet de 10"** (2560×1600): carpeta `tablet-10/` (6 capturas)
+- Para regenerarlas: `node app/capturas.mjs` con el servidor local en marcha (ver cabecera del script).
 
 ## Seguridad de los datos (cuestionario)
 - ¿Recoge o comparte datos de usuario? **No**
@@ -55,7 +58,7 @@ Sin anuncios. Sin conexión. Solo tú, tus dados y la cripta.
 1. Crea la app en Play Console con el nombre y el idioma de arriba (App · Gratis).
 2. Completa en «Panel» → «Configura tu app»: acceso, anuncios, clasificación, público, seguridad de datos, política de privacidad, categoría y ficha (textos + gráficos).
 3. Pruebas → Prueba cerrada → Crear canal (o usar «Alpha») → Testers: crea una lista con los correos de tus testers (cuentas Google).
-4. Crear versión → acepta **Play App Signing** → sube `release/cripta-0.1.0-1.aab` → notas: «Primera beta cerrada».
+4. Crear versión → acepta **Play App Signing** → sube el `.aab` más reciente de `app/release/` → notas: «Primera beta cerrada».
 5. Revisar y publicar en el canal. Google revisa (horas o algunos días). Los testers aceptan desde el enlace de inscripción del canal.
 
 > Cuentas personales nuevas: para pasar a Producción Google exige una prueba cerrada con **al menos 12 testers durante 14 días seguidos**.

@@ -37,6 +37,19 @@ def page(extra_head):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<script>
+// tablets in landscape: lay the game out as a 480px-tall screen and let the browser scale it up,
+// so the compact landscape layout fills the screen instead of a tiny phone UI in the middle
+(function(){{
+  var m=document.querySelector('meta[name=viewport]');
+  function fit(){{
+    var a=Math.max(screen.width,screen.height),b=Math.min(screen.width,screen.height);
+    var land=matchMedia('(orientation: landscape)').matches;
+    m.content=(land&&b>560)?'width='+Math.round(a*480/b)+', viewport-fit=cover, user-scalable=no':'width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no';
+  }}
+  fit(); addEventListener('orientationchange',function(){{setTimeout(fit,50)}});
+}})();
+</script>
 {extra_head}
 <style>:root{{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}}[hidden]{{display:none!important}}html,body{{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}}</style>
 {head}

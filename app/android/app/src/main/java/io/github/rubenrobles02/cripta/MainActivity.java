@@ -2,6 +2,7 @@ package io.github.rubenrobles02.cripta;
 
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebSettings;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -23,6 +24,10 @@ public class MainActivity extends BridgeActivity {
             v.setPadding(c.left, c.top, c.right, c.bottom);
             return insets;
         });
+        // honour the page's <meta viewport width=...> (tablets get the scaled landscape layout)
+        WebSettings ws = getBridge().getWebView().getSettings();
+        ws.setUseWideViewPort(true);
+        ws.setLoadWithOverviewMode(true);
         hideSystemBars();
     }
 

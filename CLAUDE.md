@@ -30,7 +30,7 @@ Roguelike de dados en pixel art para móvil, **pensado para jugarse en horizonta
 - **Nueva versión:** `cd app && python release.py [versionName]` → sube `versionCode`, compila y deja `.aab` y `.apk` firmados en `app/release/` (ignorado en git). Si cambias solo el juego, basta con esto.
 - Herramientas: JDK 21 y Android SDK 36 en `C:/Users/Gabriel/android-tools` (sin emulador). `android/local.properties` apunta al SDK.
 - **Clave de subida:** `C:/Users/Gabriel/cripta-keys/cripta-upload.jks` + `keystore.properties` (copiado a `app/android/`, ignorado en git). Nunca subirla al repo.
-- Icono: `python app/icon.py` (pixel art generado). Ficha de Play, gráficos y pasos de la beta: `app/store/`. Privacidad: `docs/privacidad.html`.
+- Icono: `python app/icon.py` (pixel art generado). Ficha de Play, gráficos y pasos de la beta: `app/store/` (capturas con `node app/capturas.mjs`). En tablets en horizontal, un script del `<head>` (en `build.py`) fija el viewport a 480px de alto para que se use el diseño horizontal compacto escalado; `MainActivity` activa `setUseWideViewPort` para que el WebView lo respete. Privacidad: `docs/privacidad.html`.
 
 ## Mapa de `index.html` (busca estas cabeceras con grep)
 
