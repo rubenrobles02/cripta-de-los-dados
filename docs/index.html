@@ -677,6 +677,25 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .mode.locked{--rim:var(--st0);opacity:.6;cursor:default}
 .go-tag{font-style:normal;font-weight:700;color:var(--org2);align-self:flex-end}
 @media (orientation:landscape){ .modes{grid-template-columns:1fr 1fr} }
+.tray{position:relative}
+.lockall{position:absolute;top:-15px;right:14px;z-index:2;display:inline-flex;align-items:center;gap:5px;padding:3px 10px 6px 8px;
+  font-family:var(--f-px);font-weight:700;font-size:13px;letter-spacing:.04em;color:var(--bone3);text-shadow:0 2px 0 var(--k);background:var(--wd2);
+  box-shadow:0 calc(-1*var(--p)) 0 0 var(--k),0 var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 0 var(--k),var(--p) 0 0 0 var(--k),inset 0 var(--p) 0 0 var(--wd3),inset 0 calc(-1*var(--p)) 0 0 var(--wd1)}
+.lockall::before,.lockall::after{content:"";position:absolute;top:50%;width:3px;height:3px;margin-top:-2px;background:var(--st3);box-shadow:0 1px 0 var(--k)}
+.lockall::before{left:-1px}.lockall::after{right:-1px}
+.lockall:active:not(:disabled){transform:translateY(2px)}
+.lockall:disabled{filter:grayscale(.7) brightness(.6);cursor:default}
+.lockall .pi{width:14px;height:14px}
+@media (orientation:portrait) and (min-height:740px){ .lockall{font-size:15px;top:-17px} .lockall .pi{width:18px;height:18px} }
+.cmp{width:100%;display:flex;flex-direction:column;gap:4px;text-align:left}
+.cmp-v{font-weight:700;font-size:15px}
+.cmp-v.up{color:var(--grn3)}.cmp-v.down{color:var(--red3)}.cmp-v.eq{color:var(--bone2)}
+.cmp table{border-collapse:collapse;width:100%;font-size:13px}
+.cmp th{padding:0 8px 2px 0;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--st3);text-align:left}
+.cmp td{padding:1px 8px 1px 0;color:var(--bone2);font-variant-numeric:tabular-nums}
+.cmp td:nth-child(3){color:var(--bone3);font-weight:700}
+.cmp tr.up td:last-child{color:var(--grn3);font-weight:700}
+.cmp tr.down td:last-child{color:var(--red3);font-weight:700}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -767,6 +786,8 @@ const ICD={
   helm:[['f','M4 15a8 8 0 0 1 16 0v6h-5v-5.5H9V21H4z'],['d','M12 5.5v8']],
   amulet:[['s','M6.5 2c0 6 2.5 8.5 5.5 9.5M17.5 2c0 6-2.5 8.5-5.5 9.5'],['f',circ(12,16,5.2)],['h',circ(12,16,2)]],
   boots:[['f','M5.5 2.5h7.5v10l7.5 3.5V21.5H3.5V18l2-2z'],['d','M5.5 9h7.5']],
+  lock:[['s','M7.5 11V7.5a4.5 4.5 0 0 1 9 0V11'],['f','M4.5 10.5h15V21h-15z'],['h','M11 14h2v4h-2z']],
+  unlock:[['s','M7.5 11V7.5a4.5 4.5 0 0 1 8.6-1.8'],['f','M4.5 10.5h15V21h-15z'],['h','M11 14h2v4h-2z']],
   clover:[['f',circ(7.5,7.5,4.6)],['f',circ(16.5,7.5,4.6)],['f',circ(7.5,15.5,4.6)],['f',circ(16.5,15.5,4.6)],['d','M12 2.5v19M2.5 11.5h19']]
 };
 const icCache={},icURLs={};
@@ -1306,6 +1327,18 @@ function gearStats(id,L){ const lv=L||lvOf(id)||1,st=GEAR[id].st(lv); if(GEAR[id
 function gearTotal(){ const t={}; for(const s of SLOTS){ const id=META.gear.eq[s]; if(!id) continue; const st=gearStats(id); for(const k in st) t[k]=k==='phoenix'?Math.max(t[k]||0,st[k]):(t[k]||0)+st[k]; } return t; }
 function gearPower(){ let p=0; for(const s of SLOTS){ const id=META.gear.eq[s]; if(id) p+=QUAL[GEAR[id].q].w*lvOf(id); } return p; }
 function gearBlock(){ return gearTotal().block||0; }
+/* comparison between a piece and the one already in its slot */
+const SW={dmg:3,block:2.5,hp:.6,regen:2.5,dodge:.4,thorns:1.5,winHeal:.5,reroll:6,phoenix:.15,dodgeHeal:1};
+const SLBL={dmg:'Daño',block:'Escudo',hp:'Vida máx.',regen:'Cura por turno',dodge:'Esquiva',thorns:'Espinas',winHeal:'Cura al ganar',reroll:'Relanzamientos',phoenix:'Fénix',dodgeHeal:'Cura al esquivar'};
+const sunit=k=>k==='dodge'||k==='phoenix'?'%':'';
+function gearScore(id){ const st=gearStats(id); return Object.keys(st).reduce((a,k)=>a+st[k]*(SW[k]||1),0); }
+function compareHTML(nid,cid){
+  const a=gearStats(nid),b=gearStats(cid),keys=[...new Set([...Object.keys(b),...Object.keys(a)])];
+  const rows=keys.map(k=>{ const va=a[k]||0,vb=b[k]||0,d=va-vb; return `<tr class="${d>0?'up':d<0?'down':'eq'}"><td>${SLBL[k]||k}</td><td>${vb}${sunit(k)}</td><td>${va}${sunit(k)}</td><td>${d>0?'▲ +'+d:d<0?'▼ '+d:'='}</td></tr>`; }).join('');
+  const diff=gearScore(nid)-gearScore(cid),v=Math.abs(diff)<.5?'eq':diff>0?'up':'down';
+  return `<div class="cmp"><div class="cmp-v ${v}">${v==='up'?'▲ Mejor que tu':v==='down'?'▼ Peor que tu':'≈ Parecida a tu'} ${GEAR[cid].name} (Nv ${lvOf(cid)})</div>
+    <table><thead><tr><th></th><th>Ahora</th><th>Nueva</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
 function statLines(id,L){ const st=gearStats(id,L); return Object.keys(st).map(k=>STATTXT[k](st[k])); }
 function upCost(id){ return QUAL[GEAR[id].q].up*lvOf(id); }
 function scrapVal(id){ return Math.round(QUAL[GEAR[id].q].scrap*(1+(lvOf(id)-1)*.5)); }
@@ -1336,10 +1369,10 @@ function lootModalHTML(){
   let body,btns;
   if(B.dup){
     body=B.maxed?`<p class="lm-note">Ya estaba al nivel máximo. Se ha desmantelado: <b>+${B.gold}</b> de oro al Tesoro.</p>`
-      :`<p class="lm-note">¡Repetida! Sube de nivel</p><div class="lvup"><span>Nv ${B.from}</span><i>▶</i><b>Nv ${B.to}</b></div>`;
+      :`<p class="lm-note">¡Repetida! Sube de nivel</p><div class="lvup"><span>Nv ${B.from}</span><i>▶</i><b>Nv ${B.to}</b></div>${cur&&!on?compareHTML(id,META.gear.eq[g.slot]):''}`;
     btns=(!on&&!B.maxed?`<button class="pb go" id="lmEq">${cur?'Reemplazar':'Equipar'}</button>`:'')+`<button class="pb${on||B.maxed?' go':''}" id="lmOk">Continuar</button>`;
   } else {
-    body=`<p class="lm-note">¡Pieza nueva!</p>${cur?`<p class="sub">Ahora llevas: <b>${cur.name}</b> (Nv ${lvOf(META.gear.eq[g.slot])})</p>`:''}`;
+    body=`<p class="lm-note">¡Pieza nueva!</p>${cur?compareHTML(id,META.gear.eq[g.slot]):`<p class="sub">Tu hueco de ${SLOTN[g.slot].toLowerCase()} está vacío.</p>`}`;
     btns=`<button class="pb go" id="lmEq">${cur?'Reemplazar':'Equipar'}</button><button class="pb" id="lmKeep">Guardar</button><button class="pb" id="lmScrap">Desmantelar +${scrapVal(id)}</button>`;
   }
   return `${head}<div class="lm-item" style="--qc:${q.c}"><span class="rays"></span>${gearIcon(id,6)}</div>
@@ -1391,7 +1424,7 @@ function showGear(back){
     const btns=(on?`<button class="pb sm" id="dUn">Quitar</button>`:`<button class="pb sm go" id="dEq">${cur?'Reemplazar':'Equipar'}</button>`)
       +(max?`<em class="gdone">Nivel máximo</em>`:`<button class="pb sm" id="dUp">Mejorar ${icon('coin','coin',1)}${upCost(id)}</button>`)
       +(on?'':`<button class="pb sm" id="dSc">Desmantelar +${scrapVal(id)}</button>`);
-    det=`${gearCard(id,'')}<div class="lvbar"><i style="width:${L/MAXLV*100}%"></i><span>Nivel ${L} / ${MAXLV}</span></div>${next}${cur&&!on?`<p class="sub">Reemplazaría a <b>${cur.name}</b> (Nv ${lvOf(eq[g.slot])})</p>`:''}<div class="maprow">${btns}</div>`;
+    det=`${gearCard(id,'')}<div class="lvbar"><i style="width:${L/MAXLV*100}%"></i><span>Nivel ${L} / ${MAXLV}</span></div>${next}${cur&&!on?compareHTML(id,eq[g.slot]):''}<div class="maprow">${btns}</div>`;
   }
   openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">Equipo</h2><span class="power" data-tip="<b>Poder</b>Suma de la calidad por el nivel de todo lo que llevas puesto.">${icon('burst','ember',2)} Poder <b>${gearPower()}</b></span><span class="bank">${icon('coin','coin',2)} <b>${META.bank||0}</b></span></div>
     <div class="gearwrap">
@@ -2181,11 +2214,16 @@ function genDoors(){
   if(lc===WORLD_LEN) return ['boss'];
   if(lc===1) return ['combat','combat'];
   if(lc===WORLD_LEN-1) return ['rest','shop'];
-  const w={combat:38,event:18,treasure:f>=3?8:0,shop:f>=2?11:0,rest:f>=3?11:0,elite:f>=3?14:0};
+  // special rooms need a few floors of rest between appearances, so they never repeat back to back
+  const COOL={rest:4,shop:3,treasure:5,elite:2,event:1};
+  G.seen=G.seen||{};
+  const ready=t=>f-(G.seen[t]??-99)>COOL[t];
+  const w={combat:38,event:ready('event')?18:0,treasure:lc>=3&&ready('treasure')?8:0,shop:lc>=2&&ready('shop')?11:0,rest:lc>=4&&lc<=WORLD_LEN-5&&ready('rest')?10:0,elite:lc>=3&&ready('elite')?14:0};
   const n=Math.random()<.55?3:2,out=[];
   let guard=0;
   while(out.length<n&&guard++<60){ const t=wpick(w); if(t!=='combat'&&out.includes(t)) continue; out.push(t); }
   if(!out.includes('combat')&&!out.includes('elite')) out[0]='combat';
+  out.forEach(t=>{ if(t!=='combat') G.seen[t]=f; });
   return out;
 }
 function nextFloor(){
@@ -2268,7 +2306,7 @@ function renderCombat(){
     <div class="cr">
       <p class="log" id="log"></p>
       <div class="sum" id="sum"></div>
-      <div class="tray" id="tray">${G.dice.map((_,i)=>`<button class="die" id="die${i}" data-i="${i}" aria-label="Dado ${i+1}"></button>`).join('')}</div>
+      <div class="tray" id="tray"><button class="lockall" id="bLockAll" disabled></button>${G.dice.map((_,i)=>`<button class="die" id="die${i}" data-i="${i}" aria-label="Dado ${i+1}"></button>`).join('')}</div>
       <div class="actions" id="actions"></div>
     </div>
   </section>`;
@@ -2301,7 +2339,7 @@ function updateCombat(){
   G.dice.forEach((_,i)=>{ if(!$('#die'+i).classList.contains('rolling')) setDie(i); });
   $('#sum').innerHTML=sumHTML();
   $('#log').textContent=C.log||'';
-  updateActions(); updateTop();
+  updateLockAll(); updateActions(); updateTop();
 }
 function sumHTML(){
   const C=G.combat;
@@ -2329,6 +2367,22 @@ function updateActions(){
       <button class="pb go" id="bGo" ${busy?'disabled':''}>${icon('sword','atk',2)} Resolver</button>`;
     $('#bRe').onclick=roll; $('#bGo').onclick=resolve;
   } else a.innerHTML=`<button class="pb go big" disabled>Tirando…</button>`;
+}
+function updateLockAll(){
+  const C=G.combat,b=$('#bLockAll'); if(!b) return;
+  const all=C.faces.some(Boolean)&&C.held.every(Boolean);
+  b.disabled=C.phase!=='rolled';
+  b.innerHTML=all?`${icon('unlock','bone',1)} Soltar todo`:`${icon('lock','bone',1)} Fijar todo`;
+  b.setAttribute('aria-label',all?'Soltar todos los dados':'Fijar todos los dados');
+  b.onclick=lockAll;
+}
+function lockAll(){
+  const C=G.combat; if(C.phase!=='rolled') return;
+  const all=C.held.every(Boolean);
+  C.held=C.faces.map(f=>!all&&!!f);
+  sfx(all?'tap':'block'); buzz(12);
+  G.dice.forEach((_,i)=>{ const el=$('#die'+i); if(el&&!all) retrigger(el,'land'); });
+  updateCombat();
 }
 function toggleHold(i){
   const C=G.combat; if(C.phase!=='rolled'||!C.faces[i]) return;
