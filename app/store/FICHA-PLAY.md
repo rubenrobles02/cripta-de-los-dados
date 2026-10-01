@@ -63,5 +63,10 @@ Sin anuncios. Sin conexión. Solo tú, tus dados y la cripta.
 
 > Cuentas personales nuevas: para pasar a Producción Google exige una prueba cerrada con **al menos 12 testers durante 14 días seguidos**.
 
+## Reclutar testers
+- Página: https://rubenrobles02.github.io/cripta-de-los-dados/beta/ (comparte este enlace)
+- En Play Console → Prueba cerrada → Testers, elige **Grupos de Google** y pon `sumitesters@googlegroups.com`.
+- En el grupo, ajustes → «Quién puede unirse»: **Cualquier usuario de la Web puede unirse**.
+
 ## Siguientes versiones
 `python release.py` (o `python release.py 0.2.0`) sube el versionCode, compila y deja el .aab en `app/release/`. Súbelo como nueva versión del mismo canal.

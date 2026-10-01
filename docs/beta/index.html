@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cripta de los Dados · Beta</title>
+<meta name="description" content="Únete a la beta cerrada de Cripta de los Dados, un roguelike de dados en pixel art para Android.">
+<meta property="og:title" content="Cripta de los Dados · Beta cerrada">
+<meta property="og:description" content="Tira, fija y baja. Únete a la beta en Android.">
+<meta property="og:image" content="https://rubenrobles02.github.io/cripta-de-los-dados/beta/img/banner.webp">
+<meta name="theme-color" content="#0b0a12">
+<link rel="icon" href="img/favicon.png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<style>
+:root{
+  --bg:#0b0a12; --bg2:#15121f; --panel:#1d1828; --k:#050408;
+  --bone:#f4ecd8; --bone2:#c9bda3; --mut:#8f8578;
+  --gold:#e8b04a; --gold2:#ffe28c; --blood:#a8243a; --mag:#8b5cd6; --green:#5fbf6a;
+  --p:3px;
+  --f-title:'Jacquarda Bastarda 9',serif; --f-ui:'Silkscreen','Pixelify Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--bone);font:500 17px/1.5 var(--f-ui);background:
+  radial-gradient(ellipse 70% 50% at 50% 0%,#2a1d40 0%,transparent 70%),var(--bg);min-height:100vh;-webkit-font-smoothing:none}
+img{image-rendering:pixelated;display:block;max-width:100%}
+a{color:var(--gold)}
+main{max-width:980px;margin:0 auto;padding:0 16px 56px}
+
+/* pixel frames, same recipe as the game */
+.pf{background:var(--panel);box-shadow:
+  0 calc(-1*var(--p)) 0 0 var(--k),0 var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 0 var(--k),var(--p) 0 0 0 var(--k),
+  inset 0 var(--p) 0 0 #ffffff14,inset 0 calc(-1*var(--p)) 0 0 #00000060;margin:var(--p)}
+.pb{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 18px var(--f-ui);text-decoration:none;
+  color:var(--k);background:var(--gold);padding:12px 22px 15px;cursor:pointer;border:0;transition:transform .08s steps(2);
+  box-shadow:0 calc(-1*var(--p)) 0 0 var(--k),0 var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 0 var(--k),var(--p) 0 0 0 var(--k),
+  inset 0 calc(-1*var(--p)) 0 0 #9a6a1c,inset 0 var(--p) 0 0 var(--gold2);margin:var(--p)}
+.pb:hover{filter:brightness(1.08)}
+.pb:active{transform:translateY(var(--p))}
+.pb.alt{background:#3a3150;color:var(--bone);box-shadow:0 calc(-1*var(--p)) 0 0 var(--k),0 var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 0 var(--k),var(--p) 0 0 0 var(--k),inset 0 calc(-1*var(--p)) 0 0 #221c30,inset 0 var(--p) 0 0 #5a4d78}
+.pb.green{background:var(--green);box-shadow:0 calc(-1*var(--p)) 0 0 var(--k),0 var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 0 var(--k),var(--p) 0 0 0 var(--k),inset 0 calc(-1*var(--p)) 0 0 #2f7a3a,inset 0 var(--p) 0 0 #9fe6a5}
+
+/* hero */
+.hero{text-align:center;padding:28px 0 8px}
+.hero .banner{width:calc(100% - 2*var(--p));max-width:820px;height:auto;margin:var(--p) auto}
+.tag{display:inline-block;margin-top:18px;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--k);background:var(--mag);padding:4px 12px 6px}
+h1{font:400 clamp(44px,9vw,76px)/1 var(--f-title);margin:10px 0 6px;color:var(--bone);text-shadow:0 4px 0 var(--k),4px 0 0 var(--k),-4px 0 0 var(--k),0 -4px 0 var(--k)}
+.lead{max-width:620px;margin:0 auto;color:var(--bone2);font-size:18px}
+
+/* steps */
+.steps{margin:34px 0 0;padding:22px 20px 24px}
+.steps h2,.feat h2{font:400 36px/1 var(--f-title);margin:0 0 6px;color:var(--gold)}
+.steps>p{margin:0 0 18px;color:var(--bone2)}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+li.step{display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:start;padding:14px;background:var(--bg2)}
+.num{width:52px;height:52px;display:grid;place-items:center;font:700 26px 'Silkscreen',monospace;color:var(--k);background:var(--bone);
+  box-shadow:inset 0 calc(-1*var(--p)) 0 0 var(--bone2)}
+.step h3{margin:2px 0 4px;font-size:20px}
+.step p{margin:0 0 12px;color:var(--bone2);font-size:16px}
+.step.done .num{background:var(--green)}
+.note{margin-top:18px;padding:12px 14px;background:#2a1a10;color:var(--bone2);font-size:15px;border-left:var(--p) solid var(--gold)}
+.note b{color:var(--gold2)}
+
+/* features + shots */
+.feat{margin-top:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:14px}
+.card{padding:10px 10px 14px}
+.card img{width:100%;height:auto}
+.card h3{margin:10px 4px 2px;font-size:18px;color:var(--bone)}
+.card p{margin:0 4px;color:var(--bone2);font-size:15px}
+
+.faq{margin-top:40px;padding:18px 20px}
+.faq h2{font:400 32px/1 var(--f-title);margin:0 0 8px;color:var(--gold)}
+details{padding:10px 0;border-top:2px dashed #ffffff14}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--bone2);font-size:16px}
+
+footer{text-align:center;margin-top:40px;color:var(--mut);font-size:14px}
+footer a{color:var(--bone2)}
+
+@media (max-width:560px){
+  body{font-size:16px}
+  li.step{grid-template-columns:40px 1fr;padding:12px}
+  .num{width:40px;height:40px;font-size:20px}
+  .pb{width:calc(100% - 2*var(--p));font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.pb{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <img class="banner pf" src="img/banner.webp" alt="Portada de Cripta de los Dados: una puerta de cripta con el título y tres dados" width="1024" height="500">
+    <span class="tag">Beta cerrada · Android</span>
+    <h1>Cripta de los Dados</h1>
+    <p class="lead">Un roguelike de dados en pixel art. Tira, fija y relanza para bajar hasta el fondo de una cripta que nadie ha logrado vaciar. Ayúdanos a probarlo antes del lanzamiento.</p>
+  </header>
+
+  <section class="steps pf" id="unirse">
+    <h2>Únete a la beta</h2>
+    <p>Son tres pasos y un par de minutos. Usa <b>la misma cuenta de Google</b> que tienes en la Play Store de tu móvil.</p>
+    <ol>
+      <li class="step" id="s1">
+        <span class="num">1</span>
+        <div>
+          <h3>Entra en el grupo de testers</h3>
+          <p>Abre el grupo y pulsa <b>«Unirse al grupo»</b>. Así Google sabe que tu cuenta puede descargar la beta.</p>
+          <a class="pb" href="https://groups.google.com/g/sumitesters" target="_blank" rel="noopener" data-step="s1">Unirme al grupo</a>
+        </div>
+      </li>
+      <li class="step" id="s2">
+        <span class="num">2</span>
+        <div>
+          <h3>Acepta la invitación de prueba</h3>
+          <p>Pulsa <b>«Convertirse en tester»</b> en la página de Google Play. Si dice que no tienes acceso, espera unos minutos tras unirte al grupo y vuelve a intentarlo.</p>
+          <a class="pb alt" href="https://play.google.com/apps/testing/io.github.rubenrobles02.cripta" target="_blank" rel="noopener" data-step="s2">Ser tester</a>
+        </div>
+      </li>
+      <li class="step" id="s3">
+        <span class="num">3</span>
+        <div>
+          <h3>Descarga el juego</h3>
+          <p>Instálalo desde Google Play como cualquier otra app. Las actualizaciones de la beta te llegarán solas.</p>
+          <a class="pb green" href="https://play.google.com/store/apps/details?id=io.github.rubenrobles02.cripta" target="_blank" rel="noopener" data-step="s3">Descargar en Google Play</a>
+        </div>
+      </li>
+    </ol>
+    <p class="note"><b>Un favor importante:</b> mantén el juego instalado al menos <b>14 días</b>. Google exige que la beta tenga testers activos durante dos semanas antes de poder publicarlo para todo el mundo.</p>
+  </section>
+
+  <section class="feat">
+    <h2>Qué vas a encontrar</h2>
+    <div class="grid">
+      <article class="card pf"><img src="img/combate.webp" alt="Combate contra un limo con tres dados tirados" loading="lazy" width="960" height="540"><h3>Dados contra monstruos</h3><p>Espadas, escudos, curas, monedas y Magia. Fija los que te gusten y relanza el resto.</p></article>
+      <article class="card pf"><img src="img/puertas.webp" alt="Elección de puertas en la cripta" loading="lazy" width="960" height="540"><h3>Elige tu camino</h3><p>Combates, élites, tiendas, hogueras, tesoros y eventos en cuatro mundos con jefe.</p></article>
+      <article class="card pf"><img src="img/equipo.webp" alt="Pantalla de equipo con casco, amuleto, escudo, pechera y botas" loading="lazy" width="960" height="540"><h3>Equipo que se nota</h3><p>25 piezas, 4 calidades y 10 niveles. Arrástralas a tu héroe y compáralas.</p></article>
+      <article class="card pf"><img src="img/armeria.webp" alt="Armería con skins de dados" loading="lazy" width="960" height="540"><h3>Skins con efectos</h3><p>8 skins de dados, cada una con su ataque propio y efectos especiales.</p></article>
+    </div>
+  </section>
+
+  <section class="faq pf">
+    <h2>Dudas</h2>
+    <details><summary>¿Cuesta algo?</summary><p>No. Es gratis, sin anuncios y sin compras.</p></details>
+    <details><summary>¿Funciona en iPhone?</summary><p>De momento la beta es solo para Android. Mientras tanto puedes <a href="../">jugar en el navegador</a>.</p></details>
+    <details><summary>Google Play dice que la app no está disponible</summary><p>Comprueba que te uniste al grupo y aceptaste la invitación (pasos 1 y 2) con la misma cuenta que usa tu Play Store. A veces tarda unos minutos en activarse.</p></details>
+    <details><summary>¿Cómo aviso de un fallo?</summary><p>Desde la ficha del juego en Google Play («Enviar comentarios privados al desarrollador») o escribiendo en el <a href="https://groups.google.com/g/sumitesters" target="_blank" rel="noopener">grupo de testers</a>.</p></details>
+    <details><summary>¿Qué datos recoge?</summary><p>Ninguno. Tu progreso se guarda solo en tu móvil. Lee la <a href="../privacidad.html">política de privacidad</a>.</p></details>
+  </section>
+
+  <footer>
+    <p>Cripta de los Dados · <a href="../">Jugar en el navegador</a> · <a href="../privacidad.html">Privacidad</a></p>
+  </footer>
+</main>
+<script>
+// tick the steps the visitor has already opened (only in this browser)
+(function(){
+  var done={};
+  try{ done=JSON.parse(localStorage.getItem('cripta-beta-steps')||'{}'); }catch(e){}
+  function paint(){ for(var k in done){ var el=document.getElementById(k); if(el) el.classList.add('done'); } }
+  document.querySelectorAll('[data-step]').forEach(function(a){
+    a.addEventListener('click',function(){ done[a.dataset.step]=1; try{ localStorage.setItem('cripta-beta-steps',JSON.stringify(done)); }catch(e){} paint(); });
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
