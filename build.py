@@ -78,7 +78,7 @@ manifest = {
     'short_name': 'Cripta',
     'start_url': './',
     'display': 'fullscreen',
-    'orientation': 'landscape',
+    'orientation': 'any',
     'background_color': '#0b0a12',
     'theme_color': '#0b0a12',
 }
