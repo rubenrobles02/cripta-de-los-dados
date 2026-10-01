@@ -1,6 +1,15 @@
 # Cripta de los Dados — guía para Claude
 
-Roguelike de dados en pixel art para móvil, **pensado para jugarse en horizontal**. Todo el juego vive en un solo archivo, `index.html` (unas 3.200 líneas de HTML, CSS y JS sin dependencias, salvo Google Fonts). El usuario habla en español: la interfaz y los textos del juego van en español.
+Roguelike de dados en pixel art para móvil, **pensado para jugarse en horizontal**. Todo el juego vive en un solo archivo, `index.html` (unas 3.200 líneas de HTML, CSS y JS sin dependencias, salvo Google Fonts). El usuario habla en español. El juego es **bilingüe (español / inglés)**.
+
+## Idiomas (obligatorio en todo texto nuevo)
+
+- Todo texto que ve el jugador se escribe como `tt('español','English')` (helper al principio del script; no se llama `L` porque `L` es el nivel en el código de equipo). Dentro de plantillas: `${tt('…','…')}`.
+- `LANG` sale de `localStorage['cripta-lang']` o del idioma del móvil; el botón `#bLang` de la portada lo cambia y recarga. Los datos (`ENEMIES`, `RELICS`…) se evalúan al cargar, por eso cambiar idioma recarga.
+- Textos generados por CSS (`content:`) se traducen con `:root:lang(en) …`.
+- Nombres en inglés: Valdeceniza → Ashvale, El Tahúr → The Gambler, Cripta de los Dados → Crypt of the Dice.
+- Frases al morir: `DEATH_QUOTES` (32, es/en, `pickQuote()` evita repetir la anterior), en la columna izquierda de `renderEnd`.
+- Páginas: `docs/beta/index.html` usa `data-en` (se cambia según el idioma del móvil o `?lang=en`); `docs/privacidad.html` lleva la versión inglesa debajo; la ficha inglesa de Play está en `app/store/FICHA-PLAY.md`.
 
 ## Cómo trabajar en este repo (ahorro de tokens)
 
@@ -72,6 +81,7 @@ Tipos de cara: `atk`, `def`, `heal`, `crit` (se muestra como «Magia»: lanza un
 - **Aspectos de héroe** (`HSKINS`, comprados con gemas, `META.hskins`/`META.hskin[héroe]`): sprite propio y fotograma de ataque (`atk`) que `drawHero` muestra mientras `S.hero.atk>0`; `heroAtkFx()` se lanza al atacar (efecto `fx`, p. ej. `leaf`). Primero: «Guardián del Ciervo» del druida, 150 gemas. Sección «Aspectos» al final de la hoja Héroes.
 - **Salas de tesoro** (`openTreasure`): cofre clásico, Arsenal olvidado (cofre de élite + 3 cartas), Altar de las caras (3 caras raras/épicas), Fuente dorada (vida + oro) y Veta de gemas.
 - **Misterios:** 12 en `EVENTS`; un resultado puede devolver `{text,next:'fight',foe}` para un combate de élite concreto. `randomUpg()` da una mejora sin selección.
+- **Enemigos:** 40 en `ENEMIES` (6 normales por mundo + élites + jefes). Sprites propios en `SPR` además de los recoloreados con `PAL_ALT`: `spider`, `rat`, `eye`, `book`, `salamander`, `beetle`, `ldie`, `moth` (2026-10-02). Ojo: las partes finas del sprite no pueden ser del color del contorno `k`, se pierden contra el fondo oscuro.
 - **Sombras de enemigos:** `drawFoe` pinta una sombra proyectada (silueta `foeSil` sesgada hacia arriba a la derecha), una sombra de contacto que encoge al elevarse y oclusión en la parte baja del sprite.
 - **Jefes:** su vida escala con el ciclo y, desde el ciclo 2, también con el piso; su fuerza nunca es menor que la de los enemigos normales del mismo piso.
 - **Economía:** al morir, `bankRun` ingresa en el Tesoro el oro restante + 15 por piso + 8 por enemigo. La Armería tiene un botón «+1000 (pruebas)».
@@ -85,6 +95,8 @@ Tipos de cara: `atk`, `def`, `heal`, `crit` (se muestra como «Magia»: lanza un
 
 ## Pendiente / ideas acordadas
 
+- **Final:** el modo infinito no tiene final (la pantalla `victory()` existe pero no se llama). Ideas: al tocar el Núcleo elegir «seguir el bucle» o «llevarte a tu hermana», o reservar el final para la Campaña.
+- Ideas de mecánicas propuestas (sin decidir): caras que sueltan los enemigos, «Tu eco» con los dados de tu última partida perdida, deuda con el destino, dados que se agrietan, apostar antes de tirar, enemigos que ven tu próxima tirada, dado de mapa para las puertas.
 - Modo **Campaña** (en el menú como «Próximamente»): por capítulos, con mecánicas distintas.
 - Sistema de **niveles/experiencia** (el desmantelado de equipo debería dar también experiencia).
 - Bajar `BOX_CHANCE` cuando termine la fase de pruebas.

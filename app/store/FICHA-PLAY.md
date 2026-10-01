@@ -12,7 +12,7 @@
 Tira los dados, cruza puertas y baja hasta el fondo de una cripta sin fin.
 
 ## Descripción completa
-Bajo el pueblo de Valdecenizas hay una cripta que nadie ha logrado vaciar. Tú tienes tres dados de hueso… y ganas de bajar.
+Bajo el pueblo de Valdeceniza hay una cripta que nadie ha logrado vaciar. Tú tienes tres dados de hueso… y ganas de bajar.
 
 Cripta de los Dados es un roguelike de dados en pixel art:
 • Tira tus dados, fija los que te gusten y relanza el resto: espadas, escudos, curas, monedas y Magia.
@@ -21,10 +21,35 @@ Cripta de los Dados es un roguelike de dados en pixel art:
 • Cuatro mundos con su jefe: la Cripta, la Torre del Archimago, las Forjas Hundidas y el Núcleo del Destino.
 • Toca el Núcleo, elige un Pacto que cambia las reglas y vuelve a empezar… más fuerte y más loco.
 • Equipo con 25 piezas, 4 calidades y 10 niveles: casco, amuleto, escudo, pechera y botas.
+• 6 héroes con habilidades propias y más de 30 enemigos, cada mundo con los suyos.
 • 8 skins de dados con efectos propios al atacar.
+• Disponible en español e inglés.
 • Música chiptune y partidas que se guardan solas: sigue justo donde lo dejaste.
 
 Sin anuncios. Sin conexión. Solo tú, tus dados y la cripta.
+
+## Ficha en inglés (en-US) — añadir en «Traducciones»
+**Nombre:** Crypt of the Dice
+
+**Descripción breve (máx. 80):**
+Roll the dice, pick your door and descend into an endless crypt.
+
+**Descripción completa:**
+Beneath the village of Ashvale lies a crypt no one has ever cleared. You have three bone dice… and a sister to bring back.
+
+Crypt of the Dice is a pixel-art dice roguelike:
+• Roll your dice, hold the ones you like and reroll the rest: swords, shields, heals, coins and Magic.
+• Choose a door on every floor: fights, elites, shops, campfires, treasure and mysteries.
+• Upgrade your dice face by face, and find new dice, blessings and relics.
+• Four worlds, each with its boss: the Crypt, the Archmage's Tower, the Sunken Forges and the Core of Fate.
+• Touch the Core, choose a Pact that changes the rules, and start again… stronger and wilder.
+• Gear with 25 pieces, 4 qualities and 10 levels: helm, amulet, shield, chest and boots.
+• 6 heroes with their own abilities and 30+ enemies, each world with its own.
+• 8 dice skins with unique attack effects.
+• Chiptune music and runs that save themselves: pick up right where you left off.
+• Available in English and Spanish.
+
+No ads. No connection needed. Just you, your dice and the crypt.
 
 ## Gráficos (en esta carpeta)
 - **Icono** 512×512: `icon-512.png`
