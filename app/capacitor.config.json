@@ -1,0 +1,16 @@
+{
+  "appId": "io.github.rubenrobles02.cripta",
+  "appName": "Cripta de los Dados",
+  "webDir": "www",
+  "backgroundColor": "#0b0a12",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "disable"
+    }
+  }
+}

@@ -2,19 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}</style>
+<link rel="stylesheet" href="fonts/fonts.css">
 <title>Cripta de los Dados</title>
 <meta name="theme-color" content="#0b0a12">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jacquarda+Bastarda+9&family=Pixelify+Sans:wght@400;500;600;700&display=swap">
 <!-- digits only: a pixel face whose 3/8 and 5/S never get confused; letters fall back to the fonts below -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&text=0123456789%2F%25%2B&display=swap">
 <style>
 /* Layout: one-screen phone game. A procedurally drawn pixel-art crypt fills the screen behind chunky pixel panels.
    One committed dark look; every scene is lit by torches with dithered light. */
@@ -3229,6 +3226,19 @@ function render(){
   const [name,opt]=sceneFor(); setScene(name,opt);
   setMusic(trackFor());
 }
+
+/* android app: hardware back button closes the top layer, opens pause, or leaves from the title */
+function onBack(){
+  if(!TIP.hidden){ hideTip(); return; }
+  const lm=$('#lootModal'); if(lm&&!lm.hidden) return;
+  const sh=$('#sheet');
+  if(!sh.hidden){ const b=sh.querySelector('#gBack,#sBack,#pResume,#closeSheet'); if(b) b.click(); else if(!sh.querySelector('.pacts')) sh.hidden=true; return; }
+  if(view==='intro'){ const sk=$('#iSkip'); if(sk) sk.click(); return; }
+  if(G&&view==='game'){ if(busyFight()) return; sfx('tap'); showPause(); return; }
+  window.Capacitor?.Plugins?.App?.minimizeApp?.();
+}
+window.Capacitor?.Plugins?.App?.addListener?.('backButton',onBack);
+window.Capacitor?.Plugins?.App?.addListener?.('pause',()=>{ if(G) saveRun(); });
 
 sizeCanvases();
 let rsT; addEventListener('resize',()=>{ clearTimeout(rsT); rsT=setTimeout(()=>{ sizeCanvases(); fitTray(); fitDoors(); buildStatic(); },150); });

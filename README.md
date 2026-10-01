@@ -20,3 +20,15 @@ git push
 ```
 
 GitHub Pages se actualiza solo a los pocos minutos del `push`.
+
+## App Android
+
+Proyecto Capacitor en `app/`. Para generar el `.aab` (Google Play) y el `.apk` firmados:
+
+```
+cd app
+npm install
+python release.py          # o: python release.py 0.2.0
+```
+
+Necesita JDK 21, Android SDK 36 y `app/android/keystore.properties` (ver `keystore.properties.example`). Ficha y gráficos de Play en `app/store/`.

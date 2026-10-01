@@ -12,7 +12,7 @@ Roguelike de dados en pixel art para móvil, **pensado para jugarse en horizonta
 
 ## Publicar
 
-1. `python build.py` → genera `docs/index.html` (documento completo con `<!doctype>`, viewport y manifiesto) a partir de `index.html`.
+1. `python build.py` → genera `docs/` y `app/www/` (documento completo con `<!doctype>`, viewport y manifiesto) a partir de `index.html`.
 2. `git add -A && git commit -m "..." && git push` (rama `main`). Termina los commits con `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 3. Republicar el artefacto con la herramienta Artifact usando `file_path` = `cripta-dados/index.html` y `url` = https://claude.ai/artifact/3dqqA3TPukSjQvm3AgHxK9 (mismo enlace).
 
@@ -20,6 +20,17 @@ Roguelike de dados en pixel art para móvil, **pensado para jugarse en horizonta
 - `index.html` **no lleva** `<!doctype>`, `<html>` ni `<head>` porque el visor de artefactos los añade. No se los pongas.
 - Prueba local: `python -m http.server 18931 --bind 127.0.0.1` en segundo plano (el puerto 8765 lo usa otra app del usuario). Un `_test.html` temporal con un `<iframe>` de 844×390 sirve para simular el móvil en horizontal; **bórralo antes de hacer commit**.
 - La pestaña de pruebas de Chrome suele estar en segundo plano: `requestAnimationFrame` y las animaciones CSS se congelan y los timers van a 1/s. Para ver el canvas, carga el juego con `srcdoc` e inyecta delante `window.requestAnimationFrame=cb=>{__raf.push(cb)}`, luego avanza a mano con `__raf.splice(0).forEach(cb=>cb(T))`.
+
+## App Android (Google Play)
+
+- Capacitor 8 en `app/` (`appId` **`io.github.rubenrobles02.cripta`**, permanente). `app/www/` y `app/android/app/src/main/assets/public` se generan: no se editan a mano.
+- Fuentes locales en `fonts/` (descargadas con `python fonts.py`); `build.py` cambia Google Fonts por `fonts/fonts.css` en `docs/` y `app/www/`, así el juego funciona sin conexión.
+- Nativo: `MainActivity.java` (pantalla completa inmersiva + margen para el notch), manifiesto `sensorLandscape`, splash oscuro (`styles.xml`), `SystemBars.insetsHandling=disable`.
+- En el juego, `onBack()` (al final del script) gestiona el botón atrás de Android vía `Capacitor.Plugins.App`: cierra capa → pausa → minimiza en la portada.
+- **Nueva versión:** `cd app && python release.py [versionName]` → sube `versionCode`, compila y deja `.aab` y `.apk` firmados en `app/release/` (ignorado en git). Si cambias solo el juego, basta con esto.
+- Herramientas: JDK 21 y Android SDK 36 en `C:/Users/Gabriel/android-tools` (sin emulador). `android/local.properties` apunta al SDK.
+- **Clave de subida:** `C:/Users/Gabriel/cripta-keys/cripta-upload.jks` + `keystore.properties` (copiado a `app/android/`, ignorado en git). Nunca subirla al repo.
+- Icono: `python app/icon.py` (pixel art generado). Ficha de Play, gráficos y pasos de la beta: `app/store/`. Privacidad: `docs/privacidad.html`.
 
 ## Mapa de `index.html` (busca estas cabeceras con grep)
 

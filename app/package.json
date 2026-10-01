@@ -1,0 +1,17 @@
+{
+  "name": "cripta-de-los-dados",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cripta de los Dados empaquetada para Android con Capacitor",
+  "scripts": {
+    "sync": "cd .. && python build.py && cd app && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
+}

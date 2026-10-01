@@ -3220,6 +3220,19 @@ function render(){
   setMusic(trackFor());
 }
 
+/* android app: hardware back button closes the top layer, opens pause, or leaves from the title */
+function onBack(){
+  if(!TIP.hidden){ hideTip(); return; }
+  const lm=$('#lootModal'); if(lm&&!lm.hidden) return;
+  const sh=$('#sheet');
+  if(!sh.hidden){ const b=sh.querySelector('#gBack,#sBack,#pResume,#closeSheet'); if(b) b.click(); else if(!sh.querySelector('.pacts')) sh.hidden=true; return; }
+  if(view==='intro'){ const sk=$('#iSkip'); if(sk) sk.click(); return; }
+  if(G&&view==='game'){ if(busyFight()) return; sfx('tap'); showPause(); return; }
+  window.Capacitor?.Plugins?.App?.minimizeApp?.();
+}
+window.Capacitor?.Plugins?.App?.addListener?.('backButton',onBack);
+window.Capacitor?.Plugins?.App?.addListener?.('pause',()=>{ if(G) saveRun(); });
+
 sizeCanvases();
 let rsT; addEventListener('resize',()=>{ clearTimeout(rsT); rsT=setTimeout(()=>{ sizeCanvases(); fitTray(); fitDoors(); buildStatic(); },150); });
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(S.A) buildStatic(); });
