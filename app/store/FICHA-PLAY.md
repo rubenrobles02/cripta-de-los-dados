@@ -94,4 +94,4 @@ No ads. No connection needed. Just you, your dice and the crypt.
 - En el grupo, ajustes → «Quién puede unirse»: **Cualquier usuario de la Web puede unirse**.
 
 ## Siguientes versiones
-`python release.py` (o `python release.py 0.2.0`) sube el versionCode, compila y deja el .aab en `app/release/`. Súbelo como nueva versión del mismo canal.
+`python release.py` (o `python release.py 0.2.0`) sube el versionCode, compila y deja el .aab en `app/release/`. Súbelo como nueva versión del mismo canal. Las notas de la versión (es/en) están en `NOVEDADES.md`.
