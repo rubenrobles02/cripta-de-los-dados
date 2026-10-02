@@ -112,7 +112,7 @@ img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 .hrow{grid-column:1;display:flex;align-items:center;gap:16px;min-width:0;padding-left:2px}
 .hrow .floorlbl{margin-left:auto}
 .hud #pause{grid-column:2;grid-row:1/3}
-@media (max-width:400px){ .hrow{gap:10px} .hrow .stat{font-size:18px} .hrow .floorlbl{font-size:15px} }
+@media (max-width:400px){ .hrow{gap:8px} .hrow .stat{font-size:18px} .hrow .floorlbl{font-size:15px} .hrow .fate .pi{display:none} .hrow .fate .fp{gap:2px} .hrow .fate .fp i{width:6px;height:6px} }
 .bar{position:relative;height:18px;flex:1;background:var(--k);box-shadow:inset 0 0 0 var(--p) var(--k)}
 .bar i{position:absolute;left:var(--p);top:var(--p);bottom:var(--p);background:var(--red2);box-shadow:inset 0 var(--p) 0 0 var(--red3),inset 0 calc(-1*var(--p)) 0 0 var(--red1);transition:width .4s steps(6)}
 .bar::after{content:"";position:absolute;inset:var(--p);background:repeating-linear-gradient(90deg,transparent 0 12px,rgba(0,0,0,.45) 12px 15px);pointer-events:none}
@@ -194,7 +194,7 @@ img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 .die.rolling .dw{animation:tumble .36s infinite;animation-timing-function:steps(1,end)}
 @keyframes tumble{0%{transform:translateY(0) rotate(0)}25%{transform:translateY(-18px) rotate(90deg)}50%{transform:translateY(-24px) rotate(180deg)}75%{transform:translateY(-9px) rotate(270deg)}100%{transform:translateY(0) rotate(360deg)}}
 .die.land .dw{animation:land .3s steps(3)}
-@keyframes land{0%{transform:translateY(-9px)}50%{transform:translateY(3px)}100%{transform:none}}
+@keyframes land{0%{transform:translateY(-12px) scale(.92,1.1)}45%{transform:translateY(2px) scale(1.14,.86)}75%{transform:translateY(-2px) scale(.97,1.04)}100%{transform:none}}
 .die.pop .dw{animation:pop .26s steps(2)}
 @keyframes pop{50%{transform:translateY(-12px);filter:brightness(1.4)}}
 .actions{display:flex;gap:4px}
@@ -248,7 +248,7 @@ img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
   text-shadow:var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 var(--k),0 var(--p) 0 var(--k),0 calc(-1*var(--p)) 0 var(--k),var(--p) var(--p) 0 var(--k);
   animation:floatup 1s steps(10) forwards}
 .float.dmg{color:var(--red3)}.float.big{font-size:44px;color:var(--yel)}.float.def{color:var(--tea3)}.float.heal{color:var(--grn3)}.float.coin{color:var(--gld3)}.float.small{font-size:20px;color:var(--bone2)}
-@keyframes floatup{0%{opacity:1;transform:translate(-50%,-30%)}20%{transform:translate(-50%,-90%)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-200%)}}
+@keyframes floatup{0%{opacity:1;transform:translate(-50%,-30%) scale(.4)}10%{transform:translate(-50%,-60%) scale(1.45)}20%{transform:translate(-50%,-85%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-200%)}}
 .banner{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font-family:var(--f-title);font-size:clamp(46px,15vw,72px);line-height:1;color:var(--yel);white-space:nowrap;
   text-shadow:0 var(--p) 0 var(--org0),0 calc(2*var(--p)) 0 var(--k),var(--p) 0 0 var(--k),calc(-1*var(--p)) 0 0 var(--k),0 calc(-1*var(--p)) 0 var(--k);animation:banner 1.2s steps(12) forwards}
 @keyframes banner{0%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%)}}
@@ -491,7 +491,7 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 #tip b{display:block;font-size:16px;margin-bottom:3px}
 #tip .st{display:block;margin-top:5px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .relic,[data-tip]{cursor:help}
-#pblock,#goldS{pointer-events:auto}
+#pblock,#goldS,#fate{pointer-events:auto}
 .eblock,.epoison{pointer-events:auto}
 @media (orientation:landscape) and (min-height:561px){ .tdice .dw{width:88px;height:88px} }
 /* ---------- loot modal ---------- */
@@ -704,6 +704,19 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .lockall::before,.lockall::after{content:"";position:absolute;top:50%;width:3px;height:3px;margin-top:-2px;background:var(--st3);box-shadow:0 1px 0 var(--k)}
 .lockall::before{left:-1px}.lockall::after{right:-1px}
 .lockall:active:not(:disabled){transform:translateY(2px)}
+/* Fate meter in the HUD: eye + pips; red and blinking when full */
+.fate{display:inline-flex;align-items:center;gap:4px;cursor:help}
+.fate .fp{display:inline-flex;gap:3px}
+.fate .fp i{width:8px;height:8px;box-shadow:inset 0 0 0 2px #6a2c9c}
+.fate .fp i.on{background:var(--pur3);box-shadow:none}
+.fate.hot .fp i.on{background:var(--org2)}
+.fate.doom .fp i.on{background:var(--red3);animation:fdoom .4s steps(2) infinite}
+@keyframes fdoom{50%{background:#fff}}
+.fate.bump{animation:fbump .3s steps(3)}
+@keyframes fbump{0%{transform:scale(1.4)}100%{transform:none}}
+.bubble.doom{--rim:var(--red3)!important;animation:blink2 .5s steps(2) infinite}
+.bubble .dm{font-style:normal;font-weight:700;font-size:14px;color:#fff;background:#b8302a;padding:0 5px;margin-left:2px}
+@media (orientation:portrait) and (min-height:740px){ .fate .fp i{width:10px;height:10px} }
 .lockall:disabled{filter:grayscale(.7) brightness(.6);cursor:default}
 .lockall .pi{width:14px;height:14px}
 @media (orientation:portrait) and (min-height:740px){ .lockall{font-size:15px;top:-17px} .lockall .pi{width:18px;height:18px} }
@@ -796,6 +809,52 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 #coach.mini .cp{border:3px solid var(--yel);animation:tutPulse .9s steps(2) infinite}
 #coach .cdo{font-size:13px;color:var(--yel);animation:blink2 .9s steps(2) infinite}
 @media (max-height:440px){ #coach{width:min(330px,calc(50vw - 16px))} #coach .ct{font-size:14px} #coach .cp{width:46px;height:46px} #coach .cp img{width:42px;height:42px} }
+/* ---------- game feel ---------- */
+/* ghost bars: a pale chunk lingers where the HP was, then catches up */
+.bar i:not(.ghost){transition:width .12s steps(2)}
+.bar i.ghost,.plate .bar i.ghost{background:#fff3b8;box-shadow:inset 0 calc(-1*var(--p)) 0 0 #e8b52a;transition:width .45s .32s steps(6)}
+/* hit-stop freezes every animation for a few frames */
+#app.hitstop *,#fx.hitstop *{animation-play-state:paused!important}
+#bg.punch,#fxc.punch{animation:punch .32s steps(4)}
+@keyframes punch{0%{transform:scale(1.05)}100%{transform:none}}
+#flash.crit{background:repeating-conic-gradient(rgba(166,85,220,.55) 0 25%,rgba(70,20,110,.35) 0 50%) 0 0/6px 6px}
+.float.big{animation:floatup 1.2s steps(12) forwards,bigflick .16s steps(2) 5}
+@keyframes bigflick{50%{color:#fff}}
+/* banners drop in letter by letter */
+.banner span{display:inline-block;animation:bnl .42s steps(5) both}
+@keyframes bnl{0%{opacity:0;transform:translateY(-28px) scale(1.5)}60%{opacity:1;transform:translateY(4px) scale(.95)}100%{transform:none}}
+/* dice that are part of a combo glow before you resolve */
+.die.combo{outline:3px solid var(--yel);outline-offset:4px;animation:comboOut .5s steps(2) infinite}
+@keyframes comboOut{50%{outline-color:var(--org2)}}
+.sum.pop .chip:not(.combo){animation:chipIn .28s steps(3)}
+@keyframes chipIn{0%{transform:scale(1.4)}100%{transform:none}}
+/* low HP: a dithered red vignette that beats like a heart */
+#vig{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;
+  background:repeating-conic-gradient(rgba(200,24,40,.95) 0 25%,rgba(90,8,16,.5) 0 50%) 0 0/6px 6px;
+  -webkit-mask:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.5) 70%,#000 100%);mask:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.5) 70%,#000 100%)}
+#vig.on{opacity:.8;animation:beat 1.1s steps(1) infinite}
+@keyframes beat{0%,40%,100%{opacity:.6}10%{opacity:1}25%{opacity:.9}}
+/* boss entrance: cinematic letterbox */
+#cine i{position:fixed;left:0;right:0;height:0;background:#000;z-index:6;pointer-events:none}
+#cine i:first-child{top:0}
+#cine i:last-child{bottom:0}
+#cine.on i{animation:cine 2.2s steps(8) forwards}
+@keyframes cine{0%{height:0}15%,75%{height:9vh}100%{height:0}}
+/* title: settings cog + tester panel */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 2px}
+.tgrid .pb{width:calc(100% - 2*var(--p))}
+.cfgbtn{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;z-index:3;width:44px;height:44px}
+.cfgbtn .pi{width:28px;height:28px}
+.cfg{display:flex;flex-direction:column;gap:2px}
+.cfg .pb{justify-content:space-between}
+.cfg .pb em{font-style:normal;color:var(--org2)}
+.dev h3{margin:6px 0 0}
+.dev .maprow{justify-content:flex-start}
+.dev .pb.sm{min-height:36px;font-size:14px;padding:0 10px}
+.dev .pb.on{--bgc:var(--org2);--hi:var(--yel);--lo:var(--org);color:#2a1206}
+.devin{width:90px;height:36px;margin:3px;padding:0 8px;font:700 18px var(--f-px);color:var(--bone3);background:var(--k);border:0;box-shadow:inset 0 0 0 var(--p) var(--st1)}
+.devin:focus{outline:var(--p) solid var(--yel)}
+.devtag{color:var(--org2)}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -804,12 +863,15 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 <body>
 <canvas id="bg"></canvas>
 <div id="flash"></div>
+<div id="vig"></div>
+<div id="cine"><i></i><i></i></div>
 <div id="app">
   <header class="hud pf dark" id="hud" hidden>
-    <div class="hp"><span id="hpIc"></span><div class="bar" id="hpBar"><i id="hpFill"></i><span id="hpT"></span></div></div>
+    <div class="hp"><span id="hpIc"></span><div class="bar" id="hpBar"><i class="ghost" id="hpGhost"></i><i id="hpFill"></i><span id="hpT"></span></div></div>
     <div class="hrow">
     <div class="stat pblock" id="pblock" hidden data-tip="<b style=&quot;color:#3fb0c9&quot;>Tu escudo</b>Absorbe el daño de los golpes enemigos. Se pierde al empezar tu siguiente turno."><span id="pbIc"></span><span id="pblockT">0</span></div>
     <div class="stat gold" id="goldS" data-tip="<b style=&quot;color:#e8b52a&quot;>Oro de la partida</b>Gástalo en el mercader. Lo que te sobre al terminar pasa al Tesoro."><span id="gIc"></span><span id="goldT">0</span></div>
+    <button class="fate" id="fate" aria-label="Destino"></button>
     <div class="floorlbl" id="floorT"></div>
     </div>
     <button class="hudbtn" id="pause" aria-label="Pausa"><span class="pausebars"><i></i><i></i></span></button>
@@ -832,6 +894,8 @@ const tt=(es,en)=>LANG==='en'?en:es;
 function setLang(v){ try{ localStorage.setItem('cripta-lang',v); }catch(e){} location.reload(); }
 document.documentElement.lang=LANG; document.title=tt('Cripta de los Dados','Crypt of the Dice');
 document.querySelector('#pblock').dataset.tip=tt('<b style="color:#3fb0c9">Tu escudo</b>Absorbe el daño de los golpes enemigos. Se pierde al empezar tu siguiente turno.','<b style="color:#3fb0c9">Your shield</b>Absorbs damage from enemy hits. Lost at the start of your next turn.');
+document.querySelector('#fate').dataset.tip=tt('<b style="color:#dca8ff">Destino</b>Cada relanzamiento suma 1; si resuelves un turno sin relanzar, baja 1. Al llenarse, la próxima acción del enemigo se duplica. Dura toda la partida: dormir en la hoguera lo calma.','<b style="color:#dca8ff">Fate</b>Every reroll adds 1; resolve a turn without rerolling and it drops by 1. When it fills up, the enemy\'s next action is doubled. It lasts the whole run: sleeping at the campfire calms it.');
+document.querySelector('#fate').setAttribute('aria-label',tt('Destino','Fate'));
 document.querySelector('#goldS').dataset.tip=tt('<b style="color:#e8b52a">Oro de la partida</b>Gástalo en el mercader. Lo que te sobre al terminar pasa al Tesoro.','<b style="color:#e8b52a">Run gold</b>Spend it at the merchant. Whatever is left at the end goes to the Treasury.');
 document.querySelector('#pause').setAttribute('aria-label',tt('Pausa','Pause'));
 const $=s=>document.querySelector(s);
@@ -900,6 +964,7 @@ const ICD={
   unlock:[['s','M7.5 11V7.5a4.5 4.5 0 0 1 8.6-1.8'],['f','M4.5 10.5h15V21h-15z'],['h','M11 14h2v4h-2z']],
   hourglass:[['f','M5 2h14v3.5l-5 6.5 5 6.5V22H5v-3.5l5-6.5-5-6.5z'],['d','M8 19h8']],
   leaf:[['f','M4 20C4 9 10 3 21 3c0 11-6 17-17 17z'],['d','M5 19L16 8']],
+  cog:[['f',(()=>{ let d=''; for(let k=0;k<16;k++){ const r=k%2?7.6:11,a0=(k*22.5-9)*Math.PI/180,a1=(k*22.5+9)*Math.PI/180; d+=`${k?'L':'M'}${(12+r*Math.cos(a0)).toFixed(2)} ${(12+r*Math.sin(a0)).toFixed(2)}L${(12+r*Math.cos(a1)).toFixed(2)} ${(12+r*Math.sin(a1)).toFixed(2)}`; } return d+'z'; })()],['h',circ(12,12,3.6)]],
   clover:[['f',circ(7.5,7.5,4.6)],['f',circ(16.5,7.5,4.6)],['f',circ(7.5,15.5,4.6)],['f',circ(16.5,15.5,4.6)],['d','M12 2.5v19M2.5 11.5h19']]
 };
 const icCache={},icURLs={};
@@ -1808,7 +1873,7 @@ function showHeroes(back){
     return `<button class="skin hero-card pf dark ${eq?'on':''} ${!own&&!isNext?'locked':''}" data-k="${k}"><span class="trio"><img src="${spriteURL34(h.spr)}" width="68" height="68" alt=""></span><span class="txt"><span class="rar" style="color:${RC.def}">${h.role}</span><b>${h.name}</b><small>${h.desc}</small>${perks}</span>${act}</button>`;
   }).join('');
   const ECON=tt('Las gemas se ganan al terminar cada partida: 1 por cada 5 pisos, +10 por cada jefe vencido. Cada héroe desbloquea al siguiente. El héroe elegido se usa al empezar una partida nueva.',"Gems are earned at the end of each run: 1 per 5 floors, +10 per boss defeated. Each hero unlocks the next. The chosen hero is used when you start a new run.");
-  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">${tt("Héroes","Heroes")}</h2><span class="info" data-tip="${tt("<b>Gemas</b>","<b>Gems</b>")}${ECON}">?</span><span class="grow"></span><button class="pb sm" id="devGems">${tt("+100 gemas (pruebas)","+100 gems (testing)")}</button><span class="bank gems">${icon('gem','def',2)} <b>${gems}</b></span></div>
+  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">${tt("Héroes","Heroes")}</h2><span class="info" data-tip="${tt("<b>Gemas</b>","<b>Gems</b>")}${ECON}">?</span><span class="grow"></span><span class="bank gems">${icon('gem','def',2)} <b>${gems}</b></span></div>
     <p class="sub arm-sub">${ECON}</p>
     <div class="skins">${list}</div>
     <h3 class="h-sec">${tt("Aspectos","Outfits")}</h3>
@@ -1841,7 +1906,6 @@ function showHeroes(back){
     burstAt($('#sheet').querySelector(`.hero-card[data-k="${k}"] .trio`),'def',34,2.6);
     if(G&&!G.over&&view==='game'&&G.hero!==k) toast(tt('El héroe cambiará en tu próxima partida',"The hero will change on your next run"));
   });
-  $('#devGems').onclick=()=>{ META.gems=(META.gems||0)+100; store('cripta-meta',META); sfx('coin'); showHeroes(back); burstAt('#devGems','def',24,2.4); };
   if(back) $('#sBack').onclick=back;
 }
 /* ---- blessings: one-shot buffs for the next fight ---- */
@@ -2058,7 +2122,7 @@ function showArmory(back){
     return `<button class="skin pf dark ${eq?'on':''}" data-k="${k}"><span class="trio">${dieImg(F('atk',6,'epic'),'',k)}${dieImg(F('crit',4),'',k)}</span><span class="txt"><span class="rar ${s.tier===tt('Mítica',"Mythic")?'myth':''}" style="color:${TIERC[s.tier]}">${s.tier}</span><b>${s.name}</b><small>${s.desc}</small><small class="perk">${icon('sword',s.fx||'bone',1)} ${s.perk}</small></span>${act}</button>`;
   }).join('');
   const ECON=tt('El Tesoro se llena al terminar cada partida: el oro que te quede, +15 por piso, +8 por enemigo y +500 si vences a Azhrak. También al desmantelar equipo.',"The Treasury fills up at the end of each run: your leftover gold, +15 per floor, +8 per enemy and +500 if you beat Azhrak. Salvaging gear adds to it too.");
-  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">${tt("Armería","Armory")}</h2><span class="info" data-tip="${tt("<b>El Tesoro</b>","<b>The Treasury</b>")}${ECON}">?</span><span class="grow"></span><button class="pb sm" id="devGold">${tt("+1000 (pruebas)","+1000 (testing)")}</button><span class="bank">${icon('coin','coin',2)} <b>${META.bank||0}</b></span></div>
+  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">${tt("Armería","Armory")}</h2><span class="info" data-tip="${tt("<b>El Tesoro</b>","<b>The Treasury</b>")}${ECON}">?</span><span class="grow"></span><span class="bank">${icon('coin','coin',2)} <b>${META.bank||0}</b></span></div>
     <p class="sub arm-sub">${ECON}</p>
     <div class="skins">${list}</div>${back?tt('<button class="pb" id="sBack">Volver</button>',"<button class=\"pb\" id=\"sBack\">Back</button>"):''}`,!!back);
   $('#sheet').querySelectorAll('.skin').forEach(b=>b.onclick=()=>{
@@ -2071,7 +2135,6 @@ function showArmory(back){
     if(s.fx) burstAt(b.querySelector('.trio'),s.fx,34,2.6);
     refreshDice(); showArmory(back);
   });
-  $('#devGold').onclick=()=>{ META.bank=(META.bank||0)+1000; store('cripta-meta',META); sfx('coin'); burstAt('#devGold','coin',24,2.4); showArmory(back); };
   if(back) $('#sBack').onclick=back;
 }
 function refreshDice(){
@@ -2543,7 +2606,7 @@ function drawFoe(c,t){
   groundShadow(c,F,cx+ox,fy,w,sc,Math.max(0,-bob)+oy*.5,fade);
   if(F.elite||F.boss){ glow(c,cx,fy-w*.45,w*.5+Math.sin(t/300)*2,F.boss?'#ff3a1a':'#a655dc',.07); }
   const x0=Math.round(cx-w/2+ox),y0=Math.round(fy-w+sc+bob+oy);
-  if(F.dead){ const a=1-Math.floor(F.dead*5)/5; if(a<=0) return; c.globalAlpha=a; c.drawImage(F.white,x0,y0+Math.round(F.dead*12),w,w); c.globalAlpha=1; F.dead+=.035; return; }
+  if(F.dead){ if(!F.shattered){ F.shattered=1; shatterFoe(F,x0,y0,sc); } if(F.dead<.12) c.drawImage(F.white,x0,y0,w,w); F.dead+=.035; return; }
   c.drawImage(F.img,x0,y0,w,w);
   occlusion(c,F,x0,y0,w);
   if(F.flash>0){ c.globalAlpha=Math.ceil(F.flash*3)/3; c.drawImage(F.white,x0,y0,w,w); c.globalAlpha=1; F.flash=Math.max(0,F.flash-.09); }
@@ -2576,6 +2639,7 @@ function drawHero(c,t){
 const heroPt=()=>S.hero&&S.hero.px!=null?{x:S.hero.px*S.s,y:S.hero.py*S.s}:null;
 function foePt(){ const el=$('#spot'); if(!el) return {x:innerWidth/2,y:innerHeight/3}; const r=el.getBoundingClientRect(),sc=(S.foe&&S.foe.sc)||2; return {x:S.foe&&S.foe.px!=null&&S.hero?S.foe.px*S.s:r.left+r.width/2,y:r.bottom-17*sc*S.s}; }
 function frame(t){
+  if(S.stop&&performance.now()<S.stop){ requestAnimationFrame(frame); return; }
   if(S.A){
     bc.drawImage(st,0,0);
     for(const f of S.anim) f(bc,t);
@@ -2692,9 +2756,24 @@ function floatAt(target,text,cls=''){
   d.style.left=(x+rnd(-12,12))+'px'; d.style.top=y+'px';
   $('#fx').appendChild(d); setTimeout(()=>d.remove(),1050);
 }
-function banner(text){ const d=document.createElement('div'); d.className='banner'; d.textContent=text; $('#fx').appendChild(d); setTimeout(()=>d.remove(),1250); }
+function banner(text){ const d=document.createElement('div'); d.className='banner'; d.setAttribute('aria-label',text); [...text].forEach((ch,i)=>{ const sp=document.createElement('span'); sp.textContent=ch===' '?'\u00a0':ch; sp.style.animationDelay=i*28+'ms'; d.appendChild(sp); }); $('#fx').appendChild(d); setTimeout(()=>d.remove(),1250); }
 function shake(){ if(REDUCED) return; retrigger($('#app'),'shake'); }
-function redFlash(){ retrigger($('#flash'),'on'); }
+function redFlash(){ $('#flash').classList.remove('crit'); retrigger($('#flash'),'on'); }
+function critFlash(){ const f=$('#flash'); f.classList.add('crit'); retrigger(f,'on'); }
+/* hit-stop: freeze the canvas and every CSS animation for a few frames so big hits land with weight */
+function hitStop(ms){ if(REDUCED) return; S.stop=performance.now()+ms; const a=$('#app'),fx=$('#fx'); a.classList.add('hitstop'); fx.classList.add('hitstop'); setTimeout(()=>{ a.classList.remove('hitstop'); fx.classList.remove('hitstop'); },ms); }
+function punch(){ if(REDUCED) return; retrigger($('#bg'),'punch'); retrigger($('#fxc'),'punch'); }
+/* a puff of dust under a die when it lands */
+function dust(el){ const r=el.getBoundingClientRect(),s=S.s,y=(r.bottom-4)/s,cx=(r.left+r.width/2)/s; for(let i=0;i<(REDUCED?2:6);i++){ const d=i%2?1:-1; S.parts.push({x:cx+d*rnd(2,6),y,vx:d*(.4+Math.random()*.6),vy:-Math.random()*.4,g:.01,life:1,dec:.05,c:['#2a2338','#4a3f5c','#8f82a3'],sz:Math.random()<.5?2:1}); } }
+/* the foe bursts into its own pixels when it dies */
+function shatterFoe(F,x0,y0,sc){
+  const c=F.img,N=c.width,d=c.getContext('2d').getImageData(0,0,N,N).data,step=REDUCED?3:1;
+  for(let y=0;y<N;y+=step) for(let X=0;X<N;X+=step){
+    const i=(y*N+X)*4; if(d[i+3]<128) continue;
+    const col='#'+[d[i],d[i+1],d[i+2]].map(v=>v.toString(16).padStart(2,'0')).join('');
+    S.parts.push({x:x0+X*sc,y:y0+y*sc,vx:(X-N/2)/N*2.4+(Math.random()-.5)*.8,vy:-Math.random()*1.9-.2+y/N*.5,g:.07,life:1,dec:.011+Math.random()*.02,c:[mix(col,-.45),col,col],sz:sc});
+  }
+}
 let toastT;
 function toast(html){ const t=$('#toast'); t.innerHTML=html; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2400); retrigger(t,'show'); }
 function retrigger(el,cls){ if(!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
@@ -2725,7 +2804,7 @@ const startDice=()=>[
   {faces:[F('atk',2),F('atk',3),F('def',2),F('heal',2),F('coin',3),F('blank',0)]}
 ];
 function newRun(){
-  G={mode:'infinite',screen:'map',hp:32,maxHp:32,gold:10,floor:1,relics:[],over:false,first:!META.tutDone,
+  G={mode:'infinite',screen:'map',hp:32,maxHp:32,gold:10,floor:1,relics:[],over:false,first:!META.tutDone,fate:0,doom:false,
     dice:startDice(),
     doors:null,combat:null,reward:null,shop:null,event:null,treasure:null,pending:null,
     stats:{kills:0,dmg:0,rolls:0,crits:0,bosses:0}};
@@ -2798,7 +2877,20 @@ function bossPhase(C){
   if(S.foe){ const d=procSprite('merchant','archmage2'); S.foe.img=d.img; S.foe.white=d.white; S.foe.flash=1; }
   banner(tt('¡Segunda fase!',"Second phase!")); sfx('buff'); shake(); burstFoe('atk',60,3.4); C.log=tt('Malakar desata su poder: +3 de daño y un escudo arcano.',"Malakar unleashes his power: +3 damage and an arcane shield."); updateCombat(); return true;
 }
-const intentVal=e=>['atk','multi','drain','smash'].includes(e.intent.type)?e.intent.v+e.str+(G&&G.pact==='fury'?3:0):e.intent.v;
+const intentVal=e=>(['atk','multi','drain','smash'].includes(e.intent.type)?e.intent.v+e.str+(G&&G.pact==='fury'?3:0):e.intent.v)*(G&&G.doom&&G.combat&&G.combat.enemy===e?2:1);
+/* Fate: rerolls tempt it; when it fills, the enemy's next action is doubled */
+const FATE_MAX=6;
+function addFate(){
+  if(G.doom) return;
+  G.fate=Math.min(FATE_MAX,(G.fate||0)+1); sfx('tink'); retrigger($('#fate'),'bump');
+  if(G.fate>=FATE_MAX){ G.doom=true; setTimeout(()=>{ banner(tt('¡El Destino cobra!',"Fate collects!")); sfx('buff'); shake(); burstFoe('crit',40,3);
+    if(!META.fateSeen){ META.fateSeen=true; store('cripta-meta',META); toast(tt('<b>Destino lleno</b>: la próxima acción del enemigo se duplica. Relanzar menos o dormir en la hoguera lo calma.',"<b>Fate is full</b>: the enemy's next action is doubled. Reroll less or sleep at the campfire to calm it.")); } },350); }
+}
+function updateFate(){
+  const b=$('#fate'); if(!b||!G) return;
+  const f=G.fate||0; b.className='fate'+(G.doom?' doom':f>=FATE_MAX-1?' hot':'')+(b.classList.contains('bump')?' bump':'');
+  b.innerHTML=`${icon('eye',G.doom?'atk':'crit',1)}<span class="fp">${Array.from({length:FATE_MAX},(_,i)=>`<i class="${i<f?'on':''}"></i>`).join('')}</span>`;
+}
 function intentText(e){
   const v=intentVal(e),n=e.intent.n;
   if(e.intent.type==='smash') return `${tt("¡Martillazo de","Hammer blow:")} ${v}!`;
@@ -2809,7 +2901,8 @@ function intentHTML(e){
   if(!e.intent) return '';
   const m={smash:['flame','ember'],atk:['sword','atk'],multi:['sword','atk'],drain:['cup','crit'],block:['shield','def'],buff:['up','ember'],heal:['heart','heal'],steal:['coin','coin']}[e.intent.type];
   const v=intentVal(e),txt=e.intent.type==='multi'?`${e.intent.n}×${v}`:e.intent.type==='buff'?`+${v}`:v;
-  return `<div class="bubble pf dark" style="--rim:${RC[m[1]]}">${icon(m[0],m[1],2)}<b>${txt}</b><span>${intentText(e)}</span></div>`;
+  const dm=G&&G.doom&&G.combat&&G.combat.enemy===e;
+  return `<div class="bubble pf dark${dm?' doom':''}" style="--rim:${RC[m[1]]}">${icon(m[0],m[1],2)}<b>${txt}</b>${dm?'<i class="dm">×2</i>':''}<span>${intentText(e)}</span></div>`;
 }
 function startCombat(key,kind){
   const e=makeEnemy(key); pickIntent(e);
@@ -2819,7 +2912,7 @@ function startCombat(key,kind){
   sealDie(G.combat); chargeUp(); if(has('hourglass')) chargeUp();
   go('combat');
   { const bn=BUFFK.filter(k=>G.combat.buffs[k]); if(bn.length&&kind!=='boss') setTimeout(()=>{ banner(BLESS[bn[0]].name); sfx('combo'); },350); }
-  if(kind==='boss'){ banner(e.name); sfx('buff'); if(BOSS_RULE[key]) setTimeout(()=>toast(`<b>${e.name}</b>: ${BOSS_RULE[key]}`),1300); }
+  if(kind==='boss'){ retrigger($('#cine'),'on'); banner(e.name); sfx('buff'); if(BOSS_RULE[key]) setTimeout(()=>toast(`<b>${e.name}</b>: ${BOSS_RULE[key]}`),1300); }
 }
 function calc(faces){
   const r={atk:0,def:0,heal:0,coin:0,crits:0,combos:[]},cnt={};
@@ -2841,6 +2934,7 @@ function calc(faces){
   r.mult=r.crits?Math.min(2,1.5+.25*(r.crits-1)):1;
   r.dmg=r.atk>0?Math.round(r.atk*r.mult)+flat:0;
   { const C1=G&&G.combat; if(C1&&C1.rage&&r.dmg>0){ r.dmg*=2; r.rage=true; } }
+  if(DEV.dmg&&r.dmg>0&&!(G&&G.tut)) r.dmg=Math.round(r.dmg*(1+DEV.dmg/100));
   if(has('purse')) r.coin=Math.round(r.coin*1.5);
   return r;
 }
@@ -2848,10 +2942,10 @@ function renderCombat(){
   const C=G.combat,e=C.enemy;
   M.innerHTML=`<section class="combat">
     <div class="cl">
-      <div class="intent-row" id="intent"></div>
+      <div class="intent-row"><div id="intent"></div></div>
       <div class="foe-spot" id="spot"></div>
       <div class="plate pf dark"><span class="nm">${e.name}</span>
-        <div class="bar" id="foeBar"><i id="foeHp"></i><span id="foeHpT"></span><em class="eblock" id="eblock" hidden data-tip="${tt("<b style=&quot;color:#3fb0c9&quot;>Escudo enemigo</b>Absorbe tu daño antes de tocarle la vida. Desaparece cuando vuelve a actuar.","<b style=&quot;color:#3fb0c9&quot;>Enemy shield</b>Absorbs your damage before it reaches their HP. Gone when they act again.")}"></em><em class="epoison" id="epoison" hidden data-tip="${tt("<b style=&quot;color:#5fb843&quot;>Veneno</b>Al empezar su turno pierde tanta vida como veneno tenga, y el veneno baja 1.","<b style=&quot;color:#5fb843&quot;>Poison</b>At the start of its turn it loses as much HP as its poison, then poison drops by 1.")}"></em></div></div>
+        <div class="bar" id="foeBar"><i class="ghost" id="foeGhost"></i><i id="foeHp"></i><span id="foeHpT"></span><em class="eblock" id="eblock" hidden data-tip="${tt("<b style=&quot;color:#3fb0c9&quot;>Escudo enemigo</b>Absorbe tu daño antes de tocarle la vida. Desaparece cuando vuelve a actuar.","<b style=&quot;color:#3fb0c9&quot;>Enemy shield</b>Absorbs your damage before it reaches their HP. Gone when they act again.")}"></em><em class="epoison" id="epoison" hidden data-tip="${tt("<b style=&quot;color:#5fb843&quot;>Veneno</b>Al empezar su turno pierde tanta vida como veneno tenga, y el veneno baja 1.","<b style=&quot;color:#5fb843&quot;>Poison</b>At the start of its turn it loses as much HP as its poison, then poison drops by 1.")}"></em></div></div>
     </div>
     <div class="cr">
       <p class="log" id="log"></p>
@@ -2881,13 +2975,15 @@ function setDie(i,force){
 function updateCombat(){
   const C=G.combat; if(!C||G.screen!=='combat'||!$('#foeHp')) return;
   const e=C.enemy;
-  $('#foeHp').style.width=`calc((100% - 6px) * ${Math.max(0,e.hp)/e.maxHp})`;
+  $('#foeHp').style.width=$('#foeGhost').style.width=`calc((100% - 6px) * ${Math.max(0,e.hp)/e.maxHp})`;
   $('#foeHpT').textContent=`${Math.max(0,e.hp)} / ${e.maxHp}`;
   const eb=$('#eblock'); eb.hidden=!e.block; eb.innerHTML=icon('shield','def',1)+e.block;
   const ep=$('#epoison'); ep.hidden=!e.poison; ep.innerHTML=icon('skull','heal',1)+(e.poison||0);
   $('#intent').innerHTML=C.phase==='won'?'':intentHTML(e);
   G.dice.forEach((_,i)=>{ if(!$('#die'+i).classList.contains('rolling')) setDie(i); });
-  $('#sum').innerHTML=sumHTML();
+  { const sm=$('#sum'),h=sumHTML(); if(sm.dataset.h!==h){ sm.dataset.h=h; sm.innerHTML=h; retrigger(sm,'pop'); } }
+  { const r=C.faces.some(Boolean)?calc(C.faces):null,ct=new Set(r?r.combos.map(c=>c.t):[]);
+    G.dice.forEach((_,i)=>{ const f=C.faces[i],el=$('#die'+i); el.classList.toggle('combo',!!f&&C.phase==='rolled'&&ct.has(f.t==='crit'?'atk':f.t)); }); }
   $('#log').textContent=C.log||'';
   updateLockAll(); updateActions(); updateAbility(); updateTop();
 }
@@ -2951,7 +3047,7 @@ function animateDie(i,k){
       C.faces[i]={...pf};
       if(lucky) setTimeout(()=>burstAt(el,'heal',12,1.6),20);
       el.classList.remove('rolling'); setDie(i,true); retrigger(el,'land');
-      sfx('clack'); buzz(12);
+      sfx('clack'); buzz(12); dust(el);
       const f=C.faces[i];
       if(SKINS[SKIN].fx) burstAt(el,SKINS[SKIN].fx,SKIN==='obsidian'?16:12,1.8);
       if(f.t==='crit'){ burstAt(el,'crit',22,2.4); G.stats.crits++; }
@@ -2966,7 +3062,7 @@ async function roll(){
   else if(C.phase!=='start') return;
   const first=C.phase==='start',idx=G.dice.map((_,i)=>i).filter(i=>!C.held[i]&&i!==C.sealed);
   if(!idx.length) return;
-  if(!first) C.rerolls--;
+  if(!first){ C.rerolls--; C.rerolled=true; addFate(); }
   C.phase='rolling'; updateActions(); sfx('roll'); G.stats.rolls++;
   await Promise.all(idx.map((i,k)=>animateDie(i,k)));
   if(first&&has('eye')){
@@ -2980,7 +3076,7 @@ async function roll(){
 }
 async function resolve(){
   const C=G.combat; if(C.phase!=='rolled') return;
-  C.phase='resolving'; C.held=C.held.map(()=>false); updateCombat();
+  C.phase='resolving'; C.held=C.held.map(()=>false); if(!C.rerolled&&!G.doom&&G.fate>0) G.fate--; updateCombat();
   const e=C.enemy,r=calc(C.faces);
   for(let i=0;i<G.dice.length;i++){ retrigger($('#die'+i),'pop'); await wait(REDUCED?0:80); }
   if(r.combos.length){ banner(`${tt("¡Racha ×","Combo ×")}${Math.max(...r.combos.map(c=>c.n))}!`); sfx('combo'); buzz([20,40,20]); await wait(650); }
@@ -2998,7 +3094,8 @@ async function resolve(){
     if(G.pact==='blood'&&dealt>0){ const h=heal(2); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),200); }
     if(has('fang')&&dealt>=15){ const h=heal(3); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),320); }
     if(S.foe){ S.foe.flash=1; S.foe.shake=r.crits?7:4; }
-    if(r.crits){ banner(tt('¡Ataque mágico!',"Magic attack!")); sfx('crit'); shake(); buzz([30,30,60]); burstFoe('crit',40,3.2); }
+    if(r.crits||dealt>=12){ hitStop(r.crits?130:85); punch(); }
+    if(r.crits){ critFlash(); banner(tt('¡Ataque mágico!',"Magic attack!")); sfx('crit'); shake(); buzz([30,30,60]); burstFoe('crit',40,3.2); }
     else { sfx('hit'); buzz(25); }
     burstFoe('atk',dealt>=12?36:20,dealt>=12?3:2.2);
     if(dealt>0) floatAt(foePt(),`-${dealt}`,r.crits||dealt>=15?'big':'dmg');
@@ -3016,11 +3113,12 @@ async function resolve(){
   newTurn();
 }
 async function hitPlayer(d){
+  if(DEV.god&&!G.tut){ floatAt(heroPt()||'#hpBar',tt('Inmortal',"Immortal"),'def'); sfx('block'); updateCombat(); return 0; }
   if(G.combat.bulwark){ floatAt(heroPt()||'#hpBar',tt('¡Baluarte!',"Bulwark!"),'def'); sfx('block'); if(S.hero) S.hero.guardHit=1; updateCombat(); return 0; }
   { const gt=gearTotal(); if(gt.dodge&&Math.random()*100<gt.dodge){ floatAt('#hpBar',tt('¡Esquiva!',"Dodge!"),'def'); sfx('whoosh'); if(gt.dodgeHeal){ const h=heal(gt.dodgeHeal); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),250); } updateCombat(); return 0; } }
   const C=G.combat,e=C.enemy,b=Math.min(C.pBlock,d),dmg=d-b;
   C.pBlock-=b;
-  if(dmg>0){ G.hp=Math.max(0,G.hp-dmg); if(S.hero){ S.hero.flash=1; S.hero.shake=4; } redFlash(); shake(); sfx('hurt'); buzz(80); floatAt('#hpBar',`-${dmg}`,'dmg'); }
+  if(dmg>0){ if(dmg>=8) hitStop(70); G.hp=Math.max(0,G.hp-dmg); if(S.hero){ S.hero.flash=1; S.hero.shake=4; } redFlash(); shake(); sfx('hurt'); buzz(80); floatAt('#hpBar',`-${dmg}`,'dmg'); }
   else { sfx('block'); floatAt('#hpBar',tt('Bloqueado',"Blocked"),'def'); if(S.hero) S.hero.guardHit=1; }
   const th=(has('thorns')?3:0)+(gearTotal().thorns||0);
   if(th&&e.hp>0){ e.hp-=th; if(S.foe) S.foe.flash=.6; setTimeout(()=>floatAt(foePt(),`-${th}`,'small'),200); }
@@ -3057,7 +3155,7 @@ function newTurn(){
   C.turn++; C.pBlock=gearBlock()+(C.buffs&&C.buffs.ward?3:0);
   { const rg=gearTotal().regen||0; if(rg&&G.hp<G.maxHp){ const h=heal(rg); if(h) setTimeout(()=>floatAt('#hpBar',`+${h}`,'heal'),120); } } C.faces=G.dice.map(()=>null); C.held=G.dice.map(()=>false);
   C.rerolls=maxRerolls(); C.phase='start'; pickIntent(C.enemy);
-  C.bulwark=false; C.rage=false; chargeUp(); sealDie(C);
+  C.bulwark=false; C.rage=false; C.rerolled=false; if(G.doom){ G.doom=false; G.fate=0; } chargeUp(); sealDie(C);
   saveRun(); updateCombat();
 }
 async function winCombat(){
@@ -3137,6 +3235,7 @@ const TUT_FIGHT=[
   {sel:'#die2',say:()=>tt('Fija también este. Solo queremos volver a tirar el vacío.',"Hold this one too. We only want to reroll the blank one."),until:()=>tC().held[2]},
   {sel:'#bRe',enter:()=>{ TUT.rig=[null,F('atk',2),null]; },say:()=>tt(`Ahora <b>relanza</b>: solo gira el dado suelto. ${maxRerolls()===1?'Tienes 1 relanzamiento':`Tienes ${maxRerolls()} relanzamientos`} por turno.`,`Now <b>reroll</b>: only the loose die spins. You get ${maxRerolls()} reroll${maxRerolls()===1?'':'s'} per turn.`),until:()=>tC().phase==='rolled'&&tC().rerolls<maxRerolls()},
   {sel:'#sum',say:()=>tt('¡Tres espadas! <b>Tres caras del mismo tipo forman una racha</b> y dan daño extra. Recuérdalo.',"Three swords! <b>Three faces of the same type make a combo</b> and deal extra damage. Remember that."),tap:1},
+  {sel:'#fate',say:()=>tt('Pero ojo: ese relanzamiento ha despertado a tu <b>Destino</b>. Cada vez que relanzas se llena un poco, y si resuelves sin relanzar se calma. <b>Cuando se llena, la siguiente acción del enemigo se duplica.</b> Y no se vacía entre peleas: dormir en la hoguera es lo único que lo calma del todo.',"But careful: that reroll woke up your <b>Fate</b>. Every reroll fills it a little, and resolving without rerolling calms it. <b>When it fills up, the enemy's next action is doubled.</b> And it doesn't empty between fights: sleeping at the campfire is the only thing that fully calms it."),tap:1},
   {sel:'#bGo',enter:()=>{ const e=tC().enemy,d=calc(tC().faces).dmg; e.hp=e.maxHp=Math.max(30,d+14); updateCombat(); },say:()=>tt('Toca <b>Resolver</b> para ejecutar tu tirada. Después me toca a mí.',"Tap <b>Resolve</b> to carry out your roll. Then it's my turn."),until:()=>tC().turn===2&&tC().phase==='start'},
   {sel:'#hpBar',say:()=>tt('Te he dado. Esa es tu <b>vida</b>: si llega a cero, la partida se acaba y vuelves a empezar desde el piso 1.',"I hit you. Those are your <b>HP</b>: if they reach zero, the run is over and you start again from floor 1."),tap:1},
   {sel:'#intent',enter:()=>setIntent(12),say:()=>tt('Y mira mi intención: <b>el próximo golpe será fuerte</b>. A veces lo mejor no es atacar, sino defenderse.',"And look at my intent: <b>the next hit will be a big one</b>. Sometimes the best move isn't attacking, it's defending."),tap:1},
@@ -3338,8 +3437,7 @@ function renderTitle(){
     </div>
     <div class="menu pf dark">
       ${saved&&!saved.over?`<button class="pb go big" id="bCont">${tt("Continuar · Piso","Continue · Floor")} ${saved.floor}</button><button class="pb" id="bNew">${tt("Nueva partida","New run")}</button>`:`<button class="pb go big" id="bNew">${tt("Nueva partida","New run")}</button>`}
-      <div class="maprow"><button class="pb sm" id="bHero">${icon('gem','def',2)} ${tt("Héroes","Heroes")}</button><button class="pb sm" id="bArm">${icon('dice','bone',2)} ${tt("Armería","Armory")}</button><button class="pb sm" id="bGear">${icon('shield','rare',2)} ${tt("Equipo","Gear")}</button></div>
-      <div class="maprow"><button class="pb sm" id="bStory">${tt("Historia","Story")}</button><button class="pb sm" id="bHow">${tt("Cómo se juega","How to play")}</button><button class="pb sm" id="bMus">${tt("Música:","Music:")} ${MUSIC?tt('sí',"on"):tt('no','off')}</button><button class="pb sm" id="bLang" aria-label="${tt('Idioma','Language')}">${tt('English','Español')}</button><button class="pb sm" id="bSnd" aria-label="${tt("Efectos de sonido","Sound effects")}">${icon(SOUND?'sound':'mute','stone',2)}</button></div>
+      <div class="tgrid"><button class="pb sm" id="bHero">${icon('gem','def',2)} ${tt("Héroes","Heroes")}</button><button class="pb sm" id="bArm">${icon('dice','bone',2)} ${tt("Armería","Armory")}</button><button class="pb sm" id="bGear">${icon('shield','rare',2)} ${tt("Equipo","Gear")}</button><button class="pb sm" id="bHow">${tt("Cómo jugar","How to play")}</button></div>
       <div class="records"><span>${tt("Mejor piso","Best floor")} <b>${META.best||'–'}</b></span><span>${tt("Jefes","Bosses")} <b>${META.wins}</b></span><span>${tt("Tesoro","Treasury")} <b>${META.bank||0}</b></span><span>${tt("Gemas","Gems")} <b>${META.gems||0}</b></span><span>${tt("Poder","Power")} <b>${gearPower()}</b></span></div>
     </div>
   </section>`;
@@ -3347,13 +3445,68 @@ function renderTitle(){
   $('#bNew').onclick=()=>{start(); chooseMode();};
   if($('#bCont')) $('#bCont').onclick=()=>{start(); G=saved; normalize(); view='game'; retrigger($('#wipe'),'on'); render();};
   $('#bHow').onclick=showHow;
-  $('#bLang').onclick=()=>{ sfx('tap'); setLang(LANG==='en'?'es':'en'); };
-  $('#bStory').onclick=()=>{ ac(); sfx('tap'); playIntro(()=>{ G=null; view='title'; render(); },tt('Volver al menú',"Back to menu")); };
+  { const cb=document.createElement('button'); cb.className='hudbtn cfgbtn'; cb.id='bCfg'; cb.setAttribute('aria-label',tt('Ajustes',"Settings")); cb.innerHTML=icon('cog','stone',2); M.querySelector('.title-screen').appendChild(cb); cb.onclick=()=>{ ac(); sfx('tap'); showSettings(); }; }
+  { let taps=[]; M.querySelector('.logo').onclick=()=>{ const n=Date.now(); taps=taps.filter(t=>n-t<3000); taps.push(n); if(taps.length>=7){ taps=[]; showDev(); } }; }
   $('#bArm').onclick=()=>{ ac(); sfx('tap'); showArmory(); };
   $('#bHero').onclick=()=>{ ac(); sfx('tap'); showHeroes(); };
   $('#bGear').onclick=()=>{ ac(); sfx('tap'); showGear(); };
-  $('#bMus').onclick=()=>{ toggleMusic(); $('#bMus').textContent=`${tt("Música:","Music:")} ${MUSIC?tt('sí',"on"):tt('no','off')}`; };
-  $('#bSnd').onclick=()=>{ ac(); toggleSound(); $('#bSnd').innerHTML=icon(SOUND?'sound':'mute','stone',2); };
+}
+/* settings: everything that used to crowd the title menu */
+function showSettings(){
+  const onoff=v=>v?tt('Sí',"On"):tt('No',"Off");
+  openSheet(`<h2 class="h-title" style="font-size:34px">${tt("Ajustes","Settings")}</h2><div class="cfg">
+    <button class="pb" id="cMus">${tt("Música","Music")} <em>${onoff(MUSIC)}</em></button>
+    <button class="pb" id="cSnd">${tt("Efectos de sonido","Sound effects")} <em>${onoff(SOUND)}</em></button>
+    <button class="pb" id="cLang">${tt("Idioma","Language")} <em>${tt('Español','English')}</em></button>
+    <button class="pb" id="cStory">${tt("Ver la historia","Watch the story")} <em>▸</em></button>
+    <button class="pb" id="cTut">${tt("Repetir el tutorial","Replay the tutorial")} <em>▸</em></button>
+  </div>`);
+  $('#cMus').onclick=()=>{ toggleMusic(); showSettings(); };
+  $('#cSnd').onclick=()=>{ ac(); toggleSound(); showSettings(); };
+  $('#cLang').onclick=()=>{ sfx('tap'); setLang(LANG==='en'?'es':'en'); };
+  $('#cStory').onclick=()=>{ ac(); sfx('tap'); playIntro(()=>{ G=null; view='title'; render(); },tt('Volver al menú',"Back to menu")); };
+  $('#cTut').onclick=()=>{ $('#sheet').hidden=true; sfx('door'); startTutorial(); };
+}
+/* ---- hidden tester panel: type TEST anywhere, or tap the title logo 7 times ---- */
+const DEV=Object.assign({dmg:0,god:false},load('cripta-dev',{}));
+const devOn=()=>!!(DEV.dmg||DEV.god);
+{ let buf=''; addEventListener('keydown',e=>{ if(e.target.closest&&e.target.closest('input,textarea')) return; if(e.key.length!==1) return; buf=(buf+e.key.toUpperCase()).slice(-4); if(buf==='TEST'){ buf=''; showDev(); } }); }
+function showDev(){
+  const run=!!(G&&!G.over&&!G.tut&&view==='game'),C=run&&G.screen==='combat'&&G.combat;
+  const b=(id,txt,on)=>`<button class="pb sm${on?' on':''}" id="${id}">${txt}</button>`;
+  const BOSSF=[[24,tt('Hoguera previa',"Pre-boss camp")],[25,'Azhrak'],[50,'Malakar'],[75,'Brokk'],[100,tt('El Tahúr',"The Gambler")],[101,tt('Ciclo 2',"Cycle 2")]];
+  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">${tt("Modo pruebas","Test mode")}</h2></div>
+    <div class="dev">
+      <h3 class="h-sec">${tt("Ir al piso","Go to floor")}${run?` · ${tt("ahora","now")} ${G.floor}`:''}</h3>
+      <div class="maprow"><input class="devin" id="dFloor" type="number" min="1" inputmode="numeric" value="${run?G.floor:1}">${b('dGo',tt('Ir ▸',"Go ▸"))}${BOSSF.map(([f,n])=>b('dF'+f,`${f} · ${n}`)).join('')}</div>
+      <h3 class="h-sec">${tt("Daño extra","Extra damage")}</h3>
+      <div class="maprow">${[0,50,100,300,1000].map(v=>b('dD'+v,v?`+${v}%`:tt('Normal',"Normal"),DEV.dmg===v)).join('')}</div>
+      <h3 class="h-sec">${tt("Trucos","Cheats")}</h3>
+      <div class="maprow">${b('dGod',`${tt("Inmortal","Immortal")}: ${DEV.god?tt('sí',"on"):tt('no','off')}`,DEV.god)}${run?b('dHeal',tt('Curar todo',"Full heal"))+b('dGold',tt('+500 oro',"+500 gold")):''}${C&&['start','rolled'].includes(C.phase)?b('dWin',tt('Ganar el combate',"Win the fight")):''}</div>
+      <h3 class="h-sec">${tt("Progreso","Progress")}</h3>
+      <div class="maprow">${b('dGems',tt('+100 gemas',"+100 gems"))}${b('dBank',tt('+1000 al Tesoro',"+1000 to the Treasury"))}${b('dTut',tt('Reiniciar primera partida y tutorial',"Reset first run and tutorial"))}</div>
+    </div>`);
+  const save=()=>{ store('cripta-dev',DEV); if(G) updateTop(); };
+  $('#dGo').onclick=()=>devFloor(+$('#dFloor').value);
+  $('#dFloor').onkeydown=e=>{ if(e.key==='Enter') devFloor(+e.target.value); };
+  BOSSF.forEach(([f])=>$('#dF'+f).onclick=()=>devFloor(f));
+  [0,50,100,300,1000].forEach(v=>$('#dD'+v).onclick=()=>{ DEV.dmg=v; save(); sfx('tap'); showDev(); });
+  $('#dGod').onclick=()=>{ DEV.god=!DEV.god; save(); sfx('tap'); showDev(); };
+  if($('#dHeal')) $('#dHeal').onclick=()=>{ heal(G.maxHp); updateTop(); sfx('heal'); showDev(); };
+  if($('#dGold')) $('#dGold').onclick=()=>{ G.gold+=500; updateTop(); sfx('coin'); showDev(); };
+  if($('#dWin')) $('#dWin').onclick=()=>{ $('#sheet').hidden=true; G.combat.enemy.hp=0; updateCombat(); winCombat(); };
+  $('#dGems').onclick=()=>{ META.gems=(META.gems||0)+100; store('cripta-meta',META); sfx('coin'); toast(`<b>+100</b> ${tt("gemas","gems")} · ${META.gems}`); if(view==='title') render(); };
+  $('#dBank').onclick=()=>{ META.bank=(META.bank||0)+1000; store('cripta-meta',META); sfx('coin'); toast(`<b>+1000</b> ${tt("al Tesoro","to the Treasury")} · ${META.bank}`); if(view==='title') render(); };
+  $('#dTut').onclick=()=>{ META.tutDone=false; store('cripta-meta',META); sfx('tap'); toast(tt('La próxima partida nueva será la primera (con tutorial)',"Your next new run will be the first one (with tutorial)")); };
+  sfx('buff');
+}
+/* jumps to any floor: keeps the current run, or starts one if there is none */
+function devFloor(n){
+  n=Math.max(1,Math.floor(n)||1); $('#sheet').hidden=true;
+  if(!(G&&!G.over&&!G.tut&&view==='game')){ META.introSeen=true; newRun(); }
+  Object.assign(G,{first:false,floor:n,combat:null,reward:null,shop:null,event:null,treasure:null,pending:null,seen:{}});
+  G.doors=genDoors(); saveRun(); go('map');
+  toast(`${tt("Modo pruebas: piso","Test mode: floor")} <b>${n}</b> · ${worldOf().w.name}`);
 }
 function showHow(){
   openSheet(`<button class="pb go" id="howTut" style="align-self:center">${icon('dice','bone',2)} ${tt("Repetir el tutorial","Replay the tutorial")}</button><h2 class="h-title" style="font-size:34px">${tt("Cómo se juega","How to play")}</h2><ul class="how">
@@ -3361,6 +3514,7 @@ function showHow(){
     <li>${icon('sword','atk',2)}<span>${tt("Ataque hace daño. Escudo bloquea el golpe enemigo. Cura recupera vida. Oro sirve en la tienda.","Attack deals damage. Shield blocks the enemy's hit. Heal restores HP. Gold is spent at the shop.")}</span></li>
     <li>${icon('burst','crit',2)}<span>${tt("Una cara de magia lanza un orbe y multiplica por 1,5 lo que sacan tus dados ese turno (cada cara de magia extra suma 0,25, hasta ×2).","A magic face launches an orb and multiplies your dice by 1.5 that turn (each extra magic face adds 0.25, up to ×2).")}</span></li>
     <li>${icon('up','ember',2)}<span>${tt("Tres caras del mismo tipo forman una racha y dan bonus.","Three faces of the same type make a combo and give a bonus.")}</span></li>
+    <li>${icon('eye','crit',2)}<span>${tt("Cada relanzamiento llena el Destino (arriba, junto al oro); si resuelves sin relanzar, baja. Cuando se llena, la próxima acción del enemigo se duplica. Dura toda la partida: dormir en la hoguera lo calma.","Every reroll fills Fate (up top, next to your gold); resolving without rerolling lowers it. When it fills up, the enemy's next action is doubled. It lasts the whole run: sleeping at the campfire calms it.")}</span></li>
     <li>${icon('eye','rare',2)}<span>${tt("Mira la intención del enemigo antes de resolver. A veces conviene defender.","Check the enemy's intent before resolving. Sometimes it pays to defend.")}</span></li>
     <li>${icon('shield','def',2)}<span>${tt("Cada héroe (menos el Errante) tiene una habilidad que se carga 1 por turno. Cuando está llena, brilla encima de los dados.","Every hero (except the Wanderer) has an ability that charges 1 per turn. When it's full, it glows above the dice.")}</span></li>
     <li>${icon('flame','ember',2)}<span>${tt("Cada jefe tiene su propia regla: léela al empezar el combate.","Every boss has its own rule: read it when the fight starts.")}</span></li>
@@ -3622,11 +3776,11 @@ function renderRest(){
     <div class="pf dark inner">
       <div><p class="eyebrow">${tt("Hoguera · Piso","Campfire · Floor")} ${G.floor}</p><h1 class="h-title">${tt("Un momento de calma","A moment of calm")}</h1></div>
       <p class="prose">${tt("Las llamas crepitan entre los huesos. Solo te da tiempo a una cosa.","The flames crackle among the bones. You only have time for one thing.")}</p>
-      <button class="pb choice" id="sleep"><b>${tt("Dormir","Sleep")}</b><small>${tt("Recuperas","Restore")} ${real} ${tt("de vida","HP")}</small></button>
+      <button class="pb choice" id="sleep"><b>${tt("Dormir","Sleep")}</b><small>${tt("Recuperas","Restore")} ${real} ${tt("de vida","HP")}${G.fate?tt(" y calmas el Destino"," and calm your Fate"):""}</small></button>
       <button class="pb choice" id="forge"><b>${tt("Forjar","Forge")}</b><small>${tt("Una cara de tus dados gana +2","One of your faces gains +2")}</small></button>
     </div>
   </section>`;
-  $('#sleep').onclick=()=>{ $('#sleep').disabled=$('#forge').disabled=true; heal(h); updateTop(); floatAt('#hpBar',`+${real}`,'heal'); burstAt('#hpBar','heal',20,2); sfx('heal'); setTimeout(nextFloor,900); };
+  $('#sleep').onclick=()=>{ $('#sleep').disabled=$('#forge').disabled=true; heal(h); G.fate=0; G.doom=false; updateTop(); floatAt('#hpBar',`+${real}`,'heal'); burstAt('#hpBar','heal',20,2); sfx('heal'); setTimeout(nextFloor,900); };
   $('#forge').onclick=()=>{ G.pending={mode:'upgrade',back:'next'}; go('forge'); };
 }
 /* treasure rooms come in five flavours so they don't repeat */
@@ -3783,11 +3937,13 @@ $('#hpIc').innerHTML=icon('heart','atk',2); $('#pbIc').innerHTML=icon('shield','
 function updateTop(){
   const show=!!(G&&view==='game'&&!['gameover','victory'].includes(G.screen));
   $('#hud').hidden=!show; const bf=show?buffList():[]; $('#relics').hidden=!show||(!G.relics.length&&!bf.length&&!G.pact);
+  $('#vig').classList.toggle('on',!!(show&&G.hp>0&&G.hp<=G.maxHp*.3));
   if(!show) return;
-  $('#hpFill').style.width=`calc((100% - 6px) * ${G.hp/G.maxHp})`;
+  $('#hpFill').style.width=$('#hpGhost').style.width=`calc((100% - 6px) * ${G.hp/G.maxHp})`;
   $('#hpT').textContent=`${G.hp} / ${G.maxHp}`;
-  $('#goldT').textContent=G.gold;
-  $('#floorT').textContent=`P${G.floor}`;
+  $('#goldT').textContent=G.gold>=10000?Math.floor(G.gold/1000)+'k':G.gold;
+  updateFate();
+  $('#floorT').innerHTML=`P${G.floor}${devOn()&&!G.tut?' <span class="devtag">TEST</span>':''}`;
   const pb=G.screen==='combat'&&G.combat?G.combat.pBlock:0;
   $('#pblock').hidden=!pb; $('#pblockT').textContent=pb;
   const rk=G.relics.join()+'|'+bf.map(b=>b.k+b.act+b.pend).join()+'|'+(G.pact||'');
