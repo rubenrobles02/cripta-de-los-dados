@@ -855,6 +855,60 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .devin{width:90px;height:36px;margin:3px;padding:0 8px;font:700 18px var(--f-px);color:var(--bone3);background:var(--k);border:0;box-shadow:inset 0 0 0 var(--p) var(--st1)}
 .devin:focus{outline:var(--p) solid var(--yel)}
 .devtag{color:var(--org2)}
+/* ---------- player profile ---------- */
+.pfbtn{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;z-index:3;display:flex;align-items:center;gap:8px;padding:5px 12px 8px 5px;max-width:230px;text-align:left}
+.pfbtn:active{transform:translateY(2px)}
+.pfav{width:40px;height:40px;flex:none;display:grid;place-items:center;background:#120d18;box-shadow:inset 0 0 0 3px var(--rk,#4a3f5c)}
+.pfav img{width:36px;height:36px;image-rendering:pixelated}
+.pfnm{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:1.05}
+.pfnm b{font-size:16px;color:var(--bone3)}
+.pfnm small{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--rk,#8f82a3);white-space:nowrap}
+.sheet-card.wide{width:min(100%,980px)}
+#sheet:has(.sheet-card.wide){align-items:center}
+.prof{display:grid;grid-template-columns:1fr;gap:8px}
+.prof .h-sec{font-size:12px}
+.pcard{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 12px 16px;text-align:center;--rim:var(--rk)}
+.pbig{position:relative;width:108px;height:108px;display:grid;place-items:center;background:#120d18;box-shadow:inset 0 0 0 4px var(--rk),0 0 18px color-mix(in srgb,var(--rk) 35%,transparent)}
+.pbig img{width:96px;height:96px;image-rendering:pixelated}
+.pbig small{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);padding:1px 6px 3px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#2a1206;background:var(--org2);white-space:nowrap}
+.pname{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;margin-top:4px}
+.pname b{font-size:26px;letter-spacing:.02em;color:var(--bone3)}
+.pedit{width:34px;height:34px}
+.pin{width:140px;height:38px;padding:0 8px;font:700 22px var(--f-px);color:var(--bone3);background:var(--k);border:0;box-shadow:inset 0 0 0 var(--p) var(--yel);text-align:center}
+.pin:focus{outline:none}
+.pin.shk{animation:tsh .3s steps(4)}
+@keyframes tsh{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.phint{margin:0;font-size:12px;color:var(--st3)}
+.phint.bad{color:var(--red3)}
+.prank{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--rk)}
+.pcard .lvbar{width:100%}
+.pcard .lvbar i{background:var(--rk)}
+.ppick{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.ppick button{width:46px;height:46px;display:grid;place-items:center;background:#120d18;box-shadow:inset 0 0 0 2px var(--st1)}
+.ppick button.on{box-shadow:inset 0 0 0 3px var(--yel)}
+.ppick img{width:40px;height:40px;image-rendering:pixelated}
+.pbox{display:flex;flex-direction:column;gap:8px;padding:12px 12px 15px}
+.plink{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px 10px;text-align:left;background:#120d18;box-shadow:inset 0 0 0 2px var(--st0)}
+.plink:active{transform:translateY(2px)}
+.plink img{width:48px;height:48px;image-rendering:pixelated;flex:none}
+.plink>span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.plink>span.pslots{flex-direction:row;flex-wrap:wrap;gap:6px}
+.plink>span.pskin{flex-direction:row;gap:4px}
+.plink b{font-size:16px}
+.plink small{font-size:12px;color:var(--bone2);line-height:1.2}
+.plink em{margin-left:auto;font-style:normal;color:var(--org2)}
+.pslots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.pslot{position:relative;width:46px;height:46px;display:grid;place-items:center;background:#0b0a12;box-shadow:inset 0 0 0 var(--p) var(--qc,var(--st0))}
+.pslot .ghost{opacity:.28}
+.pslot em{position:absolute;left:3px;bottom:1px;font-style:normal;font-weight:700;font-size:11px;color:var(--yel);text-shadow:0 1px 0 #000}
+.pskin{display:flex;gap:4px;flex:none}
+.pskin .dw{width:36px;height:36px}
+.pstats .statlist{grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:5px}
+.pstats .statlist div{padding:7px 8px 10px}
+.pstats .statlist b{font-size:20px}
+.pstats .statlist span{font-size:11px}
+@media (orientation:landscape){ .prof{grid-template-columns:minmax(0,230px) minmax(0,1fr) minmax(0,1fr);align-items:start} }
+@media (orientation:landscape) and (max-height:560px){ .pfbtn{padding:4px 10px 6px 4px} .pfav{width:34px;height:34px} .pfav img{width:30px;height:30px} .pbig{width:92px;height:92px} .pbig img{width:84px;height:84px} .pcard{padding:10px 10px 12px;gap:5px} .pbox{padding:9px 10px 11px;gap:5px} .pslot{width:38px;height:38px} .pslot .pi{width:24px;height:24px} .plink>span.pslots{gap:4px} .plink{padding:5px 8px 7px} .plink img{width:38px;height:38px} .pskin .dw{width:30px;height:30px} .pstats .statlist div{padding:5px 7px 8px} .pstats .statlist b{font-size:17px} .pname b{font-size:22px} .pname{min-height:34px;margin-top:2px} }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -964,6 +1018,7 @@ const ICD={
   unlock:[['s','M7.5 11V7.5a4.5 4.5 0 0 1 8.6-1.8'],['f','M4.5 10.5h15V21h-15z'],['h','M11 14h2v4h-2z']],
   hourglass:[['f','M5 2h14v3.5l-5 6.5 5 6.5V22H5v-3.5l5-6.5-5-6.5z'],['d','M8 19h8']],
   leaf:[['f','M4 20C4 9 10 3 21 3c0 11-6 17-17 17z'],['d','M5 19L16 8']],
+  pen:[['f','M3 21l1.4-5.6L15.6 4.2a2.2 2.2 0 0 1 3.1 0l1.1 1.1a2.2 2.2 0 0 1 0 3.1L8.6 19.6z'],['d','M13.6 6.4l4 4']],
   cog:[['f',(()=>{ let d=''; for(let k=0;k<16;k++){ const r=k%2?7.6:11,a0=(k*22.5-9)*Math.PI/180,a1=(k*22.5+9)*Math.PI/180; d+=`${k?'L':'M'}${(12+r*Math.cos(a0)).toFixed(2)} ${(12+r*Math.sin(a0)).toFixed(2)}L${(12+r*Math.cos(a1)).toFixed(2)} ${(12+r*Math.sin(a1)).toFixed(2)}`; } return d+'z'; })()],['h',circ(12,12,3.6)]],
   clover:[['f',circ(7.5,7.5,4.6)],['f',circ(16.5,7.5,4.6)],['f',circ(7.5,15.5,4.6)],['f',circ(16.5,15.5,4.6)],['d','M12 2.5v19M2.5 11.5h19']]
 };
@@ -1577,6 +1632,11 @@ function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function drop(k){try{localStorage.removeItem(k)}catch(e){}}
 const META=Object.assign({best:0,wins:0,runs:0,bank:0,skins:['bone'],gems:0,heroes:['errante'],hero:'errante',hskins:[],hskin:{}},load('cripta-meta',{}));
 if(META.tutDone===undefined){ META.tutDone=META.runs>0; store('cripta-meta',META); }
+/* ---- player profile: name (3-8 letters or digits), portrait, rank by best floor ---- */
+const NAME_OK=/^[A-Za-z0-9]{3,8}$/;
+const cleanName=v=>String(v||'').replace(/[^A-Za-z0-9]/g,'').slice(0,8);
+function randomName(){ return ['Kael','Nyx','Bram','Orin','Vex','Rook','Lira','Tavi','Zed','Mira','Sol','Ash','Iris','Dax','Runa','Thal'][Math.floor(Math.random()*16)]+(10+Math.floor(Math.random()*90)); }
+if(!META.profile||!NAME_OK.test(META.profile.name)){ META.profile=Object.assign({avatar:null},META.profile||{},{name:randomName()}); store('cripta-meta',META); }
 if(!META.skins.includes('bone')) META.skins.unshift('bone');
 if(!META.skins.includes(SKIN)) SKIN='bone';
 let SOUND=load('cripta-sound',true);
@@ -3178,7 +3238,9 @@ async function winCombat(){
   G.reward={title:`${e.name} ${tt("derrotado","defeated")}`,gold,relic,opts,stage:'box',box,boxQ:lucky?[{open:false,tier:rollChest(C.kind)}]:[],boxN:box?(lucky?2:1):0};
   go('reward');
 }
-function bankRun(won){ const earned=G.gold+G.floor*15+G.stats.kills*8+(won?500:0); META.bank=(META.bank||0)+earned; const gems=Math.floor(G.floor/5)+(G.stats.bosses||0)*10; META.gems=(META.gems||0)+gems; store('cripta-meta',META); G.earned=earned; G.gemsEarned=gems; }
+function bankRun(won){ const earned=G.gold+G.floor*15+G.stats.kills*8+(won?500:0); META.bank=(META.bank||0)+earned; const gems=Math.floor(G.floor/5)+(G.stats.bosses||0)*10; META.gems=(META.gems||0)+gems;
+  { const L=META.life=META.life||{},st=G.stats; L.floors=(L.floors||0)+G.floor; for(const k of ['kills','rolls','dmg','crits','bosses']) L[k]=(L[k]||0)+(st[k]||0); }
+  store('cripta-meta',META); G.earned=earned; G.gemsEarned=gems; }
 function lose(){
   G.combat.phase='lost'; sfx('lose'); bankRun(false); G.over=true; G.quote=pickQuote(); drop('cripta-run');
   META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
@@ -3445,12 +3507,71 @@ function renderTitle(){
   $('#bNew').onclick=()=>{start(); chooseMode();};
   if($('#bCont')) $('#bCont').onclick=()=>{start(); G=saved; normalize(); view='game'; retrigger($('#wipe'),'on'); render();};
   $('#bHow').onclick=showHow;
+  { const pb=document.createElement('button'); pb.className='pfbtn pf dark'; pb.id='bProf'; const rk=rankOf(); pb.style.setProperty('--rk',rk.c); pb.setAttribute('aria-label',tt('Perfil',"Profile"));
+    pb.innerHTML=`<span class="pfav"><img src="${spriteURL34(avatarSpr())}" alt=""></span><span class="pfnm"><b>${META.profile.name}</b><small>${rk.name}</small></span>`;
+    M.querySelector('.title-screen').appendChild(pb); pb.onclick=()=>{ ac(); sfx('tap'); showProfile(); }; }
   { const cb=document.createElement('button'); cb.className='hudbtn cfgbtn'; cb.id='bCfg'; cb.setAttribute('aria-label',tt('Ajustes',"Settings")); cb.innerHTML=icon('cog','stone',2); M.querySelector('.title-screen').appendChild(cb); cb.onclick=()=>{ ac(); sfx('tap'); showSettings(); }; }
   { let taps=[]; M.querySelector('.logo').onclick=()=>{ const n=Date.now(); taps=taps.filter(t=>n-t<3000); taps.push(n); if(taps.length>=7){ taps=[]; showDev(); } }; }
   $('#bArm').onclick=()=>{ ac(); sfx('tap'); showArmory(); };
   $('#bHero').onclick=()=>{ ac(); sfx('tap'); showHeroes(); };
   $('#bGear').onclick=()=>{ ac(); sfx('tap'); showGear(); };
 }
+/* ---- profile sheet ---- */
+const RANKS=[[1,tt('Aprendiz',"Apprentice"),'#8f82a3'],[10,tt('Saqueador de criptas',"Crypt Raider"),'#c98a4a'],[26,tt('Escalador de la Torre',"Tower Climber"),'#4f8cff'],[51,tt('Señor de la Forja',"Forge Lord"),'#ff7a2a'],[76,tt('Retador del Núcleo',"Core Challenger"),'#c27ae8'],[101,tt('Viajero eterno',"Eternal Wanderer"),'#ffd35c']];
+function rankOf(){ const b=META.best||1; let i=0; while(i<RANKS.length-1&&b>=RANKS[i+1][0]) i++; const [min,name,c]=RANKS[i],nx=RANKS[i+1]; return {name,c,min,next:nx?nx[0]:null,nextName:nx?nx[1]:null,p:nx?Math.min(1,(b-min)/(nx[0]-min)):1}; }
+/* portraits: every unlocked hero and outfit */
+function avatarOpts(){ const o=META.heroes.map(k=>({id:'h:'+k,spr:HEROES[k].spr,name:HEROES[k].name})); (META.hskins||[]).forEach(id=>{ const sk=HSKINS[id]; if(sk) o.push({id:'s:'+id,spr:sk.spr,name:sk.name}); }); return o; }
+function avatarSpr(){ const a=META.profile.avatar,o=a&&avatarOpts().find(x=>x.id===a); return o?o.spr:heroSpr(META.hero); }
+function showProfile(edit,pick){
+  const P=META.profile,rk=rankOf(),L=META.life||{},h=HEROES[META.hero]||HEROES.errante,sk=SKINS[SKIN];
+  const nf=n=>n>=100000?Math.floor(n/1000)+'k':String(n||0);
+  const slots=SLOTS.map(sl=>{ const id=META.gear.eq[sl]; return id&&GEAR[id]?`<span class="pslot" style="--qc:${QUAL[GEAR[id].q].c}" title="${GEAR[id].name}">${gearIcon(id,2)}<em>${lvOf(id)}</em></span>`:`<span class="pslot"><span class="ghost">${icon(SLOTI[sl],'stone',2)}</span></span>`; }).join('');
+  const stat=(v,l)=>`<div class="pf"><b>${v}</b><span>${l}</span></div>`;
+  openSheet(`<div class="arm-head"><h2 class="h-title" style="font-size:34px">${tt("Perfil","Profile")}</h2></div>
+    <div class="prof" style="--rk:${rk.c}">
+      <div class="pcard pf dark">
+        <button class="pbig" id="pAv" aria-label="${tt("Cambiar retrato","Change portrait")}"><img src="${spriteURL34(avatarSpr())}" alt=""><small>${tt("Cambiar","Change")}</small></button>
+        ${pick?`<div class="ppick">${avatarOpts().map(o=>`<button data-a="${o.id}" class="${o.id===(P.avatar||'h:'+META.hero)?'on':''}" aria-label="${o.name}"><img src="${spriteURL34(o.spr)}" alt=""></button>`).join('')}</div>`:''}
+        <div class="pname">${edit?`<input class="pin" id="pIn" maxlength="8" value="${P.name}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${tt("Nombre","Name")}"><button class="hudbtn pedit" id="pOk" aria-label="${tt("Guardar","Save")}">✓</button>`
+          :`<b>${P.name}</b><button class="hudbtn pedit" id="pEdit" aria-label="${tt("Cambiar nombre","Change name")}">${icon('pen','bone',1)}</button>`}</div>
+        ${edit?`<p class="phint" id="pHint">${tt("De 3 a 8 letras o números","3 to 8 letters or numbers")}</p>`:''}
+        <span class="prank">${rk.name}</span>
+        <div class="lvbar"><i style="width:${rk.p*100}%"></i><span>${rk.next?`${tt("Piso","Floor")} ${META.best||0} / ${rk.next}`:tt("Rango máximo","Max rank")}</span></div>
+        ${rk.next?`<p class="phint">${tt("Siguiente:","Next:")} ${rk.nextName}</p>`:''}
+      </div>
+      <div class="pbox pf dark">
+        <h3 class="h-sec">${tt("Tu héroe","Your hero")}</h3>
+        <button class="plink" id="pHero"><img src="${spriteURL34(heroSpr(META.hero))}" alt=""><span><b>${h.name}</b><small>${h.role}${h.ab?` · ${h.ab.name}`:''}</small></span><em>▸</em></button>
+        <h3 class="h-sec">${tt("Equipo","Gear")} · ${tt("Poder","Power")} ${gearPower()}</h3>
+        <button class="plink" id="pGear" style="justify-content:center"><span class="pslots">${slots}</span></button>
+        <h3 class="h-sec">${tt("Tus dados","Your dice")}</h3>
+        <button class="plink" id="pSkin"><span class="pskin">${dieImg(F('atk',6,'epic'))}${dieImg(F('crit',4))}</span><span><b>${sk.name}</b><small>${sk.perk}</small></span><em>▸</em></button>
+      </div>
+      <div class="pbox pstats pf dark">
+        <h3 class="h-sec">${tt("Récords","Records")}</h3>
+        <div class="statlist">${stat(META.best||0,tt("Mejor piso","Best floor"))}${stat(META.wins||0,tt("Jefes","Bosses"))}${stat(META.runs||0,tt("Partidas","Runs"))}${stat(nf(L.kills),tt("Enemigos","Enemies"))}${stat(nf(L.rolls),tt("Tiradas","Rolls"))}${stat(nf(L.dmg),tt("Daño","Damage"))}</div>
+        <h3 class="h-sec">${tt("Colección","Collection")}</h3>
+        <div class="statlist">${stat(`${META.heroes.length}/${HERO_KEYS.length}`,tt("Héroes","Heroes"))}${stat(`${Object.keys(META.gear.owned).length}/${Object.keys(GEAR).length}`,tt("Equipo","Gear"))}${stat(`${META.skins.length}/${Object.keys(SKINS).length}`,tt("Dados","Dice"))}${stat(nf(META.gems||0),tt("Gemas","Gems"))}${stat(nf(META.bank||0),tt("Tesoro","Treasury"))}${stat(L.floors?nf(L.floors):'–',tt("Pisos","Floors"))}</div>
+      </div>
+    </div>`);
+  $('#sheet .sheet-card').classList.add('wide');
+  const back=()=>showProfile();
+  $('#pAv').onclick=()=>{ sfx('tap'); showProfile(false,!pick); };
+  $('#sheet').querySelectorAll('.ppick button').forEach(b=>b.onclick=()=>{ META.profile.avatar=b.dataset.a; store('cripta-meta',META); sfx('forge'); showProfile(false,false); burstAt('#pAv','ember',30,2.4); if(view==='title') refreshProfileBtn(); });
+  $('#pHero').onclick=()=>{ sfx('tap'); showHeroes(back); };
+  $('#pGear').onclick=()=>{ sfx('tap'); showGear(back); };
+  $('#pSkin').onclick=()=>{ sfx('tap'); showArmory(back); };
+  if(edit){
+    const inp=$('#pIn'),hint=$('#pHint');
+    inp.focus(); inp.select();
+    inp.oninput=()=>{ const c=cleanName(inp.value); if(c!==inp.value){ inp.value=c; hint.classList.add('bad'); hint.textContent=tt('Solo letras y números, sin espacios',"Letters and numbers only, no spaces"); } };
+    const save=()=>{ const v=cleanName(inp.value); if(!NAME_OK.test(v)){ hint.classList.add('bad'); hint.textContent=tt('Tiene que tener de 3 a 8 letras o números',"It must have 3 to 8 letters or numbers"); sfx('tap'); retrigger(inp,'shk'); return; }
+      META.profile.name=v; store('cripta-meta',META); sfx('win'); showProfile(); burstAt('#pEdit','ember',24,2.2); if(view==='title') refreshProfileBtn(); };
+    $('#pOk').onclick=save;
+    inp.onkeydown=e=>{ if(e.key==='Enter') save(); else if(e.key==='Escape') showProfile(); };
+  } else $('#pEdit').onclick=()=>{ sfx('tap'); showProfile(true); };
+}
+function refreshProfileBtn(){ const b=$('#bProf'); if(!b) return; const rk=rankOf(); b.style.setProperty('--rk',rk.c); b.querySelector('img').src=spriteURL34(avatarSpr()); b.querySelector('b').textContent=META.profile.name; b.querySelector('small').textContent=rk.name; }
 /* settings: everything that used to crowd the title menu */
 function showSettings(){
   const onoff=v=>v?tt('Sí',"On"):tt('No',"Off");

@@ -2,6 +2,27 @@
 
 Se pegan tal cual en **Play Console → Pruebas → Prueba cerrada → Crear versión → Notas de la versión**. Máximo 500 caracteres por idioma. La versión más reciente va arriba.
 
+## 0.3.2 (versionCode 8)
+
+```
+<es-ES>
+Novedades de la 0.3.2:
+• Perfil de jugador: toca el retrato de arriba a la izquierda en la portada.
+• Elige tu nombre (de 3 a 8 letras o números) y tu retrato entre los héroes y aspectos desbloqueados.
+• Rango según tu mejor piso, de Aprendiz a Viajero eterno.
+• Tu héroe, equipo, dados, récords y colección de un vistazo.
+• El perfil se ve mejor en pantallas grandes.
+</es-ES>
+<en-US>
+What's new in 0.3.2:
+• Player profile: tap the portrait at the top left of the title screen.
+• Pick your name (3 to 8 letters or numbers) and your portrait from your unlocked heroes and outfits.
+• Rank based on your best floor, from Apprentice to Eternal Wanderer.
+• Your hero, gear, dice, records and collection at a glance.
+• The profile looks better on large screens.
+</en-US>
+```
+
 ## 0.3.1 (versionCode 7)
 
 ```
