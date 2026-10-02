@@ -88,8 +88,12 @@ img,canvas{image-rendering:pixelated;image-rendering:crisp-edges}
 .inner{display:flex;flex-direction:column;gap:12px;padding:16px 14px 18px}
 
 /* ---------- hud ---------- */
-.hud{display:flex;align-items:center;gap:10px;padding:8px 10px 11px;margin-top:10px}
-.hp{flex:1;display:flex;align-items:center;gap:6px;min-width:0}
+.hud{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:10px;row-gap:3px;padding:8px 10px 11px;margin-top:10px}
+.hp{grid-column:1;display:flex;align-items:center;gap:6px;min-width:0}
+.hrow{grid-column:1;display:flex;align-items:center;gap:16px;min-width:0;padding-left:2px}
+.hrow .floorlbl{margin-left:auto}
+.hud #pause{grid-column:2;grid-row:1/3}
+@media (max-width:400px){ .hrow{gap:10px} .hrow .stat{font-size:18px} .hrow .floorlbl{font-size:15px} }
 .bar{position:relative;height:18px;flex:1;background:var(--k);box-shadow:inset 0 0 0 var(--p) var(--k)}
 .bar i{position:absolute;left:var(--p);top:var(--p);bottom:var(--p);background:var(--red2);box-shadow:inset 0 var(--p) 0 0 var(--red3),inset 0 calc(-1*var(--p)) 0 0 var(--red1);transition:width .4s steps(6)}
 .bar::after{content:"";position:absolute;inset:var(--p);background:repeating-linear-gradient(90deg,transparent 0 12px,rgba(0,0,0,.45) 12px 15px);pointer-events:none}
@@ -751,6 +755,28 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 .dq cite{display:block;margin-top:6px;color:var(--org2);font-size:14px;font-style:normal}
 .dq{width:min(100%,440px)}
 .tl:has(.dq) .gate-spot{flex:0 0 auto;height:110px;min-height:0;padding-top:0}
+/* tutorial: spotlight + coach */
+#tutHole{position:fixed;z-index:11;pointer-events:none;border:3px solid var(--yel);box-shadow:0 0 0 3px var(--k),0 0 0 200vmax rgba(5,4,8,.7);transition:left .25s,top .25s,width .25s,height .25s;animation:tutPulse .9s steps(2) infinite}
+#tutHole.off{left:50%!important;top:50%!important;width:0!important;height:0!important;border-width:0}
+#tutHole.free{box-shadow:none;border-width:0}
+@keyframes tutPulse{50%{border-color:var(--org2)}}
+#tutArrow{position:fixed;z-index:11;pointer-events:none;color:var(--yel);font:700 26px 'Pixelify Sans',sans-serif;text-shadow:0 3px 0 var(--k),2px 0 0 var(--k),-2px 0 0 var(--k);animation:tutBob .6s steps(2) infinite alternate;transition:left .25s,top .25s}
+#tutArrow.up{transform:rotate(180deg)}
+@keyframes tutBob{to{translate:0 6px}}
+#coach{position:fixed;z-index:13;display:flex;gap:10px;align-items:flex-start;width:min(390px,calc(100vw - 20px));padding:10px 12px 12px;transition:left .25s,top .25s;animation:rise .3s ease-out}
+#coach .cp{flex:none;width:58px;height:58px;display:grid;place-items:center;background:#120d18;box-shadow:inset 0 0 0 2px #3d3048}
+#coach .cp img{width:54px;height:54px;image-rendering:pixelated}
+#coach .cb{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+#coach .cn{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--yel)}
+#coach .ct{margin:0;font-size:15px;line-height:1.3}
+#coach .ct b{color:var(--org2)}
+#coach .cf{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#coach .cskip{background:none;border:0;padding:4px 0;font:inherit;font-size:12px;color:#8f82a3;text-decoration:underline;cursor:pointer}
+#coach.mini{width:auto;padding:6px;cursor:pointer}
+#coach.mini .cb{display:none}
+#coach.mini .cp{border:3px solid var(--yel);animation:tutPulse .9s steps(2) infinite}
+#coach .cdo{font-size:13px;color:var(--yel);animation:blink2 .9s steps(2) infinite}
+@media (max-height:440px){ #coach{width:min(330px,calc(50vw - 16px))} #coach .ct{font-size:14px} #coach .cp{width:46px;height:46px} #coach .cp img{width:42px;height:42px} }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -761,9 +787,11 @@ em.gdone{font-style:normal;font-size:13px;font-weight:700;color:var(--grn3);whit
 <div id="app">
   <header class="hud pf dark" id="hud" hidden>
     <div class="hp"><span id="hpIc"></span><div class="bar" id="hpBar"><i id="hpFill"></i><span id="hpT"></span></div></div>
+    <div class="hrow">
     <div class="stat pblock" id="pblock" hidden data-tip="<b style=&quot;color:#3fb0c9&quot;>Tu escudo</b>Absorbe el daño de los golpes enemigos. Se pierde al empezar tu siguiente turno."><span id="pbIc"></span><span id="pblockT">0</span></div>
     <div class="stat gold" id="goldS" data-tip="<b style=&quot;color:#e8b52a&quot;>Oro de la partida</b>Gástalo en el mercader. Lo que te sobre al terminar pasa al Tesoro."><span id="gIc"></span><span id="goldT">0</span></div>
     <div class="floorlbl" id="floorT"></div>
+    </div>
     <button class="hudbtn" id="pause" aria-label="Pausa"><span class="pausebars"><i></i><i></i></span></button>
   </header>
   <div class="relics" id="relics" hidden></div>
@@ -1158,7 +1186,7 @@ const SPR={
     '..kpbk.ww.kbpk..','.kpbbk.ww.kbbpk.','kpwpbk.ww.kbpwpk','kpppk..ww..kpppk',
     '.kkk...ww...kkk.','................','................','................']}
 };
-const PAL_ALT={brood:{b:'#2a3a1a',q:'#5a7a2a',r:'#ffe14a',w:'#f4f7ea'},cursed:{w:'#3a1a2e',s:'#24101e',p:'#ffe27a',r:'#ff3b4f',y:'#ff7a5c',k:'#000000'},
+const PAL_ALT={shade:{k:'#05030a',h:'#4a3a5e',r:'#2a1838',d:'#140a1e',e:'#9eeaf0',w:'#d8f8ff'},brood:{b:'#2a3a1a',q:'#5a7a2a',r:'#ffe14a',w:'#f4f7ea'},cursed:{w:'#3a1a2e',s:'#24101e',p:'#ffe27a',r:'#ff3b4f',y:'#ff7a5c',k:'#000000'},
   c_gold:{b:'#e8b52a',y:'#fff1a8',k:'#3a2206'},c_legend:{b:'#4a1d6e',y:'#ffa640',k:'#120a1e'},
   gold:{w:'#f0cf6a',s:'#b08a2c',k:'#2a1b08',r:'#6ff3ff'},  ghoul:{g:'#7a8a6a',l:'#a8b898',y:'#e04040',b:'#3a3a2a',n:'#6a6a5a'},
   imp:{g:'#c4302a',l:'#ff6a4a',y:'#ffe14a',b:'#3a1a1e',n:'#e8b52a',k:'#1a0608'},
@@ -1428,7 +1456,10 @@ const ENEMIES={
   livingdie:{name:tt('Dado viviente',"Living Die"),sprite:'ldie',hp:28,intents:[['multi',3,4],['atk',11],['steal',12]]},
   voidmoth:{name:tt('Polilla del vacío',"Void Moth"),sprite:'moth',hp:24,intents:[['drain',7],['multi',2,5],['block',8]]},
   curseddie:{name:tt('Dado maldito',"Cursed Die"),sprite:'ldie',pal:'cursed',hp:54,elite:true,intents:[['multi',4,4],['steal',15],['atk',15],['block',14]]},
-  tahur:{name:tt('El Tahúr',"The Gambler"),sprite:'merchant',pal:'tahur',hp:320,boss:true,intents:[['atk',18],['multi',6,4],['drain',12],['block',20],['buff',5],['heal',18]]}
+  tahur:{name:tt('El Tahúr',"The Gambler"),sprite:'merchant',pal:'tahur',hp:320,boss:true,intents:[['atk',18],['multi',6,4],['drain',12],['block',20],['buff',5],['heal',18]]},
+  // first run only: the Shade of Azhrak ends it on floor 5; the old gambler is the tutorial sparring partner
+  shade:{name:tt('Sombra de Azhrak',"Shade of Azhrak"),sprite:'demon',pal:'shade',hp:140,elite:true,intents:[['atk',22],['multi',8,3],['drain',16]]},
+  mentor:{name:tt('El viejo tahúr',"The old gambler"),sprite:'merchant',pal:'tahur',hp:30,intents:[['atk',5]]}
 };
 const DOORS={
   combat:{name:tt('Combate',"Fight"),hint:tt('Un monstruo',"A monster"),icon:'skull',ramp:'atk'},
@@ -1460,11 +1491,12 @@ function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}
 function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function drop(k){try{localStorage.removeItem(k)}catch(e){}}
 const META=Object.assign({best:0,wins:0,runs:0,bank:0,skins:['bone'],gems:0,heroes:['errante'],hero:'errante',hskins:[],hskin:{}},load('cripta-meta',{}));
+if(META.tutDone===undefined){ META.tutDone=META.runs>0; store('cripta-meta',META); }
 if(!META.skins.includes('bone')) META.skins.unshift('bone');
 if(!META.skins.includes(SKIN)) SKIN='bone';
 let SOUND=load('cripta-sound',true);
 let G=null, view='title';
-function saveRun(){ if(G&&!G.over) store('cripta-run',G); }
+function saveRun(){ if(G&&!G.over&&!G.tut) store('cripta-run',G); }
 /* ================= equipment: 5 slots, 3 qualities, levels 1-10 ================= */
 const BOX_CHANCE=1; // probabilidad de que un enemigo suelte una caja (1 = siempre, para pruebas)
 const MAXLV=10;
@@ -2667,13 +2699,14 @@ function genDie(){ return {faces:[genFace(),genFace(),genFace(),genFace(),F('atk
 const faceName=f=>f.t==='blank'?tt('Cara vacía',"Blank face"):`${TYPES[f.t].name} ${f.v}`;
 
 /* ================= run flow ================= */
+const startDice=()=>[
+  {faces:[F('atk',3),F('atk',3),F('atk',4),F('def',3),F('def',2),F('blank',0)]},
+  {faces:[F('atk',2),F('atk',2),F('def',3),F('def',3),F('heal',2),F('blank',0)]},
+  {faces:[F('atk',2),F('atk',3),F('def',2),F('heal',2),F('coin',3),F('blank',0)]}
+];
 function newRun(){
-  G={mode:'infinite',screen:'map',hp:32,maxHp:32,gold:10,floor:1,relics:[],over:false,
-    dice:[
-      {faces:[F('atk',3),F('atk',3),F('atk',4),F('def',3),F('def',2),F('blank',0)]},
-      {faces:[F('atk',2),F('atk',2),F('def',3),F('def',3),F('heal',2),F('blank',0)]},
-      {faces:[F('atk',2),F('atk',3),F('def',2),F('heal',2),F('coin',3),F('blank',0)]}
-    ],
+  G={mode:'infinite',screen:'map',hp:32,maxHp:32,gold:10,floor:1,relics:[],over:false,first:!META.tutDone,
+    dice:startDice(),
     doors:null,combat:null,reward:null,shop:null,event:null,treasure:null,pending:null,
     stats:{kills:0,dmg:0,rolls:0,crits:0,bosses:0}};
   G.hero=META.heroes.includes(META.hero)?META.hero:'errante';
@@ -2686,6 +2719,7 @@ function genDoors(){
   const f=G.floor;
   const lc=worldOf(f).local;
   if(lc===WORLD_LEN) return ['boss'];
+  if(G.first&&f===FIRST_SHADE_FLOOR) return ['elite'];
   if(lc===1) return ['combat','combat'];
   if(lc===WORLD_LEN-1) return ['rest','shop'];
   // special rooms need a few floors of rest between appearances, so they never repeat back to back
@@ -2702,8 +2736,9 @@ function genDoors(){
 }
 function nextFloor(){
   G.floor++; G.combat=null; G.reward=null; G.shop=null; G.event=null; G.treasure=null; G.pending=null;
-  META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
-  G.doors=genDoors();
+  if(!G.tut){ META.best=Math.max(META.best,G.floor); store('cripta-meta',META); }
+  G.doors=G.tut?['combat','event','treasure']:genDoors();
+  if(G.first&&G.floor===FIRST_SHADE_FLOOR) setTimeout(()=>toast(tt('Algo enorme respira tras esa puerta…',"Something huge is breathing behind that door…")),700);
   if(worldOf().local===1&&G.floor>1){ saveRun(); const st=worldStory(); playStory(st.panels,()=>{ view='game'; go('map'); if(st.pact) showPacts(); },{endLabel:st.pact?tt('Tocar el Núcleo',"Touch the Core"):tt('Seguir',"Continue"),final:st.final,music:'dungeon'}); }
   else go('map');
 }
@@ -2712,7 +2747,8 @@ function enterDoor(t,btn){
   sfx('door');
   if(btn){ btn.classList.add('open'); btn.querySelector('img').src=doorURL(t,true); }
   setTimeout(()=>{
-    if(t==='combat') startCombat(pick(poolFor()),'normal');
+    if(t==='elite'&&G.first&&G.floor===FIRST_SHADE_FLOOR) startCombat('shade','elite');
+    else if(t==='combat') startCombat(pick(poolFor()),'normal');
     else if(t==='elite') startCombat(pick(worldOf().w.elites),'elite');
     else if(t==='boss') startCombat(worldOf().w.boss,'boss');
     else if(t==='treasure') openTreasure();
@@ -2724,8 +2760,9 @@ function enterDoor(t,btn){
 
 /* ================= combat ================= */
 function makeEnemy(key){
-  const d=ENEMIES[key],f=G.floor,cy=worldOf().cycle,hp=d.boss?Math.round(d.hp*(1+.5*cy)*(1+cy*.01*(f-1))):Math.round(d.hp*(1+.075*(f-1)));
-  return {key,name:d.name,hp,maxHp:hp,block:0,str:d.boss?Math.max(1+2*cy,Math.floor((f-1)/5)):Math.floor((f-1)/5),intent:null,last:null};
+  const d=ENEMIES[key],f=G.floor,cy=worldOf().cycle,hp0=d.boss?Math.round(d.hp*(1+.5*cy)*(1+cy*.01*(f-1))):Math.round(d.hp*(1+.075*(f-1)));
+  const harsh=G.first&&key!=='shade',hp=harsh?Math.round(hp0*1.25):hp0; // the first run is a little harsher
+  return {key,name:d.name,hp,maxHp:hp,block:0,str:(d.boss?Math.max(1+2*cy,Math.floor((f-1)/5)):Math.floor((f-1)/5))+(harsh?1:0),intent:null,last:null};
 }
 function pickIntent(e){
   const d=ENEMIES[e.key],opts=d.intents.filter(i=>!(e.last&&i[0]===e.last[0]&&i[0]!=='atk'));
@@ -2889,6 +2926,7 @@ function animateDie(i,k){
     setTimeout(()=>{
       clearInterval(tick);
       let pf=pick(faces),lucky=false;
+      if(TUT&&TUT.rig&&TUT.rig[i]){ pf=TUT.rig[i]; TUT.rig[i]=null; }
       if(C.buffs&&C.buffs.luck){ const alt=pick(faces); if(faceScore(alt)>faceScore(pf)){ pf=alt; lucky=true; } }
       C.faces[i]={...pf};
       if(lucky) setTimeout(()=>burstAt(el,'heal',12,1.6),20);
@@ -3017,7 +3055,8 @@ async function winCombat(){
   let relic=null; if(big){ relic=randomRelic(); gainRelic(relic); }
   const opts=genOpts(big?1:0);
   const box=Math.random()<BOX_CHANCE?{open:false,tier:rollChest(C.kind)}:null;
-  const lucky=box&&Math.random()<(C.kind==='boss'?.35:C.kind==='elite'?.2:.12);
+  if(G.tut&&box) box.tier='gold';
+  const lucky=!G.tut&&box&&Math.random()<(C.kind==='boss'?.35:C.kind==='elite'?.2:.12);
   G.reward={title:`${e.name} ${tt("derrotado","defeated")}`,gold,relic,opts,stage:'box',box,boxQ:lucky?[{open:false,tier:rollChest(C.kind)}]:[],boxN:box?(lucky?2:1):0};
   go('reward');
 }
@@ -3025,12 +3064,140 @@ function bankRun(won){ const earned=G.gold+G.floor*15+G.stats.kills*8+(won?500:0
 function lose(){
   G.combat.phase='lost'; sfx('lose'); bankRun(false); G.over=true; G.quote=pickQuote(); drop('cripta-run');
   META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
+  if(G.first&&!META.tutDone){ setTimeout(firstDeath,1400); return; }
   setTimeout(()=>{ G.screen='gameover'; retrigger($('#wipe'),'on'); render(); },900);
 }
 function victory(){
   bankRun(true); G.over=true; drop('cripta-run'); META.best=Math.max(META.best,G.floor); store('cripta-meta',META);
   G.screen='victory'; retrigger($('#wipe'),'on'); render();
 }
+
+/* ================= first run + interactive tutorial ================= */
+const FIRST_SHADE_FLOOR=5;
+let TUT=null;
+/* after the first (forced) death: wake up in the tavern, the old gambler offers to teach you */
+function firstDeath(){
+  playStory([
+    {scene:['crypt',{dim:1}],foe:'shade',
+     txt:tt('La Sombra de Azhrak cae sobre ti. Tus tres dados ruedan por el suelo… y todo se vuelve negro.',"The Shade of Azhrak falls upon you. Your three dice roll across the floor… and everything goes black."),
+     html:tt('La <b>Sombra de Azhrak</b> cae sobre ti. Tus tres dados ruedan por el suelo… y <b>todo se vuelve negro</b>.',"The <b>Shade of Azhrak</b> falls upon you. Your three dice roll across the floor… and <b>everything goes black</b>.")},
+    {scene:['rest',{}],
+     txt:tt('Despiertas junto al fuego de la taberna de Valdeceniza. Alguien te sacó de la cripta. Al otro lado de la mesa, el viejo tahúr hace girar un dado entre los dedos.',"You wake up by the fire in Ashvale's tavern. Someone dragged you out of the crypt. Across the table, the old gambler spins a die between his fingers."),
+     html:tt('Despiertas junto al fuego de la taberna de <b>Valdeceniza</b>. Alguien te sacó de la cripta. Al otro lado de la mesa, <b>el viejo tahúr</b> hace girar un dado entre los dedos.',"You wake up by the fire in <b>Ashvale</b>'s tavern. Someone dragged you out of the crypt. Across the table, <b>the old gambler</b> spins a die between his fingers.")},
+    {scene:['rest',{}],foe:'mentor',
+     txt:tt('«¿Bajaste ahí con tres dados y sin saber tirarlos? Valiente… y tonto. Siéntate, muchacho. Te enseñaré a tirar como es debido. Pégame, si puedes.»',"“You went down there with three dice and no idea how to roll them? Brave… and foolish. Sit down, kid. I'll teach you to roll properly. Hit me, if you can.”"),
+     html:tt('<i>«¿Bajaste ahí con tres dados y sin saber tirarlos? Valiente… y tonto. Siéntate, muchacho. <b>Te enseñaré a tirar como es debido.</b> Pégame, si puedes.»</i>',"<i>“You went down there with three dice and no idea how to roll them? Brave… and foolish. Sit down, kid. <b>I'll teach you to roll properly.</b> Hit me, if you can.”</i>")}
+  ],startTutorial,{endLabel:tt('Aprender a tirar',"Learn to roll"),final:tt('Coge tus dados.',"Pick up your dice."),music:'camp'});
+}
+function startTutorial(){
+  ac(); tutClose();
+  G={mode:'tut',tut:true,screen:'map',hp:32,maxHp:32,gold:0,floor:1,relics:[],over:false,dice:startDice(),hero:'errante',buffs:{},gearHp:0,
+    doors:['combat'],combat:null,reward:null,shop:null,event:null,treasure:null,pending:null,stats:{kills:0,dmg:0,rolls:0,crits:0,bosses:0}};
+  view='game'; startCombat('mentor','normal');
+  G.combat.log=tt('El viejo tahúr se sienta frente a ti.',"The old gambler sits down across from you."); updateCombat();
+  tutRun(TUT_FIGHT,()=>G&&G.tut,endTutorial);
+}
+function endTutorial(skipped){
+  tutClose();
+  const gift=!META.tutDone; if(gift){ META.tutDone=true; META.gems=(META.gems||0)+50; store('cripta-meta',META); }
+  G=null; view='title'; retrigger($('#wipe'),'on'); render();
+  if(skipped){ if(gift) toast(tt('<b>+50 gemas</b> · Puedes repetir el tutorial en «Cómo se juega»',"<b>+50 gems</b> · Replay the tutorial from “How to play”")); return; }
+  setTimeout(()=>tutRun(TUT_TITLE(gift),()=>view==='title'&&!G,null),500);
+}
+const tC=()=>G&&G.combat;
+const setIntent=v=>{ const e=tC().enemy; e.intent={type:'atk',v,n:1}; updateCombat(); };
+/* each step: sel (spotlight target), say (text), tap (needs "Next") or until() (waits for the player), enter(), skip(), free (no dim, no click blocking) */
+const TUT_FIGHT=[
+  {say:()=>tt('Bienvenido a mi mesa. Aquí todo funciona igual que ahí abajo: <b>tiras tus dados y lo que sale es lo que haces</b>.',"Welcome to my table. Everything here works just like down there: <b>you roll your dice, and what comes up is what you do</b>."),tap:1},
+  {sel:'#intent',say:()=>tt('Encima de cada enemigo está su <b>intención</b>: lo que hará en su turno. La mía dice que voy a atacarte. Léela siempre antes de decidir.',"Above every enemy is its <b>intent</b>: what it will do on its turn. Mine says I'm about to attack you. Always read it before you decide."),tap:1},
+  {sel:'#tray',say:()=>tt('Tus tres dados de hueso. Cada cara es una acción: <b>espada</b> ataca, <b>escudo</b> protege, <b>corazón</b> cura, <b>moneda</b> da oro… y la cara vacía no hace nada.',"Your three bone dice. Each face is an action: <b>sword</b> attacks, <b>shield</b> protects, <b>heart</b> heals, <b>coin</b> gives gold… and the blank face does nothing."),tap:1},
+  {sel:'#bRoll',enter:()=>{ TUT.rig=[F('atk',4),F('blank',0),F('atk',3)]; },say:()=>tt('Vamos allá. Toca <b>Tirar dados</b>.',"Here we go. Tap <b>Roll dice</b>."),until:()=>tC().phase==='rolled'},
+  {sel:'#sum',say:()=>tt('Aquí se suma lo que has sacado. Dos espadas… pero tu segundo dado ha salido <b>vacío</b>. Eso tiene arreglo.',"This adds up what you rolled. Two swords… but your second die came up <b>blank</b>. That can be fixed."),tap:1},
+  {sel:'#die0',say:()=>tt('Toca este dado para <b>fijarlo</b>. Un dado fijo no vuelve a girar.',"Tap this die to <b>hold</b> it. A held die won't roll again."),until:()=>tC().held[0]},
+  {sel:'#die2',say:()=>tt('Fija también este. Solo queremos volver a tirar el vacío.',"Hold this one too. We only want to reroll the blank one."),until:()=>tC().held[2]},
+  {sel:'#bRe',enter:()=>{ TUT.rig=[null,F('atk',2),null]; },say:()=>tt(`Ahora <b>relanza</b>: solo gira el dado suelto. ${maxRerolls()===1?'Tienes 1 relanzamiento':`Tienes ${maxRerolls()} relanzamientos`} por turno.`,`Now <b>reroll</b>: only the loose die spins. You get ${maxRerolls()} reroll${maxRerolls()===1?'':'s'} per turn.`),until:()=>tC().phase==='rolled'&&tC().rerolls<maxRerolls()},
+  {sel:'#sum',say:()=>tt('¡Tres espadas! <b>Tres caras del mismo tipo forman una racha</b> y dan daño extra. Recuérdalo.',"Three swords! <b>Three faces of the same type make a combo</b> and deal extra damage. Remember that."),tap:1},
+  {sel:'#bGo',enter:()=>{ const e=tC().enemy,d=calc(tC().faces).dmg; e.hp=e.maxHp=Math.max(30,d+14); updateCombat(); },say:()=>tt('Toca <b>Resolver</b> para ejecutar tu tirada. Después me toca a mí.',"Tap <b>Resolve</b> to carry out your roll. Then it's my turn."),until:()=>tC().turn===2&&tC().phase==='start'},
+  {sel:'#hpBar',say:()=>tt('Te he dado. Esa es tu <b>vida</b>: si llega a cero, la partida se acaba y vuelves a empezar desde el piso 1.',"I hit you. Those are your <b>HP</b>: if they reach zero, the run is over and you start again from floor 1."),tap:1},
+  {sel:'#intent',enter:()=>setIntent(12),say:()=>tt('Y mira mi intención: <b>el próximo golpe será fuerte</b>. A veces lo mejor no es atacar, sino defenderse.',"And look at my intent: <b>the next hit will be a big one</b>. Sometimes the best move isn't attacking, it's defending."),tap:1},
+  {sel:'#bRoll',enter:()=>{ TUT.rig=[F('def',3),F('def',3),F('heal',2)]; },say:()=>tt('Tira.',"Roll."),until:()=>tC().phase==='rolled'},
+  {sel:'#bGo',say:()=>tt('Dos <b>escudos</b> y una <b>cura</b>: justo lo que hacía falta. El escudo absorbe mi golpe antes de tocar tu vida. Resuelve.',"Two <b>shields</b> and a <b>heal</b>: exactly what you needed. The shield soaks up my hit before it touches your HP. Resolve."),until:()=>tC().turn===3&&tC().phase==='start'},
+  {enter:()=>{ G.dice[2].faces[5]=F('crit',3,'rare'); sfx('forge'); burstAt('#die2','crit',22,2.4); },sel:'#die2',say:()=>tt('¿Ves? Casi ni lo notaste. Toma, un regalo: he cambiado la cara vacía de este dado por una de <b>Magia</b>. Lanza un orbe y <b>multiplica toda tu tirada</b>.',"See? You barely felt it. Here, a gift: I swapped this die's blank face for a <b>Magic</b> one. It launches an orb and <b>multiplies your whole roll</b>."),tap:1},
+  {sel:'#bRoll',enter:()=>{ TUT.rig=[F('atk',3),F('atk',2),F('crit',3,'rare')]; },say:()=>tt('Tira otra vez.',"Roll again."),until:()=>tC().phase==='rolled'},
+  {sel:'#bGo',enter:()=>{ const e=tC().enemy; e.hp=Math.max(1,Math.min(e.hp,calc(tC().faces).dmg)); updateCombat(); },say:()=>tt('¡<b>Magia</b> y <b>racha</b> a la vez! La Magia cuenta como ataque para las rachas. Remátame.',"<b>Magic</b> and a <b>combo</b> at once! Magic counts as an attack for combos. Finish me off."),until:()=>G.screen==='reward'},
+  {sel:'#lmBox',say:()=>tt('Al vencer pueden caer <b>cofres con equipo</b>. Este te lo he preparado yo. Ábrelo.',"Winning can drop <b>chests with gear</b>. I prepared this one for you. Open it."),until:()=>!!document.querySelector('#lmEq,#lmKeep,#lmOk')},
+  {free:1,say:()=>tt('Equípalo o guárdalo. <b>El equipo se queda contigo aunque mueras</b>, y lo usarás en todas tus partidas.',"Equip it or keep it. <b>Gear stays with you even when you die</b>, and you'll use it in every run."),until:()=>{ const lm=$('#lootModal'); return !lm||lm.hidden; }},
+  {sel:'.rcards',say:()=>tt('Después de cada pelea eliges <b>una mejora</b>: caras nuevas, un dado más, bendiciones… Cada carta se puede relanzar una vez. Elige.',"After every fight you pick <b>one upgrade</b>: new faces, an extra die, blessings… Each card can be rerolled once. Pick one."),until:()=>G.screen!=='reward'},
+  {free:1,skip:()=>G.screen==='map',say:()=>tt('Elige dónde va la mejora. Una cara nueva sustituye a otra de tus dados: cambia primero las vacías y las flojas.',"Choose where the upgrade goes. A new face replaces one of your dice's faces: swap out the blank and weak ones first."),until:()=>G.screen==='map'},
+  {sel:'.doors',say:()=>tt('Cada piso eliges <b>una puerta</b>: combate, élite, misterio, tesoro, mercader, hoguera… Y cada 25 pisos, un <b>jefe con sus propias reglas</b>.',"Every floor you choose <b>one door</b>: fight, elite, mystery, treasure, merchant, campfire… And every 25 floors, a <b>boss with its own rules</b>."),tap:1},
+  {sel:'#hud',say:()=>tt('Arriba tienes tu vida y tu <b>oro</b>. El oro se gasta en el mercader, y lo que te sobre al caer va al <b>Tesoro</b>.',"Up top: your HP and your <b>gold</b>. Gold is spent at the merchant, and whatever's left when you fall goes to the <b>Treasury</b>."),tap:1},
+  {say:()=>tt('Suficiente por hoy. Volvamos al pueblo: hay un par de cosas que deberías ver antes de bajar otra vez.',"That's enough for today. Let's head back to the village: there are a couple of things you should see before going down again."),tap:1,next:tt('Volver al pueblo',"Back to the village")}
+];
+const TUT_TITLE=gift=>[
+  {sel:'#bHero',say:()=>tt(`Con <b>gemas</b> desbloqueas héroes nuevos, cada uno con su habilidad.${gift?' Te dejo <b>50 gemas</b> para empezar.':''}`,`With <b>gems</b> you unlock new heroes, each with their own ability.${gift?" Here are <b>50 gems</b> to get you started.":''}`),tap:1},
+  {sel:'#bArm',say:()=>tt('En la <b>Armería</b> gastas el Tesoro en estilos de dados. Cada uno cambia lo que hacen tus espadas.',"At the <b>Armory</b> you spend the Treasury on dice styles. Each one changes what your swords do."),tap:1},
+  {sel:'#bGear',say:()=>tt('Aquí te pones lo que sacas de los cofres. Ese equipo te acompaña <b>en todas las partidas</b>.',"Here you wear what you get from chests. That gear comes with you <b>in every run</b>."),tap:1},
+  {sel:'#bHow',say:()=>tt('Si se te olvida algo, aquí está todo. Y puedes <b>repetir esta lección</b> cuando quieras.',"If you forget anything, it's all here. And you can <b>replay this lesson</b> whenever you like."),tap:1},
+  {sel:'#bNew',say:()=>tt('Ahora sí: baja otra vez. Y esta vez, <b>tira con cabeza</b>.',"Now you're ready: go back down. And this time, <b>roll smart</b>."),until:()=>!$('#sheet').hidden||view!=='title'}
+];
+function tutRun(steps,alive,done){
+  tutClose();
+  TUT={steps,alive,done,i:-1,rig:null,t0:0};
+  const h=document.createElement('div'); h.id='tutHole'; h.className='off';
+  const a=document.createElement('div'); a.id='tutArrow'; a.textContent='▼'; a.hidden=true;
+  const c=document.createElement('div'); c.id='coach'; c.className='pf dark';
+  document.body.append(h,a,c);
+  tutNext();
+}
+function tutNext(){
+  const T=TUT; if(!T) return;
+  do T.i++; while(T.steps[T.i]&&T.steps[T.i].skip&&T.steps[T.i].skip());
+  const st=T.steps[T.i];
+  if(!st){ const d=T.done; tutClose(); if(d) d(); return; }
+  T.s=st; T.t0=Date.now(); T.exp=0; if(st.enter) st.enter();
+  const ment=ENEMIES.mentor;
+  $('#coach').innerHTML=`<div class="cp"><img src="${spriteURL34(ment.sprite,ment.pal)}" alt=""></div><div class="cb"><span class="cn">${ment.name}</span><p class="ct">${st.say()}</p>
+    <div class="cf"><button class="cskip" id="tSkip">${tt('Saltar tutorial',"Skip tutorial")}</button>${st.tap?`<button class="pb go sm" id="tGo">${st.next||tt('Seguir ▸',"Next ▸")}</button>`:`<span class="cdo">${st.free?'':tt('Tu turno ▸',"Your move ▸")}</span>`}</div></div>`;
+  if(st.tap) $('#tGo').onclick=()=>{ sfx('tap'); tutNext(); };
+  $('#coach').onclick=()=>{ const c=$('#coach'); if(c&&TUT===T&&c.classList.contains('mini')){ T.exp=Date.now(); sfx('tap'); tutPlace(); } };
+  $('#tSkip').onclick=()=>{ sfx('tap'); if(G&&G.tut) endTutorial(true); else tutClose(); };
+  sfx('tink'); tutPlace();
+}
+function tutClose(){ if(!TUT) return; TUT=null; ['tutHole','tutArrow','coach'].forEach(id=>{ const e=document.getElementById(id); if(e) e.remove(); }); }
+const tutTarget=()=>{ const st=TUT&&TUT.s; if(!st||!st.sel) return null; const e=document.querySelector(st.sel); if(!e) return null; const r=e.getBoundingClientRect(); return r.width&&r.height?e:null; };
+function tutPlace(){
+  const T=TUT; if(!T||!T.s) return;
+  const st=T.s,h=$('#tutHole'),a=$('#tutArrow'),c=$('#coach'),t=tutTarget(),W=innerWidth,H=innerHeight,land=W>H;
+  h.classList.toggle('free',!!st.free);
+  const mini=!!st.free&&Date.now()-(T.exp||T.t0)>3500; c.classList.toggle('mini',mini);
+  const cw=c.offsetWidth,ch=c.offsetHeight;
+  if(mini){ h.classList.add('off'); a.hidden=true; c.style.left='8px'; c.style.top=H-ch-8+'px'; return; }
+  let cx=(W-cw)/2,cy=H-ch-12;
+  if(t){
+    const r=t.getBoundingClientRect(),p=6;
+    h.classList.remove('off'); Object.assign(h.style,{left:r.left-p+'px',top:r.top-p+'px',width:r.width+p*2+'px',height:r.height+p*2+'px'});
+    const below=r.top<44; a.hidden=!!st.free; a.classList.toggle('up',below);
+    a.style.left=r.left+r.width/2-9+'px'; a.style.top=(below?r.bottom+p+6:r.top-p-34)+'px';
+    if(land&&r.width<W*.5){ cx=r.left+r.width/2>W/2?12:W-cw-12; cy=Math.min(Math.max(12,r.top+r.height/2-ch/2),H-ch-12); }
+    else if(land){ cy=r.top+r.height/2>H/2?r.top-ch-40:r.bottom+40; if(cy<10||cy+ch>H-10) cy=r.top+r.height/2>H/2?10:H-ch-10; } // wide targets: above or below
+    else { cy=r.top+r.height/2>H/2?Math.min(56,Math.max(12,r.top-ch-48)):Math.min(H-ch-12,r.bottom+48); } // portrait: far from the target, under the HUD
+  } else { h.classList.add('off'); a.hidden=true; if(st.free) cy=12; }
+  c.style.left=Math.max(10,cx)+'px'; c.style.top=Math.max(10,cy)+'px';
+}
+setInterval(()=>{
+  const T=TUT; if(!T||!T.s) return;
+  if(T.alive&&!T.alive()){ tutClose(); return; }
+  tutPlace();
+  if(T.s.until&&Date.now()-T.t0>250&&T.s.until()) tutNext();
+},120);
+addEventListener('resize',()=>{ if(TUT) tutPlace(); });
+/* while a step waits for a specific tap, every other tap is swallowed (the coach and the pause button always work) */
+document.addEventListener('click',ev=>{
+  const T=TUT; if(!T||!T.s||T.s.free) return;
+  if(ev.target.closest('#coach,#pause,#sheet')) return;
+  const t=tutTarget(); if(t&&!T.s.tap&&t.contains(ev.target)) return;
+  ev.stopPropagation(); ev.preventDefault();
+},true);
 
 /* ================= intro story (first run, skippable) ================= */
 const INTRO=[
@@ -3169,7 +3336,7 @@ function renderTitle(){
   $('#bSnd').onclick=()=>{ ac(); toggleSound(); $('#bSnd').innerHTML=icon(SOUND?'sound':'mute','stone',2); };
 }
 function showHow(){
-  openSheet(`<h2 class="h-title" style="font-size:34px">${tt("Cómo se juega","How to play")}</h2><ul class="how">
+  openSheet(`<button class="pb go" id="howTut" style="align-self:center">${icon('dice','bone',2)} ${tt("Repetir el tutorial","Replay the tutorial")}</button><h2 class="h-title" style="font-size:34px">${tt("Cómo se juega","How to play")}</h2><ul class="how">
     <li>${icon('dice','bone',2)}<span>${tt("Cada turno tiras tus dados. Toca uno para fijarlo y relanza el resto (2 veces por turno).","Each turn you roll your dice. Tap one to hold it and reroll the rest (twice per turn).")}</span></li>
     <li>${icon('sword','atk',2)}<span>${tt("Ataque hace daño. Escudo bloquea el golpe enemigo. Cura recupera vida. Oro sirve en la tienda.","Attack deals damage. Shield blocks the enemy's hit. Heal restores HP. Gold is spent at the shop.")}</span></li>
     <li>${icon('burst','crit',2)}<span>${tt("Una cara de magia lanza un orbe y multiplica por 1,5 lo que sacan tus dados ese turno (cada cara de magia extra suma 0,25, hasta ×2).","A magic face launches an orb and multiplies your dice by 1.5 that turn (each extra magic face adds 0.25, up to ×2).")}</span></li>
@@ -3178,6 +3345,7 @@ function showHow(){
     <li>${icon('shield','def',2)}<span>${tt("Cada héroe (menos el Errante) tiene una habilidad que se carga 1 por turno. Cuando está llena, brilla encima de los dados.","Every hero (except the Wanderer) has an ability that charges 1 per turn. When it's full, it glows above the dice.")}</span></li>
     <li>${icon('flame','ember',2)}<span>${tt("Cada jefe tiene su propia regla: léela al empezar el combate.","Every boss has its own rule: read it when the fight starts.")}</span></li>
     <li>${icon('horns','atk',2)}<span>${tt("Cuatro mundos de 25 pisos, cada uno con su jefe. Al final espera el Núcleo del Destino: tócalo y el ciclo vuelve a empezar con un pacto nuevo.","Four worlds of 25 floors, each with its boss. At the end waits the Core of Fate: touch it and the cycle starts over with a new pact.")}</span></li></ul>`);
+  $('#howTut').onclick=()=>{ $('#sheet').hidden=true; sfx('door'); startTutorial(); };
 }
 function openSheet(html,custom){
   const s=$('#sheet'); s.innerHTML=`<div class="sheet-card pf dark">${html}${custom?'':tt('<button class="pb" id="closeSheet">Cerrar</button>',"<button class=\"pb\" id=\"closeSheet\">Close</button>")}</div>`;
@@ -3645,7 +3813,7 @@ function sceneFor(){
   const k=G.combat&&G.combat.kind,co=k==='boss'?{boss:1}:k==='elite'?{elite:1}:{};
   switch(G.screen){
     case 'map': return ['hall',{theme:worldOf().w.key}];
-    case 'combat': case 'reward': return [worldOf().w.scene,co];
+    case 'combat': case 'reward': return G.tut?['rest',{}]:[worldOf().w.scene,co];
     case 'shop': return ['shop',{}];
     case 'rest': return ['rest',{}];
     case 'forge': return G.pending&&G.pending.back==='shop'?['shop',{}]:G.pending&&G.pending.mode==='upgrade'&&!G.pending.op?['rest',{}]:[worldOf().w.scene,co];
